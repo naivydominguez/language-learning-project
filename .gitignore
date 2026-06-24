@@ -1,6 +1,10 @@
 # Env
 /frontend/.env
 /backend/.env
+venv/
+
+# Editor
+.vscode/
 
 # Compiled source #
 ###################
