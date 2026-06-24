@@ -5,7 +5,7 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig, LogitsProcessor, pipeline 
 
 MODEL_NAME = "HuggingFaceTB/SmolLM2-360M-Instruct"
-KNOWN_WORDS_BIAS = 7
+KNOWN_WORDS_BIAS = 3
 
 if torch.cuda.is_available():
     device = "cuda"
@@ -26,6 +26,7 @@ class LogitsMask(LogitsProcessor):
         self.unknown_words_percentage = unknown_words_percentage
 
     def __call__(self, input_ids, scores):
+        # return scores
         # Encouraging/discouraging a word based on chance
         use_unknown_word = np.random.rand() * 100 < self.unknown_words_percentage
         bias = -KNOWN_WORDS_BIAS if use_unknown_word else KNOWN_WORDS_BIAS
@@ -62,5 +63,3 @@ def generate_response(chat, known_words, unknown_words_percentage):
         new_message = new_message[len("assistant"):].strip()
        
     return new_message 
-
-print(generate_response([{"role": "user", "content": "Hello, how are you?"}], ["hello", "how", "are", "you"], 50))

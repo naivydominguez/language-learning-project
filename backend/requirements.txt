@@ -1,4 +1,6 @@
+colorama==0.4.6
 numpy==2.5.0
 pandas==3.0.3
+sympy==1.14.0
 torch==2.12.1
 transformers==5.12.1
