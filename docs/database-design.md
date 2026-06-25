@@ -12,34 +12,39 @@ within each conversation and known words from the user
 # Tables
 
 profiles:
-- id 
-- username
-- first_name
-- last_name
-- target_lang
-- created_at
+- id (uuid, primary key, foreign key: auth.users.id)
+- username (text, unique)
+- first_name (text)
+- last_name (text)
+- target_lang (text)
+- spotify_acc (text)
+- jpdb_acc (text)
+- anki_acc (text)
+- streaks (integer, default 0)
+- created_at (timestamp)
 
 conversations:
-- id
-- user_id 
-- title
-- target_lang
-- created_at
+- id (uuid, primary key)
+- user_id (uuid, foreign key -> profiles.id)
+- title (text)
+- target_lang (text)
+- created_at (timestamp)
 
 messages:
-- id
-- conversation_id 
-- sender (user | ai)
-- content
-- created_at
+- id (uuid, primary key)
+- conversation_id (uuid, foreign key: conversations.id)
+- sender (text, check: 'user' | 'ai')
+- content (text, not null)
+- created_at (timestamp)
 
 known_words:
-- id
-- user_id 
-- word
-- translation
-- language
-- created_at
+- id (uuid, primary key)
+- user_id (uuid, foreign key: profiles.id)
+- word (text, not null)
+- translation (text)
+- language (text)
+- memory_strength (integer, default 0)
+- created_at (timestamp)
 
 # Design Decisions
 
