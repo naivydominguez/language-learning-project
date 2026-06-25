@@ -3,15 +3,15 @@
 The design of our database stores users, conversations, individual messages 
 within each conversation and known words from the user
 
-# Relationships
-
-- One profile → many conversations
-- One conversation → many messages
-- One profile → many known_words
+# Relationships:
+- One account has many conversations.
+- One conversation has many messages.
+- One account has many words through bridge.
+- One known_word can belong to many accounts through bridge.
 
 # Tables
 
-profiles:
+Accounts:
 - id (uuid, primary key, foreign key: auth.users.id)
 - username (text, unique)
 - first_name (text)
@@ -45,6 +45,13 @@ known_words:
 - language (text)
 - memory_strength (integer, default 0)
 - created_at (timestamp)
+
+bridge
+- user_id (uuid, foreign key: accounts.id)
+- word_id (uuid, foreign key: known_words.id)
+- memory_strength (integer, default 0)
+- created_at (timestamp)
+- primary key: (user_id, word_id)
 
 # Design Decisions
 

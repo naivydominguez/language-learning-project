@@ -32,6 +32,7 @@ create table public.messages (
   created_at timestamp default now()
 );
 
+
 create table public.known_words (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references public.accounts(id) on delete cascade,
@@ -40,6 +41,14 @@ create table public.known_words (
   language text,
 
   memory_strength integer default 0,
-  
+
   created_at timestamp default now()
+);
+
+create table public.bridge (
+    user_id uuid references public.accounts(id) on delete cascade,
+    word_id uuid references public.known_words(id) on delete cascade,
+    memory_strength integer default 0,
+
+    primary key (user_id, word_id)
 );
