@@ -17,16 +17,14 @@ else:
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, device_map="auto")
 
-# We define the mask here. We discourage unknown words but don't ban them 
-# so users with few known words can still get a response. During some steps of 
-# generation we invert the mask to encourage unknown words to be used.
+# We discourage unknown words but don't ban them so users with few known words can still get a response. 
+# During some steps of generation we invert the mask to encourage unknown words to be used.
 class LogitsMask(LogitsProcessor):
     def __init__(self, known_token_ids, unknown_words_percentage):
         self.known_token_ids = set(known_token_ids)
         self.unknown_words_percentage = unknown_words_percentage
 
     def __call__(self, input_ids, scores):
-        # return scores
         # Encouraging/discouraging a word based on chance
         use_unknown_word = np.random.rand() * 100 < self.unknown_words_percentage
         bias = -KNOWN_WORDS_BIAS if use_unknown_word else KNOWN_WORDS_BIAS

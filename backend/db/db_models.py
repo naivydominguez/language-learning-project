@@ -1,6 +1,6 @@
 import uuid
 from typing import Optional
-from sqlalchemy import CheckConstraint, DateTime, Mapped, PrimaryKeyConstraint, func, ForeignKey
+from sqlalchemy import CheckConstraint, DateTime, Mapped, PrimaryKeyConstraint, func, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import declarative_base, mapped_column, relationship
 
 Base = declarative_base()
@@ -25,6 +25,7 @@ class User(Base):
     username: Mapped[str] = mapped_column(unique=True)
     first_name: Mapped[str]
     last_name: Mapped[str]
+    jpdb_api_key: Mapped[Optional[str]]
     spotify_account: Mapped[Optional[str]]
     streak: Mapped[int] = mapped_column(default=0) # Non negative
     created_at: Mapped[DateTime] = mapped_column(server_default=func.now())
@@ -71,6 +72,9 @@ class Message(Base):
 
 class Word(Base):
     __tablename__ = 'known_words'
+    __table_args__ = (
+        UniqueConstraint('language_id', 'word', name='unique_word_per_language')
+    )
     
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, server_default=uuid.uuid4)
     language_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('languages.id'))
@@ -87,6 +91,7 @@ class UserKnownWord(Base):
     
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('users.id'))
     word_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('known_words.id'))
+    memory_strength: Mapped[int] = mapped_column(default=0) # Non negative
     
     user: Mapped[User] = relationship("User", back_populates="user_known_words")
     word: Mapped[Word] = relationship("Word", back_populates="user_known_words")
