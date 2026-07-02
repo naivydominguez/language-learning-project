@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional
-from sqlalchemy import CheckConstraint, DateTime, Mapped, PrimaryKeyConstraint, func, ForeignKey, UniqueConstraint
-from sqlalchemy.orm import declarative_base, mapped_column, relationship
+from sqlalchemy import CheckConstraint, DateTime, PrimaryKeyConstraint, func, ForeignKey, UniqueConstraint
+from sqlalchemy.orm import declarative_base, mapped_column, relationship, Mapped
 
 Base = declarative_base()
 

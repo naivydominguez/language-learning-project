@@ -1,0 +1,1 @@
+from .jpdb_sync import router
