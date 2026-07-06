@@ -12,14 +12,16 @@
 :root {
   /* ── Typography — project-wide font stacks (kept from existing global.css) */
   --font-display:
-    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol,
-      Noto Color Emoji;
-  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
-/* ── Typography — Immerbot design system fonts ─ */
-  --font-sans: 'DM Sans', system-ui, sans-serif;
-  --font-serif: 'Lora', Georgia, serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji,
+    Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  --font-rounded:
+    "SF Pro Rounded", "Hiragino Maru Gothic ProN", Meiryo, "MS PGothic",
+    sans-serif;
+
+  /* ── Typography — Immerbot design system fonts ─ */
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-serif: "Lora", Georgia, serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
   --font-size: 15px;
   /* mobile body base */
   --font-weight-normal: 400;
@@ -27,95 +29,49 @@
   --font-weight-semi: 600;
   --font-weight-bold: 700;
 
-  /* ── Backgrounds ────────────────────────────── */
-  --background: #FAF7F4;
-  /* sand-50  — main screen fill    */
-  --background-subtle: #F3EEE8;
-  /* sand-100 — section tints        */
-  --background-element: #E9E0D8;
-  /* sand-200 — input fills          */
-  --surface: #FFFFFF;
-  /* cards, sheets, modals           */
+  /* ── Color palette — */
+  --background-light: #faf7f4;
+  --background: #f3eee8;
+  --background-dark: #e9e0d8;
 
-  /* ── Cards / Popovers ───────────────────────── */
-  --card: #FFFFFF;
-  --card-foreground: #201810;
-  --popover: #FFFFFF;
-  --popover-foreground: #201810;
+  --white: #ffffff;
+  --black: #201810;
 
-  /* ── Text ───────────────────────────────────── */
   --foreground: #201810;
-  /* sand-900 — primary text         */
-  --foreground-secondary: #8C6E60;
-  /* sand-600 — secondary text       */
-  --foreground-tertiary: #BFAD9F;
-  /* sand-400 — tertiary / placeholder */
-  --foreground-inverse: #FFFFFF;
+  --foreground-secondary: #8c6e60;
+  --foreground-tertiary: #bfad9f;
 
-  /* ── Primary accent — Terracotta ────────────── */
-  --primary: #B5613A;
-  /* terra-500                       */
-  --primary-hover: #D67A4A;
-  /* terra-400                       */
-  --primary-strong: #6F3A22;
-  /* terra-700                       */
-  --primary-subtle: #FEF4EF;
-  /* terra-50                        */
-  --primary-subtle-fg: #6F3A22;
-  /* terra-700                       */
-  --primary-foreground: #FFFFFF;
+  --primary-light: #d67a4a;
+  --primary: #b5613a;
+  --primary-dark: #6f3a22;
 
-  /* ── Secondary — Olive ──────────────────────── */
-  --secondary: #6B7A55;
-  /* olive-500                       */
-  --secondary-subtle: #F4F5EE;
-  /* olive-50                        */
-  --secondary-subtle-fg: #424E34;
-  /* olive-700                       */
-  --secondary-foreground: #FFFFFF;
+  /* We also use this as the color for successful interactions */
+  --secondary-light: #f4f5ee;
+  --secondary: #6b7a55;
+  --secondary-dark: #424e34;
 
-  /* ── Muted ──────────────────────────────────── */
-  --muted: #E9E0D8;
-  /* sand-200                        */
-  --muted-foreground: #8C6E60;
-  /* sand-600                        */
+  --warning: #c4843c;
+  --warning-dark: #8a5018;
 
-  /* ── Accent (Tailwind alias — same as primary) ─ */
-  --accent: #FEF4EF;
-  /* primary-subtle for bg tints     */
-  --accent-foreground: #6F3A22;
+  --destructive: #b04040;
 
-  /* ── Semantic ───────────────────────────────── */
-  --success: #4E7A5B;
-  --success-subtle: #EBF3EE;
-  --success-foreground: #2D5038;
-  --warning: #C4843C;
-  --warning-subtle: #FDF4E8;
-  --warning-foreground: #8A5018;
-  --destructive: #B04040;
-  --destructive-subtle: #FAF0F0;
-  --destructive-foreground: #FFFFFF;
-  --info: #4A6FA8;
-  --info-subtle: #EDF1F9;
-  --info-foreground: #2A4878;
+  --info-light: #edf1f9;
+  --info: #4a6fa8;
+  --info-dark: #2a4878;
 
-  /* ── Vocabulary ─────────────────────────────── */
-  --word-new: #C4843C;
-  --word-new-bg: #FDF4E8;
-  --word-known: #4E7A5B;
-  --word-known-bg: #EBF3EE;
-
-  /* ── Borders ────────────────────────────────── */
-  --border: rgba(32, 24, 16, 0.10);
-  --border-subtle: rgba(32, 24, 16, 0.06);
-  --border-strong: rgba(32, 24, 16, 0.22);
-  --input: rgba(32, 24, 16, 0.10);
-  --input-background: #E9E0D8;
-  /* sand-200                        */
-  --switch-background: #BFAD9F;
-  /* sand-400                        */
-  --ring: #B5613A;
-  /* matches primary for focus ring  */
+  /* ── Shadows (warm-tinted, not pure black) ──── */
+  --shadow-xs: 0 1px 2px rgba(32, 24, 16, 0.06);
+  --shadow-sm:
+    0 1px 4px rgba(32, 24, 16, 0.08), 0 1px 2px rgba(32, 24, 16, 0.04);
+  --shadow-md:
+    0 4px 12px rgba(32, 24, 16, 0.09), 0 1px 4px rgba(32, 24, 16, 0.04);
+  --shadow-lg:
+    0 8px 24px rgba(32, 24, 16, 0.1), 0 2px 8px rgba(32, 24, 16, 0.06);
+  --shadow-xl:
+    0 16px 40px rgba(32, 24, 16, 0.12), 0 4px 12px rgba(32, 24, 16, 0.06);
+  --shadow-modal:
+    0 24px 60px rgba(32, 24, 16, 0.15), 0 8px 20px rgba(32, 24, 16, 0.08);
+  --shadow-inner: inset 0 1px 3px rgba(32, 24, 16, 0.06);
 
   /* ── Radius ─────────────────────────────────── */
   --radius: 0.75rem;
@@ -136,15 +92,6 @@
   /* 36px                            */
   --radius-full: 9999px;
 
-  /* ── Shadows (warm-tinted, not pure black) ──── */
-  --shadow-xs: 0 1px 2px rgba(32, 24, 16, 0.06);
-  --shadow-sm: 0 1px 4px rgba(32, 24, 16, 0.08), 0 1px 2px rgba(32, 24, 16, 0.04);
-  --shadow-md: 0 4px 12px rgba(32, 24, 16, 0.09), 0 1px 4px rgba(32, 24, 16, 0.04);
-  --shadow-lg: 0 8px 24px rgba(32, 24, 16, 0.10), 0 2px 8px rgba(32, 24, 16, 0.06);
-  --shadow-xl: 0 16px 40px rgba(32, 24, 16, 0.12), 0 4px 12px rgba(32, 24, 16, 0.06);
-  --shadow-modal: 0 24px 60px rgba(32, 24, 16, 0.15), 0 8px 20px rgba(32, 24, 16, 0.08);
-  --shadow-inner: inset 0 1px 3px rgba(32, 24, 16, 0.06);
-
   /* ── Motion ─────────────────────────────────── */
   --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -156,133 +103,4 @@
   --duration-enter: 250ms;
   --duration-exit: 150ms;
   --duration-slow: 350ms;
-
-  /* ── Charts ─────────────────────────────────── */
-  --chart-1: #B5613A;
-  /* terracotta */
-  --chart-2: #6B7A55;
-  /* olive      */
-  --chart-3: #C4843C;
-  /* amber      */
-  --chart-4: #4A6FA8;
-  /* blue       */
-  --chart-5: #9B6B8A;
-  /* mauve      */
-
-  /* ── Sidebar ────────────────────────────────── */
-  --sidebar: #F3EEE8;
-  /* sand-100 */
-  --sidebar-foreground: #201810;
-  --sidebar-primary: #B5613A;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #FEF4EF;
-  --sidebar-accent-foreground: #6F3A22;
-  --sidebar-border: rgba(32, 24, 16, 0.10);
-  --sidebar-ring: #B5613A;
-
-  /* ── Spacing ─────────────────────────────────── */
-  --space-1: 0.25rem;
-  /*  4px */
-  --space-2: 0.5rem;
-  /*  8px */
-  --space-3: 0.75rem;
-  /* 12px */
-  --space-4: 1rem;
-  /* 16px */
-  --space-5: 1.25rem;
-  /* 20px — screen horizontal padding */
-  --space-6: 1.5rem;
-  /* 24px */
-  --space-8: 2rem;
-  /* 32px */
-  --space-10: 2.5rem;
-  /* 40px */
-  --space-12: 3rem;
-  /* 48px — tab bar height */
-  --space-14: 3.5rem;
-  /* 56px — large touch target */
-  --space-16: 4rem;
-  /* 64px — bottom safe area */
 }
-
-/* ─── Dark mode ───────────────────────────────────────────────────────────── */
-
-.dark {
-  --background: #1A1410;
-  --background-subtle: #231C15;
-  --background-element: #2E251C;
-  --surface: #241D16;
-
-  --card: #241D16;
-  --card-foreground: #F0EAE3;
-  --popover: #2E251C;
-  --popover-foreground: #F0EAE3;
-
-  --foreground: #F0EAE3;
-  --foreground-secondary: #BEA898;
-  --foreground-tertiary: #7A6054;
-  --foreground-inverse: #201810;
-
-  --primary: #D67A4A;
-  /* terra-400 — brighter on dark   */
-  --primary-hover: #E8A070;
-  /* terra-300                      */
-  --primary-strong: #F5C9A8;
-  /* terra-200                      */
-  --primary-subtle: #2E1C10;
-  --primary-subtle-fg: #F5C9A8;
-  --primary-foreground: #FFFFFF;
-
-  --secondary: #8BA26A;
-  /* olive-400                      */
-  --secondary-subtle: #1A2012;
-  --secondary-subtle-fg: #CDDAB3;
-  --secondary-foreground: #FFFFFF;
-
-  --muted: #2E251C;
-  --muted-foreground: #BEA898;
-
-  --accent: #2E1C10;
-  --accent-foreground: #F5C9A8;
-
-  --destructive: #C85A5A;
-  --destructive-subtle: #2A1010;
-  --destructive-foreground: #FFFFFF;
-
-  --word-new: #E8A070;
-  --word-new-bg: #2A1C08;
-  --word-known: #8BA26A;
-  --word-known-bg: #141E10;
-
-  --border: rgba(240, 234, 227, 0.10);
-  --border-subtle: rgba(240, 234, 227, 0.06);
-  --border-strong: rgba(240, 234, 227, 0.20);
-  --input: rgba(240, 234, 227, 0.10);
-  --input-background: #2E251C;
-  --switch-background: #4A3828;
-  --ring: #D67A4A;
-
-  --chart-1: #D67A4A;
-  --chart-2: #8BA26A;
-  --chart-3: #E8A070;
-  --chart-4: #7A9EC8;
-  --chart-5: #BF90B0;
-
-  --sidebar: #1A1410;
-  --sidebar-foreground: #F0EAE3;
-  --sidebar-primary: #D67A4A;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #2E1C10;
-  --sidebar-accent-foreground: #F5C9A8;
-  --sidebar-border: rgba(240, 234, 227, 0.10);
-  --sidebar-ring: #D67A4A;
-
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.20);
-  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.15);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.28), 0 1px 4px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.30), 0 2px 8px rgba(0, 0, 0, 0.18);
-  --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.20);
-  --shadow-modal: 0 24px 60px rgba(0, 0, 0, 0.45), 0 8px 20px rgba(0, 0, 0, 0.25);
-  --shadow-inner: inset 0 1px 3px rgba(0, 0, 0, 0.20);
-}
-

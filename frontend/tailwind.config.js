@@ -8,56 +8,77 @@ module.exports = {
         sans: ["DMSans-Regular"],
         serif: ["Lora-Regular"],
         mono: ["JetBrainsMono-Regular"],
+        display: ["var(--font-display)"],
+        rounded: ["var(--font-rounded)"],
+      },
+      fontSize: {
+        base: "var(--font-size)",
+      },
+      fontWeight: {
+        normal: "var(--font-weight-normal)",
+        medium: "var(--font-weight-medium)",
+        semi: "var(--font-weight-semi)",
+        bold: "var(--font-weight-bold)",
       },
       colors: {
+        // ── Backgrounds ──────────────────────────
+        "background-light": "var(--background-light)",
         background: "var(--background)",
-        "background-subtle": "var(--background-subtle)",
-        "background-element": "var(--background-element)",
-        surface: "var(--surface)",
+        "background-dark": "var(--background-dark)",
 
+        // ── Base ─────────────────────────────────
+        white: "var(--white)",
+        black: "var(--black)",
+
+        // ── Foreground ───────────────────────────
         foreground: "var(--foreground)",
         "foreground-secondary": "var(--foreground-secondary)",
         "foreground-tertiary": "var(--foreground-tertiary)",
-        "foreground-placeholder": "var(--foreground-placeholder)",
 
-        accent: "var(--accent)",
-        "accent-hover": "var(--accent-hover)",
-        "accent-strong": "var(--accent-strong)",
-        "accent-subtle": "var(--accent-subtle)",
-        "accent-subtle-fg": "var(--accent-subtle-fg)",
-        "accent-fg": "var(--accent-fg)",
+        // ── Primary ──────────────────────────────
+        "primary-light": "var(--primary-light)",
+        primary: "var(--primary)",
+        "primary-dark": "var(--primary-dark)",
 
+        // ── Secondary ────────────────────────────
+        "secondary-light": "var(--secondary-light)",
         secondary: "var(--secondary)",
-        "secondary-subtle": "var(--secondary-subtle)",
-        "secondary-subtle-fg": "var(--secondary-subtle-fg)",
-        "secondary-fg": "var(--secondary-fg)",
+        "secondary-dark": "var(--secondary-dark)",
 
-        success: "var(--success)",
-        "success-subtle": "var(--success-subtle)",
+        // ── Warning ──────────────────────────────
         warning: "var(--warning)",
-        "warning-subtle": "var(--warning-subtle)",
-        error: "var(--error)",
-        "error-subtle": "var(--error-subtle)",
+        "warning-dark": "var(--warning-dark)",
+
+        // ── Destructive ──────────────────────────
+        destructive: "var(--destructive)",
+
+        // ── Info ─────────────────────────────────
+        "info-light": "var(--info-light)",
         info: "var(--info)",
-        "info-subtle": "var(--info-subtle)",
-
-        "word-new": "var(--word-new)",
-        "word-new-bg": "var(--word-new-bg)",
-        "word-known": "var(--word-known)",
-        "word-known-bg": "var(--word-known-bg)",
-
-        border: "var(--border)",
-        "border-subtle": "var(--border-subtle)",
-        "border-strong": "var(--border-strong)",
-
-        // Sidebar — aliased to closest existing tokens (no dedicated sidebar vars in global.css)
-        sidebar: "var(--background-subtle)",
-        "sidebar-foreground": "var(--foreground)",
-        "sidebar-primary": "var(--accent)",
-        "sidebar-primary-foreground": "var(--accent-fg)",
-        "sidebar-accent": "var(--accent-subtle)",
-        "sidebar-accent-foreground": "var(--accent-subtle-fg)",
-        "sidebar-border": "var(--border)",
+        "info-dark": "var(--info-dark)",
+      },
+      boxShadow: {
+        xs: "var(--shadow-xs)",
+        sm: "var(--shadow-sm)",
+        md: "var(--shadow-md)",
+        lg: "var(--shadow-lg)",
+        xl: "var(--shadow-xl)",
+        modal: "var(--shadow-modal)",
+        inner: "var(--shadow-inner)",
+      },
+      transitionTimingFunction: {
+        default: "var(--ease-default)",
+        spring: "var(--ease-spring)",
+        out: "var(--ease-out)",
+        in: "var(--ease-in)",
+      },
+      transitionDuration: {
+        instant: "var(--duration-instant)",
+        fast: "var(--duration-fast)",
+        default: "var(--duration-default)",
+        enter: "var(--duration-enter)",
+        exit: "var(--duration-exit)",
+        slow: "var(--duration-slow)",
       },
       borderRadius: {
         xs: "var(--radius-xs)",
