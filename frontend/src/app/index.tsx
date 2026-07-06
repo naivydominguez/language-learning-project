@@ -1,12 +1,13 @@
-import "../global.css"
-import { Text, View } from "react-native";
- 
-export default function App() {
+import { View, Text, Pressable } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import HamburgerButton from "@/components/humburgerBtn";
+import navbar from "@/components/navbar";
+
+export default function app() {
+
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-xl font-bold text-blue-500">
-        Welcome to Nativewind!
-      </Text>
+    <View className="flex-1 flex-row">
+      <HamburgerButton />
     </View>
   );
 }
