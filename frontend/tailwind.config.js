@@ -22,40 +22,40 @@ module.exports = {
       },
       colors: {
         // ── Backgrounds ──────────────────────────
-        "background-light": "var(--background-light)",
-        background: "var(--background)",
-        "background-dark": "var(--background-dark)",
+        "background-light": "rgb(var(--background-light) / <alpha-value>)",
+        background: "rgb(var(--background) / <alpha-value>)",
+        "background-dark": "rgb(var(--background-dark) / <alpha-value>)",
 
         // ── Base ─────────────────────────────────
-        white: "var(--white)",
-        black: "var(--black)",
+        white: "rgb(var(--white) / <alpha-value>)",
+        black: "rgb(var(--black) / <alpha-value>)",
 
         // ── Foreground ───────────────────────────
-        foreground: "var(--foreground)",
-        "foreground-secondary": "var(--foreground-secondary)",
-        "foreground-tertiary": "var(--foreground-tertiary)",
+        foreground: "rgb(var(--foreground) / <alpha-value>)",
+        "foreground-secondary": "rgb(var(--foreground-secondary) / <alpha-value>)",
+        "foreground-tertiary": "rgb(var(--foreground-tertiary) / <alpha-value>)",
 
         // ── Primary ──────────────────────────────
-        "primary-light": "var(--primary-light)",
-        primary: "var(--primary)",
-        "primary-dark": "var(--primary-dark)",
+        "primary-light": "rgb(var(--primary-light) / <alpha-value>)",
+        primary: "rgb(var(--primary) / <alpha-value>)",
+        "primary-dark": "rgb(var(--primary-dark) / <alpha-value>)",
 
         // ── Secondary ────────────────────────────
-        "secondary-light": "var(--secondary-light)",
-        secondary: "var(--secondary)",
-        "secondary-dark": "var(--secondary-dark)",
+        "secondary-light": "rgb(var(--secondary-light) / <alpha-value>)",
+        secondary: "rgb(var(--secondary) / <alpha-value>)",
+        "secondary-dark": "rgb(var(--secondary-dark) / <alpha-value>)",
 
         // ── Warning ──────────────────────────────
-        warning: "var(--warning)",
-        "warning-dark": "var(--warning-dark)",
+        warning: "rgb(var(--warning) / <alpha-value>)",
+        "warning-dark": "rgb(var(--warning-dark) / <alpha-value>)",
 
         // ── Destructive ──────────────────────────
-        destructive: "var(--destructive)",
+        destructive: "rgb(var(--destructive) / <alpha-value>)",
 
         // ── Info ─────────────────────────────────
-        "info-light": "var(--info-light)",
-        info: "var(--info)",
-        "info-dark": "var(--info-dark)",
+        "info-light": "rgb(var(--info-light) / <alpha-value>)",
+        info: "rgb(var(--info) / <alpha-value>)",
+        "info-dark": "rgb(var(--info-dark) / <alpha-value>)",
       },
       boxShadow: {
         xs: "var(--shadow-xs)",

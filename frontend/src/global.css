@@ -30,34 +30,34 @@
   --font-weight-bold: 700;
 
   /* ── Color palette — */
-  --background-light: #faf7f4;
-  --background: #f3eee8;
-  --background-dark: #e9e0d8;
+  --background-light: 250 247 244; /* #faf7f4 */
+  --background: 243 238 232; /* #f3eee8 */
+  --background-dark: 233 224 216; /* #e9e0d8 */
 
-  --white: #ffffff;
-  --black: #201810;
+  --white: 255 255 255; /* #ffffff */
+  --black: 32 24 16; /* #201810 */
 
-  --foreground: #201810;
-  --foreground-secondary: #8c6e60;
-  --foreground-tertiary: #bfad9f;
+  --foreground: 32 24 16; /* #201810 */
+  --foreground-secondary: 140 110 96; /* #8c6e60 */
+  --foreground-tertiary: 191 173 159; /* #bfad9f */
 
-  --primary-light: #d67a4a;
-  --primary: #b5613a;
-  --primary-dark: #6f3a22;
+  --primary-light: 214 122 74; /* #d67a4a */
+  --primary: 181 97 58; /* #b5613a */
+  --primary-dark: 111 58 34; /* #6f3a22 */
 
   /* We also use this as the color for successful interactions */
-  --secondary-light: #f4f5ee;
-  --secondary: #6b7a55;
-  --secondary-dark: #424e34;
+  --secondary-light: 244 245 238; /* #f4f5ee */
+  --secondary: 107 122 85; /* #6b7a55 */
+  --secondary-dark: 66 78 52; /* #424e34 */
 
-  --warning: #c4843c;
-  --warning-dark: #8a5018;
+  --warning: 196 132 60; /* #c4843c */
+  --warning-dark: 138 80 24; /* #8a5018 */
 
-  --destructive: #b04040;
+  --destructive: 176 64 64; /* #b04040 */
 
-  --info-light: #edf1f9;
-  --info: #4a6fa8;
-  --info-dark: #2a4878;
+  --info-light: 237 241 249; /* #edf1f9 */
+  --info: 74 111 168; /* #4a6fa8 */
+  --info-dark: 42 72 120; /* #2a4878 */
 
   /* ── Shadows (warm-tinted, not pure black) ──── */
   --shadow-xs: 0 1px 2px rgba(32, 24, 16, 0.06);
