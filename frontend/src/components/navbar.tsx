@@ -1,6 +1,7 @@
 import { View, Text, Pressable, Animated } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter, usePathname } from "expo-router";
+import ChatScreen from "./chatScreen";
 import React, { useRef, useEffect } from "react";
 
 const DRAWER_WIDTH = 220;
@@ -12,7 +13,7 @@ type Props = {
 
 const NAV_ITEMS = [
   { label: "New Conversation", path: "/" },
-  { label: "Chat", path: "/" },
+  { label: "Chat", path: "/chat" },
   { label: "Settings", path: "/settings" },
   { label: "Progress", path: "/progress" },
 ] as const;

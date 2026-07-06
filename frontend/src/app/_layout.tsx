@@ -1,17 +1,13 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme, View, Text } from 'react-native';
+import { View } from "react-native";
+import { Stack } from "expo-router";
+import HamburgerButton from "@/components/humburgerBtn";
+import "../global.css";
 
-import AppTabs from '@/components/app-tabs';
-
-SplashScreen.preventAutoHideAsync();
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function RootLayout() {
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <AppTabs />
-            
-    </ThemeProvider>
+    <View className="flex-1">
+      <HamburgerButton />
+      <Stack screenOptions={{ headerShown: false }} />
+    </View>
   );
 }
