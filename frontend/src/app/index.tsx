@@ -1,8 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HamburgerButton from "@/components/humburgerBtn";
-import navbar from "@/components/navbar";
-
+import "../global.css";
 export default function app() {
 
   return (
