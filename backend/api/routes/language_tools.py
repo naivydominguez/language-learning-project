@@ -17,3 +17,16 @@ def translate(text: str, target_lang: str):
         translated_text=f"[translated to {target_lang}]: {text}",
         target_lang=target_lang,
     )
+    
+
+class FeedbackResponse(BaseModel):
+    original_text: str
+    feedback: str
+
+
+@router.get("/feedback", response_model=FeedbackResponse)
+def get_feedback(text: str, target_lang: str):
+    return FeedbackResponse(
+        original_text=text,
+        feedback="This is placeholder feedback on grammar and word choice.",
+    )
