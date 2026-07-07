@@ -47,18 +47,32 @@ export default function Navbar({ visible, onClose }: Props) {
   };
 
   return (
-    <View className="absolute top-0 left-0 h-full w-full" pointerEvents={visible ? "auto" : "none"}>
+    <View
+      style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 50}}
+      pointerEvents={visible ? "auto" : "none"}
+    >
       {/* Backdrop */}
-      <Animated.View className="absolute top-0 left-0 h-full w-full bg-black" style={{ opacity: overlayOpacity }}>
+      <Animated.View
+        style={{ position: "absolute", top: 0, left: 0, height: "100%", width: "100%", opacity: overlayOpacity }}
+        className="bg-black"
+      >
         <Pressable style={{ flex: 1 }} onPress={onClose} />
       </Animated.View>
 
       {/* Sliding sidebar */}
-      <Animated.View
-        className="absolute top-0 left-0 h-full w-56 bg-sidebar rounded-r-lg border-r border-sidebar-border"
-        style={{ transform: [{ translateX }] }}
-      >
-        <SafeAreaView className="flex-1">
+        <Animated.View
+  style={{
+    position: "absolute",
+    top: 30,
+    left: 0,
+    bottom: 0,
+    width: DRAWER_WIDTH,
+    transform: [{ translateX }],
+  }}
+  className="rounded-r-lg border-r border-sidebar-border shadow-lg"
+>
+      
+        <SafeAreaView className="flex-1 bg-sidebar" >
           <View className="px-5 pl-4 py-4 border-b border-sidebar-border">
             <Text className="font-sans text-lg font-semibold text-sidebar-foreground">Immer bot</Text>
           </View>
