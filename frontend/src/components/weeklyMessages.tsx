@@ -2,8 +2,9 @@ import { View, Text } from "react-native";
 
 const WeeklyMessages = () => {
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-xl font-bold text-blue-500">Weekly Messages</Text>
+    <View className="w-full h-max flex flex-col bg-white p-4 rounded-md border border-background-dark">
+      <Text className="font-bold text-lg">Weekly Messages</Text>
+      {/* calendar grid */}
     </View>
   );
 };
