@@ -1,13 +1,19 @@
-from fastapi import FastAPI
-from supabase import create_client, Client
 from dotenv import load_dotenv
-import os
-from pydantic import BaseModel
-from typing import Optional
-
 load_dotenv()
 
+import os
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import Optional
+from supabase import create_client, Client
+
+from backend.api.routes import jpdb_router, conversations_router, language_tools_router
+
 app = FastAPI()
+app.include_router(jpdb_router)
+app.include_router(conversations_router)
+app.include_router(language_tools_router)
+
 supabase: Client = create_client(os.environ.get("SUPABASE_URL"), os.environ.get("SUPABASE_KEY"))
 
 
@@ -16,6 +22,7 @@ class StatsCreate(BaseModel):
     known_words: int
     number_messages: int
     steak: bool
+
 
 class Settings(BaseModel):
     user_id: str
@@ -31,10 +38,12 @@ async def get_user_languages(user_id: str):
     response = supabase.table('user_languages').select('*').eq('user_id', user_id).execute()
     return response.data
 
+
 @app.get('/known_words_user_statistics/{user_id}')
 async def get_known_words_user_statistics(user_id: str):
     response = supabase.table('temporal_user_statistics').select('known_words').eq('user_id', user_id).execute()
     return response.data
+
 
 @app.get('/user_statistics/{user_id}')
 async def get_user_statistics(user_id: str):
@@ -54,10 +63,12 @@ async def update_user_settings(user_id: str, settings: Settings):
     response = supabase.table('users').update(updates).eq('user_id', user_id).execute()
     return response.data
 
+
 @app.get('/users/{user_id}')
 async def get_user_id(user_id: str):
     response = supabase.table('users').select('*').eq('user_id', user_id).execute()
     return response.data
+
 
 @app.post('/users', status_code=201)
 async def post_settings(settings: Settings):
