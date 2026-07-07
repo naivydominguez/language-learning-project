@@ -6,15 +6,17 @@ import { FlatList } from "react-native-gesture-handler";
 
 type Message = {
   id: string;
-  text: string;
-  sender: "user" | "bot";
+  sender: "user" | "ai";
+  context: string;
 };
 
 type Props = {
   text?: string;
 };
-
-export default function ChatScreen({ text = "" }: Props) {
+type Prop = {
+  conversationId: string;
+};
+export default function ChatScreen({ conversationId }: Prop) {
   const [messages, setMessages] = React.useState<Message[]>([]);
 
   const handleSend = (messageText: string) => {
@@ -22,8 +24,8 @@ export default function ChatScreen({ text = "" }: Props) {
 
     const newMessage: Message = {
       id: Date.now().toString(),
-      text: messageText,
       sender: "user",
+      context: messageText, 
     };
 
     setMessages((prev) => [...prev, newMessage]);
@@ -33,8 +35,8 @@ export default function ChatScreen({ text = "" }: Props) {
         ...prev,
         {
           id: Date.now().toString(),
-          text: `Bot reply to: ${messageText}`,
-          sender: "bot",
+          context: `AI reply to: ${messageText}`,
+          sender: "ai",
         },
       ]);
     }, 500);
