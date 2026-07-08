@@ -146,3 +146,5 @@ async def post_settings(settings: Settings, current_user = Depends(get_current_u
         raise HTTPException(status_code=400, detail="Insert failed")
 
     return response.data
+
+
