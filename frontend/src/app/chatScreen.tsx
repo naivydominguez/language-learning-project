@@ -11,11 +11,6 @@ type Message = {
   context: string;
 };
 
-let messageIdCounter = 0;
-function nextMessageId() {
-  messageIdCounter += 1;
-  return `${Date.now()}-${messageIdCounter}`;
-}
 
 export default function ChatScreen() {
   const { start,initialMessage, title } = useLocalSearchParams<{
@@ -30,7 +25,7 @@ export default function ChatScreen() {
 
    const createConversation = async () => {
      try {
-       const response = await fetch("http://localhost:8000/conversations/", {
+       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/`, {
          method: "POST",
          headers: {
            "Content-Type": "application/json",
@@ -51,9 +46,10 @@ export default function ChatScreen() {
      }
    };
 
+  
    const sendMessageToAI = async (context: string, conversationId: string, accessToken: string) => {
      try {
-       const response = await fetch(`http://localhost:8000/conversations/${conversationId}/messages`, {
+       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${conversationId}/messages`, {
          method: "POST",
          headers: {
            "Content-Type": "application/json",
@@ -79,36 +75,58 @@ export default function ChatScreen() {
     setIsWaiting(true);
     try {
       const newMessage: Message = {
-        id: nextMessageId(),
+        id: Date.now().toString()+messageText,
         sender: "user",
         context: messageText,
       };
       setMessages((prev) => [...prev, newMessage]);
-
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: nextMessageId(),
-            context: `AI reply to: ${messageText}`,
-            sender: "ai",
-          },
-        ]);
-      }, 500);
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: Date.now().toString()+`AI reply to: ${messageText}`,
+              context: `AI reply to: ${messageText}`,
+              sender: "ai",
+            },
+          ]);
+          resolve();
+        }, 500);
+      });
     } finally {
       setIsWaiting(false);
     }
   };
 
+
    
-      
+  const handleSendBackend = async (messageText: string) => {
+    setIsWaiting(true);
+    try {
+      const newMessage: Message = {
+        id: Date.now().toString()+messageText,
+        sender: "user",
+        context: messageText,
+      };
+      setMessages((prev) => [...prev, newMessage]);
+
+      const convoData = await createConversation();
+      const conversationId = convoData.id;
+      const accessToken = "temporary-access-token"; // Replace with your actual access token
+      const aiMessage = await sendMessageToAI(messageText, conversationId, accessToken);
+      setMessages((prev) => [...prev, { id: Date.now().toString()+aiMessage.content, sender: "ai", context: aiMessage.content }]);
+    } finally {
+      setIsWaiting(false);
+    }
+  };
+
   React.useEffect(() => {
     if (!hasSentInitial.current) {
       hasSentInitial.current = true;
       if (start) {
         setMessages((prev) => [
           ...prev,
-          { id: nextMessageId(), sender: "ai", context: start },
+          { id: Date.now().toString()+start, sender: "ai", context: start },
         ]);
       }
       if (initialMessage) {
