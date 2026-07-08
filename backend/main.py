@@ -39,6 +39,13 @@ class Messages(BaseModel):
     content: str
     created_at: datetime
 
+
+class KnownWords:
+    word: str
+    translation: str
+    language: str
+    created_at: datetime
+
 async def get_current_user(authorization: str = Header(...)):
     if not authorization.startswith('Bearer '):
         raise HTTPException(status_code=401, detail="Invalid authorization header")
@@ -181,3 +188,37 @@ async def get_messages(conversation_id: str):
 
     return response.data
 
+@app.post('/known_words', status_code=201)
+async def post_known_words(knownwords: KnownWords, current_user = Depends(get_current_user)):
+    data = knownwords.model_dump(exclude_unset=True)
+    data['user_id'] = current_user.id
+
+    try:
+        response = supabase.table('known_words').insert(data).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    if not response.data:
+        raise HTTPException(status_code=400, detail="Insert failed")
+
+    return response.data
+
+@app.get('/known_words/me')
+async def get_words(current_user = Depends(get_current_user)):
+    try:
+        response = supabase.table('known_words').select('*').eq('user_id', current_user.id).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    if not response.data:
+        raise HTTPException(status_code=404, detail="Words not found")
+
+    return response.data
+
+
+@app.delete('/known_words/{word_id}', status_code=204)
+async def delete_known_word(word_id: str, current_user = Depends(get_current_user)):
+    try:
+        supabase.table('known_words').delete().eq('id', word_id).eq('user_id', current_user.id).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
