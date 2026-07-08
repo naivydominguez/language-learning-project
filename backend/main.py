@@ -1,13 +1,21 @@
 from fastapi import FastAPI, Depends, Header, HTTPException
 from supabase import create_client, Client
 from dotenv import load_dotenv
-import os
-from pydantic import BaseModel
-from typing import Optional
-
 load_dotenv()
 
+import os
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import Optional
+from supabase import create_client, Client
+
+from backend.api.routes import jpdb_router, conversations_router, language_tools_router
+
 app = FastAPI()
+app.include_router(jpdb_router)
+app.include_router(conversations_router)
+app.include_router(language_tools_router)
+
 supabase: Client = create_client(os.environ.get("SUPABASE_URL"), os.environ.get("SUPABASE_KEY"))
 
 
@@ -15,6 +23,7 @@ class StatsCreate(BaseModel):
     known_words: int
     number_messages: int
     steak: bool
+
 
 class Settings(BaseModel):
     target_languages: Optional[str] = None

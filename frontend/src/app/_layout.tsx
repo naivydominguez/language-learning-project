@@ -1,18 +1,29 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import React from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+import {  View } from "react-native";
+import { Stack } from "expo-router";
 
-SplashScreen.preventAutoHideAsync();
+import HamburgerButton from "../components/hamburgerBtn";
+import Navbar from "@/components/navbar";
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+import "../global.css";
+
+export default function RootLayout() {
+  const [navOpen, setNavOpen] = React.useState(false);
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+  <SafeAreaView className="flex-1" >
+    
+    <View className="flex-1">
+      <Stack screenOptions={{ headerShown: false }} />
+
+      <View style={{ position: "absolute", top: 10, left: 20, zIndex: 10 }}>
+        <HamburgerButton onPress={() => setNavOpen(!navOpen)} />
+      </View>
+
+      <Navbar visible={navOpen} onClose={() => setNavOpen(false)} />
+    </View>
+    </SafeAreaView>
   );
 }

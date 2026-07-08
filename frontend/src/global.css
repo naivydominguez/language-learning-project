@@ -1,13 +1,106 @@
+/* stylelint-disable at-rule-no-unknown */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Immerbot Design System — Terra palette + DM Sans / Lora
+   NativeWind reads these CSS custom properties directly — no vars()/JS bridge
+   needed. Toggle dark mode by adding/removing the `dark` class on your root
+   view (see README note at the bottom of this file).
+───────────────────────────────────────────────────────────────────────────── */
 :root {
+  /* ── Typography — project-wide font stacks (kept from existing global.css) */
   --font-display:
-    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol, Noto Color Emoji;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
-  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
-  --font-serif: Georgia, 'Times New Roman', serif;
+    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji,
+    Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  --font-rounded:
+    "SF Pro Rounded", "Hiragino Maru Gothic ProN", Meiryo, "MS PGothic",
+    sans-serif;
+
+  /* ── Typography — Immerbot design system fonts ─ */
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-serif: "Lora", Georgia, serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --font-size: 15px;
+  /* mobile body base */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semi: 600;
+  --font-weight-bold: 700;
+
+  /* ── Color palette — */
+  --background-light: 250 247 244; /* #faf7f4 */
+  --background: 243 238 232; /* #f3eee8 */
+  --background-dark: 233 224 216; /* #e9e0d8 */
+
+  --white: 255 255 255; /* #ffffff */
+  --black: 32 24 16; /* #201810 */
+
+  --foreground: 32 24 16; /* #201810 */
+  --foreground-secondary: 140 110 96; /* #8c6e60 */
+  --foreground-tertiary: 191 173 159; /* #bfad9f */
+
+  --primary-light: 214 122 74; /* #d67a4a */
+  --primary: 181 97 58; /* #b5613a */
+  --primary-dark: 111 58 34; /* #6f3a22 */
+
+  /* We also use this as the color for successful interactions */
+  --secondary-light: 244 245 238; /* #f4f5ee */
+  --secondary: 107 122 85; /* #6b7a55 */
+  --secondary-dark: 66 78 52; /* #424e34 */
+
+  --warning: 196 132 60; /* #c4843c */
+  --warning-dark: 138 80 24; /* #8a5018 */
+
+  --destructive: 176 64 64; /* #b04040 */
+
+  --info-light: 237 241 249; /* #edf1f9 */
+  --info: 74 111 168; /* #4a6fa8 */
+  --info-dark: 42 72 120; /* #2a4878 */
+
+  /* ── Shadows (warm-tinted, not pure black) ──── */
+  --shadow-xs: 0 1px 2px rgba(32, 24, 16, 0.06);
+  --shadow-sm:
+    0 1px 4px rgba(32, 24, 16, 0.08), 0 1px 2px rgba(32, 24, 16, 0.04);
+  --shadow-md:
+    0 4px 12px rgba(32, 24, 16, 0.09), 0 1px 4px rgba(32, 24, 16, 0.04);
+  --shadow-lg:
+    0 8px 24px rgba(32, 24, 16, 0.1), 0 2px 8px rgba(32, 24, 16, 0.06);
+  --shadow-xl:
+    0 16px 40px rgba(32, 24, 16, 0.12), 0 4px 12px rgba(32, 24, 16, 0.06);
+  --shadow-modal:
+    0 24px 60px rgba(32, 24, 16, 0.15), 0 8px 20px rgba(32, 24, 16, 0.08);
+  --shadow-inner: inset 0 1px 3px rgba(32, 24, 16, 0.06);
+
+  /* ── Radius ─────────────────────────────────── */
+  --radius: 0.75rem;
+  /* 12px — radius-md, default card  */
+  --radius-xs: 0.25rem;
+  /* 4px                             */
+  --radius-sm: 0.5rem;
+  /* 8px                             */
+  --radius-md: 0.75rem;
+  /* 12px                            */
+  --radius-lg: 1rem;
+  /* 16px                            */
+  --radius-xl: 1.25rem;
+  /* 20px                            */
+  --radius-2xl: 1.75rem;
+  /* 28px                            */
+  --radius-3xl: 2.25rem;
+  /* 36px                            */
+  --radius-full: 9999px;
+
+  /* ── Motion ─────────────────────────────────── */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --duration-instant: 80ms;
+  --duration-fast: 120ms;
+  --duration-default: 200ms;
+  --duration-enter: 250ms;
+  --duration-exit: 150ms;
+  --duration-slow: 350ms;
 }
