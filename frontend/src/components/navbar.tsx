@@ -75,7 +75,7 @@ export default function Navbar({ visible, onClose }: Props) {
           <View className="px-5 pl-4 py-4 border-b border-sidebar-border">
             <View className="flex-row items-center justify-between">
               <View className="bg-sidebar-accent rounded-lg p-2">
-                <text>🌿</text>
+                <Text>🌿</Text>
               </View>
               <Text className="font-sans text-lg font-semibold text-sidebar-foreground"> Immer bot</Text>
               <Pressable onPress={onClose}>
