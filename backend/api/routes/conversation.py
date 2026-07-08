@@ -30,6 +30,7 @@ class MessageResponse(BaseModel):
     sender: str
     content: str
     created_at: datetime
+    unknown_words: list[str]
     
 @router.post("/", response_model=ConversationResponse)
 def create_conversation(request: CreateConversationRequest, user_id: str = Depends(get_user_id)):
@@ -42,6 +43,8 @@ def create_conversation(request: CreateConversationRequest, user_id: str = Depen
         "user_id": user_id,
         "language_id": language_id,
     }).execute()
+    
+    
 
     row = response.data[0]
     return ConversationResponse(
@@ -66,13 +69,39 @@ def send_message(conversation_id: UUID, request: SendMessageRequest, user_id: st
         "sender": "ai",
         "content": reply_content,
     }).execute()
-
+    
+    
     row = response.data[0]
+    
+    conversation_response = supabase.table("conversations").select("language_id").eq("id", str(conversation_id)).execute()
+    language_id = conversation_response.data[0]["language_id"]
+
+    known_word_ids_response = supabase.table("user_known_words").select("word_id").eq("user_id", user_id).execute()
+    known_word_ids = []
+    for w in known_word_ids_response.data:
+        known_word_ids.append(w["word_id"])
+
+    known_words = set()
+    if known_word_ids:
+        known_words_response = (
+            supabase.table("known_words")
+            .select("word")
+            .eq("language_id", language_id)
+            .in_("id", known_word_ids)
+            .execute()
+            )
+        
+        for w in known_word_ids_response.data:
+            known_words.add(w["word"].lower())
+
+    unknown_words = sorted({word for word in reply_content.split() if word.lower() not in known_words})
+
     return MessageResponse(
         id=row["id"],
         conversation_id=row["conversation_id"],
         sender=row["sender"],
         content=row["content"],
         created_at=row["created_at"],
+        unknown_words=unknown_words,
     )
     
