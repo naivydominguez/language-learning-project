@@ -5,17 +5,19 @@ import { ArrowUp } from "lucide-react-native";
 
 type Props = {
     onSend: (message: string) => void;
+    isWaiting?: boolean;
 }
-export default function ChatInputBar({ onSend }: Props) {
+export default function ChatInputBar({ onSend, isWaiting = false }: Props) {
   const insets = useSafeAreaInsets();
   const [message, setMessage] = React.useState("");
   const handleSend = () => {
         const trimmedMessage = message.trim();
-    if (trimmedMessage) {
+    if (trimmedMessage && !isWaiting) {
       onSend(trimmedMessage);
       setMessage(""); // Clear the input after sending
     }
     };
+    const canSend = !!message.trim() && !isWaiting;
 
     return (
         <KeyboardAvoidingView
@@ -34,11 +36,11 @@ export default function ChatInputBar({ onSend }: Props) {
                 />
                 <Pressable
                     onPress={handleSend}
-                    disabled={!message.trim()}
-                    className={`w-10 h-10 rounded-full items-center justify-center mb-1 ${message.trim() ? "bg-primary-light"
+                    disabled={!canSend}
+                    className={`w-10 h-10 rounded-full items-center justify-center mb-1 ${canSend ? "bg-primary-light"
                          : "bg-background-element"}`}
                 >
-                    <ArrowUp size={16} color={message.trim() ? "#FFFFFF" : "#BFAD9F"} strokeWidth={2} />
+                    <ArrowUp size={16} color={canSend ? "#FFFFFF" : "#BFAD9F"} strokeWidth={2} />
                 </Pressable>
             </View>
         </KeyboardAvoidingView>

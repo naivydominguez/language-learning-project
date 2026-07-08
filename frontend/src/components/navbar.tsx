@@ -1,9 +1,7 @@
 import { View, Text, Pressable, Animated } from "react-native";
 import { useRouter, usePathname } from "expo-router";
-
-import ChatScreen from "./chatScreen";
-import React, { useRef, useEffect } from "react";
-import Avatar from "./avatar";
+import { useRef, useEffect } from "react";
+import Logo from "./logo";
 import { ChevronLeft, Plus, MessageCircle, Settings, TrendingUp } from "lucide-react-native";
 const DRAWER_WIDTH = 220;
 
@@ -13,7 +11,7 @@ type Props = {
 };
 
 const NAV_ITEMS = [
-  { label: "Chat", path: "/chat", icon: MessageCircle },
+  { label: "Chat", path: "/", icon: MessageCircle },
   { label: "Settings", path: "/settings", icon: Settings },
   { label: "Progress", path: "/progress", icon: TrendingUp },
 ] as const;
@@ -74,16 +72,14 @@ export default function Navbar({ visible, onClose }: Props) {
         <View className="flex-1 bg-sidebar">
           <View className="px-5 pl-4 py-4 border-b border-sidebar-border">
             <View className="flex-row items-center justify-between">
-              <View className="bg-sidebar-accent rounded-lg p-2">
-                <text>🌿</text>
-              </View>
+              <Logo size="md" />
               <Text className="font-sans text-lg font-semibold text-sidebar-foreground"> Immer bot</Text>
               <Pressable onPress={onClose}>
                 <ChevronLeft size={20} color="#BFAD9F" />
               </Pressable>
             </View>
             <Pressable
-              onPress={() => navigate("/chat")}
+              onPress={() => navigate("/")}
               className="flex-row items-center justify-center gap-1.5 mt-3 px-2.5 py-2 rounded-lg border border-primary/25 bg-primary/10"
             >
               <Plus size={13} color="#B5613A" strokeWidth={2.5} />
@@ -124,7 +120,6 @@ export default function Navbar({ visible, onClose }: Props) {
         </View>
 
         <View className="flex-row items-center justify-center gap-3 py-4 border-t bg-sidebar border-sidebar-border">
-          <Avatar isUser={true} />
         </View>
       </Animated.View>
     </View>
