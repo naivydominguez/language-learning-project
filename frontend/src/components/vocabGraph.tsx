@@ -6,7 +6,9 @@ import PointerComponentCreator from "./GraphPointerComponent";
 const POINTER_CONFIG = {
   activatePointersOnLongPress: true,
   showPointerStrip: false,
-  pointerComponent: PointerComponentCreator("words"),
+  pointerComponent: PointerComponentCreator({
+    units: "words",
+  }),
   autoAdjustPointerLabelPosition: true,
 };
 
@@ -51,7 +53,7 @@ const VocabGraph = ({ axisTextStyles }: Props) => {
           startOpacity={0.3}
           endOpacity={0}
           width={chartWidth - 40} // subtract 40 to account for the space that the y-axis labels take up
-          height={160}
+          height={120}
           initialSpacing={0}
           endSpacing={0}
           noOfSections={4}

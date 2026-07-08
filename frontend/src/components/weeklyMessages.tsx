@@ -7,7 +7,9 @@ const POINTER_CONFIG = {
   activatePointersOnLongPress: true,
   showPointerStrip: false,
   radius: 0,
-  pointerLabelComponent: PointerComponentCreator("messages"),
+  pointerLabelComponent: PointerComponentCreator({
+    units: "messages",
+  }),
   autoAdjustPointerLabelPosition: true,
   pointerLabelWidth: 120,
 };
@@ -45,7 +47,7 @@ const WeeklyMessages = ({ axisTextStyles }: Props) => {
           disableScroll
           parentWidth={chartWidth}
           noOfSections={2}
-          height={160}
+          height={120}
           initialSpacing={12}
           endSpacing={12}
           frontColor="#6b7a55" // secondary

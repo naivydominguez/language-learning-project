@@ -1,6 +1,14 @@
 import { View, Text } from "react-native";
 
-export default function PointerComponentCreator(units: string) {
+interface Props {
+  labelPretext?: string;
+  units?: string;
+}
+
+export default function PointerComponentCreator({
+  labelPretext,
+  units,
+}: Props) {
   return function PointerComponent(dataPoints: any) {
     if (!dataPoints) return null;
 
@@ -19,7 +27,7 @@ export default function PointerComponentCreator(units: string) {
     return (
       <View className="w-max px-6 flex flex-col items-start bg-white rounded-md border border-background-dark p-2 font-thin whitespace-nowrap select-none">
         <Text numberOfLines={1} className="text-lg text-foreground">
-          {label}
+          {labelPretext ? `${labelPretext} ${label}` : label}
         </Text>
         <Text numberOfLines={1} className="text-sm font-thin text-primary">
           {value} {units}

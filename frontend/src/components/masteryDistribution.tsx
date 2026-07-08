@@ -3,6 +3,18 @@ import { View, Text } from "react-native";
 import { BarChart } from "react-native-gifted-charts/dist/BarChart";
 import PointerComponentCreator from "./GraphPointerComponent";
 
+const POINTER_CONFIG = {
+  activatePointersOnLongPress: true,
+  showPointerStrip: false,
+  radius: 0,
+  pointerLabelComponent: PointerComponentCreator({
+    labelPretext: "Mastery:",
+    units: "words",
+  }),
+  autoAdjustPointerLabelPosition: true,
+  pointerLabelWidth: 170,
+};
+
 interface Props {
   axisTextStyles: {
     color: string;
@@ -11,20 +23,21 @@ interface Props {
 }
 
 const MasteryDistribution = ({ axisTextStyles }: Props) => {
-
   const [chartWidth, setChartWidth] = useState(0);
 
   const data = [
-    { label: "0-20%", value: 5 },
-    { label: "20-40%", value: 15 },
-    { label: "40-60%", value: 25 },
-    { label: "60-80%", value: 35 },
-    { label: "80-100%", value: 45 },
-  ]
+    { label: String(1), value: 10, frontColor: "#bfad9f" }, // foreground-tertiary
+    { label: String(2), value: 20, frontColor: "#d67a4a" }, // primary-light
+    { label: String(3), value: 35, frontColor: "#d67a4a" }, // primary-light
+    { label: String(4), value: 40, frontColor: "#b5613a" }, // primary
+    { label: String(5), value: 50, frontColor: "#b5613a" }, // primary
+    { label: String(6), value: 14, frontColor: "#6f3a22" }, // primary-dark
+    { label: String(7), value: 7, frontColor: "#6f3a22" }, // primary-dark
+  ];
 
   return (
     <View className="w-full h-max flex flex-col bg-white p-4 pr-0 rounded-md border border-background-dark">
-      <Text className="font-bold text-lg">Mastery Distribution</Text>
+      <Text className="font-bold text-lg">Words by mastery</Text>
       <View
         className="w-full mt-4"
         onLayout={(e) => setChartWidth(e.nativeEvent.layout.width)}
@@ -35,7 +48,7 @@ const MasteryDistribution = ({ axisTextStyles }: Props) => {
           disableScroll
           parentWidth={chartWidth}
           noOfSections={2}
-          height={160}
+          height={120}
           initialSpacing={12}
           endSpacing={12}
           frontColor="#6b7a55" // secondary
@@ -43,6 +56,7 @@ const MasteryDistribution = ({ axisTextStyles }: Props) => {
           barBorderTopRightRadius={4}
           yAxisTextStyle={axisTextStyles}
           xAxisLabelTextStyle={axisTextStyles}
+          pointerConfig={POINTER_CONFIG}
         />
       </View>
     </View>
