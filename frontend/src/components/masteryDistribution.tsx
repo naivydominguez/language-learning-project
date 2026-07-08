@@ -59,6 +59,32 @@ const MasteryDistribution = ({ axisTextStyles }: Props) => {
           pointerConfig={POINTER_CONFIG}
         />
       </View>
+      <View className="flex flex-row justify-center gap-3 pr-8 text-sm text-foreground-tertiary">
+        {["New", "Learning", "Comfortable", "Mastered"].map(
+          (label, index) => (
+            <GraphLegendItem
+              key={label}
+              color={["#bfad9f", "#d67a4a", "#b5613a", "#6f3a22"][index]}
+              label={label}
+            />
+          ),
+        )}
+      </View>
+    </View>
+  );
+};
+
+const GraphLegendItem = ({
+  color,
+  label,
+}: {
+  color: string;
+  label: string;
+}) => {
+  return (
+    <View className="flex flex-row items-center gap-1">
+      <View className="size-2 rounded-[2px]" style={{ backgroundColor: color }} />
+      <Text className="text-xs text-foreground-tertiary">{label}</Text>
     </View>
   );
 };
