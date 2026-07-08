@@ -59,18 +59,6 @@
   --info: 74 111 168; /* #4a6fa8 */
   --info-dark: 42 72 120; /* #2a4878 */
 
-  /* ── Sidebar / navbar ─────────────────────────── */
-  --sidebar: 250 247 244; /* #faf7f4 */
-  --sidebar-foreground: 32 24 16; /* #201810 */
-  --sidebar-border: 233 224 216; /* #e9e0d8 */
-  --sidebar-accent: 214 122 74; /* #d67a4a */
-  --sidebar-accent-foreground: 255 255 255; /* #ffffff */
-
-  /* ── Chat bubbles ─────────────────────────────── */
-  --surface: 255 255 255; /* #ffffff — bot bubble background */
-  --accent-subtle: 244 214 198; /* #f4d6c6 — user bubble background */
-  --accent-subtle-fg: 111 58 34; /* #6f3a22 — user bubble text */
-
   /* ── Shadows (warm-tinted, not pure black) ──── */
   --shadow-xs: 0 1px 2px rgba(32, 24, 16, 0.06);
   --shadow-sm:
