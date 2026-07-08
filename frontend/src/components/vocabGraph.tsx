@@ -1,20 +1,23 @@
 import { useState } from "react";
 import { View, Text } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
-
-const AXIS_TEXT_STYLES = {
-  color: "#bfad9f", // foreground-tertiary
-  fontSize: 12,
-};
+import PointerComponentCreator from "./GraphPointerComponent";
 
 const POINTER_CONFIG = {
   activatePointersOnLongPress: true,
   showPointerStrip: false,
-  pointerComponent: PointerComponent,
+  pointerComponent: PointerComponentCreator("words"),
   autoAdjustPointerLabelPosition: true,
 };
 
-const VocabGraph = () => {
+interface Props {
+  axisTextStyles: {
+    color: string;
+    fontSize: number;
+  };
+}
+
+const VocabGraph = ({ axisTextStyles }: Props) => {
   const [chartWidth, setChartWidth] = useState(0);
   // TODO: Load data from backend
   // map: data -> label, number of words -> value
@@ -43,39 +46,25 @@ const VocabGraph = () => {
           data={data}
           areaChart
           hideDataPoints
-          // hideRules
           color="#b5613a" // primary
           startFillColor="#d67a4a" // primary-light
           startOpacity={0.3}
           endOpacity={0}
-          width={300}
+          width={chartWidth - 40} // subtract 40 to account for the space that the y-axis labels take up
           height={160}
           initialSpacing={0}
           endSpacing={0}
-          rulesLength={300}
           noOfSections={4}
-          yAxisTextStyle={AXIS_TEXT_STYLES}
-          xAxisLabelTextStyle={{ ...AXIS_TEXT_STYLES, transform: [{ translateX: 0 }] }}
+          yAxisTextStyle={axisTextStyles}
+          xAxisLabelTextStyle={{
+            ...axisTextStyles,
+            transform: [{ translateX: 0 }],
+          }}
           pointerConfig={POINTER_CONFIG}
         />
       </View>
     </View>
   );
 };
-
-function PointerComponent(dataPoint: { label: string; value: number }) {
-  const { label, value } = dataPoint;
-
-  return (
-    <View className="flex flex-col items-start bg-white rounded-md border border-background-dark p-2 font-thin whitespace-nowrap select-none">
-      <Text numberOfLines={1} className="text-lg text-foreground">
-        {label}
-      </Text>
-      <Text numberOfLines={1} className="text-sm font-thin text-primary">
-        {value} words
-      </Text>
-    </View>
-  );
-}
 
 export default VocabGraph;
