@@ -32,8 +32,10 @@ module.exports = {
 
         // ── Foreground ───────────────────────────
         foreground: "rgb(var(--foreground) / <alpha-value>)",
-        "foreground-secondary": "rgb(var(--foreground-secondary) / <alpha-value>)",
-        "foreground-tertiary": "rgb(var(--foreground-tertiary) / <alpha-value>)",
+        "foreground-secondary":
+          "rgb(var(--foreground-secondary) / <alpha-value>)",
+        "foreground-tertiary":
+          "rgb(var(--foreground-tertiary) / <alpha-value>)",
 
         // ── Primary ──────────────────────────────
         "primary-light": "rgb(var(--primary-light) / <alpha-value>)",
@@ -62,7 +64,8 @@ module.exports = {
         "sidebar-foreground": "rgb(var(--sidebar-foreground) / <alpha-value>)",
         "sidebar-border": "rgb(var(--sidebar-border) / <alpha-value>)",
         "sidebar-accent": "rgb(var(--sidebar-accent) / <alpha-value>)",
-        "sidebar-accent-foreground": "rgb(var(--sidebar-accent-foreground) / <alpha-value>)",
+        "sidebar-accent-foreground":
+          "rgb(var(--sidebar-accent-foreground) / <alpha-value>)",
 
         // ── Chat bubbles ─────────────────────────
         surface: "rgb(var(--surface) / <alpha-value>)",
