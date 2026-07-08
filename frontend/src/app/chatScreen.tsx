@@ -11,6 +11,12 @@ type Message = {
   context: string;
 };
 
+let messageIdCounter = 0;
+function nextMessageId() {
+  messageIdCounter += 1;
+  return `${Date.now()}-${messageIdCounter}`;
+}
+
 export default function ChatScreen() {
   const { start,initialMessage, title } = useLocalSearchParams<{
     start? :string;
@@ -19,27 +25,79 @@ export default function ChatScreen() {
     conversationId?: string;
   }>();
   const [messages, setMessages] = React.useState<Message[]>([]);
+  const [isWaiting, setIsWaiting] = React.useState(false);
   const hasSentInitial = React.useRef(false);
 
-  const handleSend = (messageText: string) => {
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      sender: "user",
-      context: messageText,
-    };
+   const createConversation = async () => {
+     try {
+       const response = await fetch("http://localhost:8000/conversations/", {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+         },
+         body: JSON.stringify({
+           target_lang: "Spanish", // Replace with your target language
+         }),
+       });
 
-    setMessages((prev) => [...prev, newMessage]);
+       if (!response.ok) {
+         throw new Error("Failed to create conversation");
+       }
 
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          context: `AI reply to: ${messageText}`,
-          sender: "ai",
-        },
-      ]);
-    }, 500);
+       return response.json();
+     } catch (error) {
+       console.error("Error creating conversation:", error);
+       throw error;
+     }
+   };
+
+   const sendMessageToAI = async (context: string, conversationId: string, accessToken: string) => {
+     try {
+       const response = await fetch(`http://localhost:8000/conversations/${conversationId}/messages`, {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+           Authorization: `Bearer ${accessToken}`,
+         },
+         body: JSON.stringify({
+           content: context,
+         }),
+       });
+
+       if (!response.ok) {
+         throw new Error("Failed to send message");
+       }
+       return response.json();
+     } catch (error) {
+       console.error("Error sending message:", error);
+       throw error;
+     }
+   };
+
+
+  const handleSend = async (messageText: string) => {
+    setIsWaiting(true);
+    try {
+      const newMessage: Message = {
+        id: nextMessageId(),
+        sender: "user",
+        context: messageText,
+      };
+      setMessages((prev) => [...prev, newMessage]);
+
+      setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: nextMessageId(),
+            context: `AI reply to: ${messageText}`,
+            sender: "ai",
+          },
+        ]);
+      }, 500);
+    } finally {
+      setIsWaiting(false);
+    }
   };
 
    
@@ -50,7 +108,7 @@ export default function ChatScreen() {
       if (start) {
         setMessages((prev) => [
           ...prev,
-          { id: Date.now().toString(), sender: "ai", context: start },
+          { id: nextMessageId(), sender: "ai", context: start },
         ]);
       }
       if (initialMessage) {
@@ -74,7 +132,7 @@ export default function ChatScreen() {
         renderItem={({ item }) => <MessageBubble message={item} />}
         contentContainerStyle={{ padding: 16, gap: 8 }}
       />
-      <ChatInputBar onSend={handleSend} />
+      <ChatInputBar onSend={handleSend} isWaiting={isWaiting} />
     </View>
   );
 }
