@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, View, TextInput, Pressable, KeyboardAvoidingView, Platform} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
+import { ArrowUp } from "lucide-react-native";
 
 type Props = {
     onSend: (message: string) => void;
@@ -34,9 +35,10 @@ export default function ChatInputBar({ onSend }: Props) {
                 <Pressable
                     onPress={handleSend}
                     disabled={!message.trim()}
-                    className={`w-10 h-10 rounded-full items-center justify-center mb-1 ${message.trim() ? "bg-accent" : "bg-background-element"}`}
+                    className={`w-10 h-10 rounded-full items-center justify-center mb-1 ${message.trim() ? "bg-primary-light"
+                         : "bg-background-element"}`}
                 >
-                    <Text>Send</Text>
+                    <ArrowUp size={16} color={message.trim() ? "#FFFFFF" : "#BFAD9F"} strokeWidth={2} />
                 </Pressable>
             </View>
         </KeyboardAvoidingView>

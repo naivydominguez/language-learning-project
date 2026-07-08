@@ -1,14 +1,15 @@
 import uuid
+import datetime
 from typing import Optional
-from sqlalchemy import CheckConstraint, DateTime, Mapped, PrimaryKeyConstraint, func, ForeignKey, UniqueConstraint
-from sqlalchemy.orm import declarative_base, mapped_column, relationship
+from sqlalchemy import CheckConstraint, DateTime, PrimaryKeyConstraint, func, ForeignKey, UniqueConstraint
+from sqlalchemy.orm import declarative_base, mapped_column, relationship, Mapped
 
 Base = declarative_base()
 
 class Language(Base):
     __tablename__ = 'languages'
     
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, server_default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     name: Mapped[str] 
 
     words: Mapped[list["Word"]] = relationship("Word", back_populates="language", cascade="all, delete-orphan")
@@ -17,10 +18,10 @@ class Language(Base):
 class User(Base):
     __tablename__ = 'users'
     __table_args__ = (
-        CheckConstraint("streak >= 0", name="check_streak_non_negative")
+        CheckConstraint("streak >= 0", name="check_streak_non_negative"),
     )
     
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, server_default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     native_lang_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('languages.id'))
     username: Mapped[str] = mapped_column(unique=True)
     first_name: Mapped[str]
@@ -28,7 +29,7 @@ class User(Base):
     jpdb_api_key: Mapped[Optional[str]]
     spotify_account: Mapped[Optional[str]]
     streak: Mapped[int] = mapped_column(default=0) # Non negative
-    created_at: Mapped[DateTime] = mapped_column(server_default=func.now())
+    created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
 
     conversations: Mapped[list["Conversation"]] = relationship("Conversation", back_populates="user", cascade="all, delete-orphan")
     user_known_words: Mapped[list["UserKnownWord"]] = relationship("UserKnownWord", back_populates="user", cascade="all, delete-orphan")
@@ -50,10 +51,10 @@ class UserLanguage(Base):
 class Conversation(Base):
     __tablename__ = 'conversations'
     
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, server_default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('users.id'))
     language_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('languages.id'))
-    created_at: Mapped[DateTime] = mapped_column(server_default=func.now())
+    created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
 
     user: Mapped[User] = relationship("User", back_populates="conversations")
     messages: Mapped[list["Message"]] = relationship("Message", back_populates="conversation", cascade="all, delete-orphan")
@@ -62,21 +63,21 @@ class Conversation(Base):
 class Message(Base):
     __tablename__ = 'messages'
     
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, server_default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     conversation_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('conversations.id'))
     sender: Mapped[str] # 'user' or 'ai'
     content: Mapped[str]
-    created_at: Mapped[DateTime] = mapped_column(server_default=func.now())
+    created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
 
     conversation: Mapped[Conversation] = relationship("Conversation", back_populates="messages")
 
 class Word(Base):
     __tablename__ = 'known_words'
     __table_args__ = (
-        UniqueConstraint('language_id', 'word', name='unique_word_per_language')
+        UniqueConstraint('language_id', 'word', name='unique_word_per_language'),
     )
     
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, server_default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     language_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('languages.id'))
     word: Mapped[str] 
 
