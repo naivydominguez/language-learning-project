@@ -7,7 +7,7 @@ const KnownWordsPreview = () => {
   const router = useRouter();
 
   const navigateToKnownWords = () => {
-    router.push("/progress/knownWords");
+    router.push("/progress/known-words");
   };
 
   const mostRecentWords = [

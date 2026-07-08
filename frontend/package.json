@@ -5,6 +5,7 @@
   "dependencies": {
     "@expo/ui": "~56.0.20",
     "@react-navigation/drawer": "^7.12.7",
+    "@shopify/flash-list": "^2.3.2",
     "@symbiot.dev/react-native-heatmap": "^1.0.0",
     "expo": "56",
     "expo-constants": "~56.0.20",
