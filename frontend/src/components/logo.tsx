@@ -1,0 +1,23 @@
+import { View, Text } from "react-native";
+
+const SIZES = {
+  sm: { padding: "p-1", fontSize: "text-base" },
+  md: { padding: "p-2", fontSize: "text-2xl" },
+  lg: { padding: "p-4", fontSize: "text-7xl" },
+};
+
+type LogoProps = {
+  size?: keyof typeof SIZES;
+};
+
+function Logo({ size = "md" }: LogoProps) {
+  const { padding, fontSize } = SIZES[size];
+  return (
+    <View className={`bg-sidebar-accent rounded-lg ${padding}`}>
+      <Text className={fontSize}>🌿</Text>
+    </View>
+  );
+}
+
+export default Logo;
+

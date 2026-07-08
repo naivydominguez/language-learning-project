@@ -33,6 +33,19 @@ class Settings(BaseModel):
     personality_prompt: Optional[str] = None
 
 
+class Messages(BaseModel):
+    conversation_id: str
+    sender: str
+    content: str
+    created_at: datetime
+
+
+class KnownWords:
+    word: str
+    translation: str
+    language: str
+    created_at: datetime
+
 async def get_current_user(authorization: str = Header(...)):
     if not authorization.startswith('Bearer '):
         raise HTTPException(status_code=401, detail="Invalid authorization header")
@@ -146,3 +159,66 @@ async def post_settings(settings: Settings, current_user = Depends(get_current_u
         raise HTTPException(status_code=400, detail="Insert failed")
 
     return response.data
+
+
+@app.post('/messages', status_code=201)
+async def post_messages(messages: Messages, current_user = Depends(get_current_user)):
+    data = messages.model_dump(exclude_unset=True)
+    data['sender'] = current_user.id
+
+    try:
+        response = supabase.table('messages').insert(data).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    if not response.data:
+        raise HTTPException(status_code=400, detail="Insert failed")
+
+    return response.data
+
+@app.get('/messages/{conversation_id}')
+async def get_messages(conversation_id: str):
+    try:
+        response = supabase.table('messages').select('*').eq('conversation_id', conversation_id).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    if not response.data:
+        raise HTTPException(status_code=404, detail="Messages not found")
+
+    return response.data
+
+@app.post('/known_words', status_code=201)
+async def post_known_words(knownwords: KnownWords, current_user = Depends(get_current_user)):
+    data = knownwords.model_dump(exclude_unset=True)
+    data['user_id'] = current_user.id
+
+    try:
+        response = supabase.table('known_words').insert(data).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    if not response.data:
+        raise HTTPException(status_code=400, detail="Insert failed")
+
+    return response.data
+
+@app.get('/known_words/me')
+async def get_words(current_user = Depends(get_current_user)):
+    try:
+        response = supabase.table('known_words').select('*').eq('user_id', current_user.id).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    if not response.data:
+        raise HTTPException(status_code=404, detail="Words not found")
+
+    return response.data
+
+
+@app.delete('/known_words/{word_id}', status_code=204)
+async def delete_known_word(word_id: str, current_user = Depends(get_current_user)):
+    try:
+        supabase.table('known_words').delete().eq('id', word_id).eq('user_id', current_user.id).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

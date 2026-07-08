@@ -1,9 +1,7 @@
 import { View, Text, Pressable, Animated } from "react-native";
 import { useRouter, usePathname } from "expo-router";
-
-import ChatScreen from "./chatScreen";
-import React, { useRef, useEffect } from "react";
-import Avatar from "./avatar";
+import { useRef, useEffect } from "react";
+import Logo from "./avatar";
 import { ChevronLeft, Plus, MessageCircle, Settings, TrendingUp } from "lucide-react-native";
 const DRAWER_WIDTH = 220;
 
