@@ -1,12 +1,11 @@
-import { View, Text, Pressable } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import HamburgerButton from "@/components/humburgerBtn";
-import "../global.css";
-export default function app() {
+// src/app/index.tsx
+import { View } from "react-native";
+import ChatScreen from "@/components/chatScreen";
 
+export default function HomeScreen() {
   return (
     <View className="flex-1 flex-row">
-      <HamburgerButton />
+      <ChatScreen />
     </View>
   );
 }
