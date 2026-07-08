@@ -23,6 +23,7 @@
     "expo-system-ui": "~56.0.5",
     "expo-web-browser": "~56.0.5",
     "lucide-react-native": "^1.23.0",
+    "minisearch": "^7.2.0",
     "nativewind": "^4.2.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -37,7 +38,8 @@
     "react-native-svg": "15.15.4",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.10.2",
-    "worklets": "0.0.1-alpha"
+    "worklets": "0.0.1-alpha",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
