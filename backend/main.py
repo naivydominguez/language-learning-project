@@ -33,6 +33,12 @@ class Settings(BaseModel):
     personality_prompt: Optional[str] = None
 
 
+class Messages(BaseModel):
+    conversation_id: str
+    sender: str
+    content: str
+    created_at: datetime
+
 async def get_current_user(authorization: str = Header(...)):
     if not authorization.startswith('Bearer '):
         raise HTTPException(status_code=401, detail="Invalid authorization header")
@@ -146,3 +152,32 @@ async def post_settings(settings: Settings, current_user = Depends(get_current_u
         raise HTTPException(status_code=400, detail="Insert failed")
 
     return response.data
+
+
+@app.post('/messages', status_code=201)
+async def post_messages(messages: Messages, current_user = Depends(get_current_user)):
+    data = messages.model_dump(exclude_unset=True)
+    data['sender'] = current_user.id
+
+    try:
+        response = supabase.table('messages').insert(data).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    if not response.data:
+        raise HTTPException(status_code=400, detail="Insert failed")
+
+    return response.data
+
+@app.get('/messages/{conversation_id}')
+async def get_messages(conversation_id: str):
+    try:
+        response = supabase.table('messages').select('*').eq('conversation_id', conversation_id).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    if not response.data:
+        raise HTTPException(status_code=404, detail="Messages not found")
+
+    return response.data
+

@@ -13,7 +13,7 @@ router=APIRouter(prefix="/conversations", tags=["conversations"])
 
 class CreateConversationRequest(BaseModel):
     target_lang: str
-    title: str | None = None
+    name : str | None = None
     
 class ConversationResponse(BaseModel):
     id: UUID
@@ -106,3 +106,17 @@ def send_message(conversation_id: UUID, request: SendMessageRequest, user_id: st
         unknown_words=unknown_words,
     )
     
+
+@router.get('/me')
+async def get_conversation(current_user = Depends(get_current_user)):
+    try:
+        response = supabase.table('conversations').select('*').eq('user_id', current_user.id).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    if not response.data:
+        raise HTTPException(status_code=404, detail="Conversations not found")
+
+    return response.data
+
+
