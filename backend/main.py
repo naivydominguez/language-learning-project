@@ -20,14 +20,12 @@ supabase: Client = create_client(os.environ.get("SUPABASE_URL"), os.environ.get(
 
 
 class StatsCreate(BaseModel):
-    user_id: str
     known_words: int
     number_messages: int
     steak: bool
 
 
 class Settings(BaseModel):
-    user_id: str
     target_languages: Optional[str] = None
     native_language: Optional[str] = None
     name: Optional[str] = None
