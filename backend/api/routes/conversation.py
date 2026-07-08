@@ -76,42 +76,19 @@ def send_message(conversation_id: UUID, request: SendMessageRequest, user_id: st
         }).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save message: {e}")
-
-    reply_content = "This is a placeholder response."
-
-    try:
-        response = supabase.table("messages").insert({
-            "conversation_id": str(conversation_id),
-            "sender": "ai",
-            "content": reply_content,
-        }).execute()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to save ai reply: {e}")
-
-    row = response.data[0]
-
-    unknown_words = []
+    
+    known_words = set()
     try:
         known_word_ids_response = supabase.table("user_known_words").select("word_id").eq("user_id", user_id).execute()
         known_word_ids = [w["word_id"] for w in known_word_ids_response.data]
-
-        known_words = set()
+        
         if known_word_ids:
-            known_words_response = supabase.table("known_words").select("word").eq("language_id", language_id).in_("id", known_word_ids).execute()
+            known_words_response = supabase.table("known_words").select("word").eq("language_id", language_id).in_("id",known_word_ids).execute()
             known_words = {w["word"].lower() for w in known_words_response.data}
-
-        unknown_words = sorted({word for word in reply_content.split() if word.lower() not in known_words})
     except Exception:
-        unknown_words = []
+        known_words = set()
 
-    return MessageResponse(
-        id=row["id"],
-        conversation_id=row["conversation_id"],
-        sender=row["sender"],
-        content=row["content"],
-        created_at=row["created_at"],
-        unknown_words=unknown_words,
-    )
+    
     
 
 @router.get('/me')
