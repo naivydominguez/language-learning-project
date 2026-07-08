@@ -19,6 +19,7 @@ class ConversationResponse(BaseModel):
     id: UUID
     target_lang: str
     created_at: datetime
+    name: str | None
     
 class SendMessageRequest(BaseModel):
     content: str
@@ -32,6 +33,7 @@ class MessageResponse(BaseModel):
     created_at: datetime
     unknown_words: list[str]
     
+# Conversation response now returns name    
 @router.post("/", response_model=ConversationResponse)
 def create_conversation(request: CreateConversationRequest, user_id: str = Depends(get_user_id)):
     language_response = supabase.table("languages").select("id").eq("name", request.target_lang).execute()
@@ -39,17 +41,20 @@ def create_conversation(request: CreateConversationRequest, user_id: str = Depen
         raise HTTPException(status_code=400, detail=f"Unknown language: {request.target_lang}")
     language_id = language_response.data[0]["id"]
 
-    response = supabase.table("conversations").insert({
-        "user_id": user_id,
-        "language_id": language_id,
-    }).execute()
-    
-    
+    try:
+        response = supabase.table("conversations").insert({
+            "user_id": user_id,
+            "language_id": language_id,
+            "name": request.name,
+        }).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create conversation: {e}")
 
     row = response.data[0]
     return ConversationResponse(
         id=row["id"],
         target_lang=request.target_lang,
+        name=row["name"],
         created_at=row["created_at"],
     )
 
