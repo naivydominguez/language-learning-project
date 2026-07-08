@@ -28,9 +28,9 @@ const StreakCalendar = () => {
       <View className="flex flex-col gap-y-1 text-foreground mb-4">
         <View className="flex flex-row items-center gap-2">
           {/* TODO: fire icon */}
-          <Text className="font-bold text-lg">12 day streak</Text>
+          <Text className="font-bold text-xl">12 day streak</Text>
         </View>
-        <Text className="text-xs text-foreground-secondary/100">Longest: 15 days</Text>
+        <Text className="text-sm font-light text-foreground-secondary/100">Longest: 15 days</Text>
       </View>
       <WeeklyHeatMap
         data={streakDays}

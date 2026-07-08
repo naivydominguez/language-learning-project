@@ -36,9 +36,9 @@ const WeeklyMessages = ({ axisTextStyles }: Props) => {
 
   return (
     <View className="w-full h-max flex flex-col bg-white p-4 pr-0 rounded-md border border-background-dark">
-      <Text className="font-bold text-lg">Messages this week</Text>
+      <Text className="font-bold text-xl">Messages this week</Text>
       <View
-        className="w-full mt-4"
+        className="w-full mt-6"
         onLayout={(e) => setChartWidth(e.nativeEvent.layout.width)}
       >
         <BarChart
