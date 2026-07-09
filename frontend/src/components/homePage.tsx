@@ -21,7 +21,7 @@ export default function HomePage() {
   return (
     <View className="flex-1 items-center justify-center bg-background m-4 p-4 gap-6" >
       <Logo size="lg" />
-      <Text className="text-4xl font-bold text-blue-500">Hello, Learner </Text>
+      <Text className="text-4xl font-bold text-black-500"> Hello, Learner </Text>
       <View className="flex-row items-center justify-between w-full gap-2 p-2 bg-gray-200 rounded-lg mt-4">
         <View>
             {/* Place generated conversation start in here*/}
