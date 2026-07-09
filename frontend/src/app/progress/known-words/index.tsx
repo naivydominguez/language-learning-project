@@ -25,6 +25,7 @@ const knownWords = () => {
           },
         },
       );
+      console.log(response.json())
       return response.json();
     },
   });
