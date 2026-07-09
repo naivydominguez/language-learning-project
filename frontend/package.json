@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~56.0.20",
+    "@react-native-picker/picker": "2.11.4",
     "@react-navigation/drawer": "^7.12.7",
     "expo": "56",
     "expo-constants": "~56.0.20",
