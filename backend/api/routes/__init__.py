@@ -1,3 +1,8 @@
 from .jpdb_sync import router as jpdb_router
 from .conversation import router as conversations_router
 from .language_tools import router as language_tools_router
+from .users import router as users_router
+from .user_languages import router as user_languages_router
+from .user_statistics import router as user_statistics_router
+from .messages import router as messages_router
+from .known_words import router as known_words_router
