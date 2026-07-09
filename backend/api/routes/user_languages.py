@@ -1,15 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 
-from backend.api.utils.auth import get_current_user
 from backend.api.utils.supabase_client import supabase
+from backend.api.utils.user_id import TEST_USER_ID
 
 router = APIRouter(prefix="/user_languages", tags=["user-languages"])
 
 
 @router.get('/me')
-async def get_user_languages(current_user = Depends(get_current_user)):
+async def get_user_languages(current_user_id: str = TEST_USER_ID):
     try:
-        response = supabase.table('user_languages').select('*').eq('user_id', current_user.id).execute()
+        response = supabase.table('user_languages').select('*').eq('user_id', current_user_id).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

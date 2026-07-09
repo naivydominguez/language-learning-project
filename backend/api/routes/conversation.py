@@ -4,9 +4,8 @@ from pydantic import BaseModel
 from datetime import datetime, timezone
 from uuid import UUID
 from supabase import create_client, Client
-from backend.api.utils.auth import get_current_user
 from backend.api.utils.supabase_client import supabase
-from backend.api.utils.user_id import get_user_id
+from backend.api.utils.user_id import TEST_USER_ID
 from backend.chatbot.generation import generate_response
 
 UNKNOWN_WORDS_PERCENTAGE = 10
@@ -37,7 +36,7 @@ class MessageResponse(BaseModel):
     unknown_words: list[str]
     
 @router.post("/", response_model=ConversationResponse)
-def create_conversation(request: CreateConversationRequest, user_id: str = Depends(get_user_id), starterPrompt):
+def create_conversation(request: CreateConversationRequest, starterPrompt, user_id: str = TEST_USER_ID):
     language_response = supabase.table("languages").select("id").eq("name", request.target_lang).execute()
     if not language_response.data:
         raise HTTPException(status_code=400, detail=f"Unknown language: {request.target_lang}")
@@ -55,7 +54,7 @@ def create_conversation(request: CreateConversationRequest, user_id: str = Depen
     row = response.data[0]
     conversation_id = row["id"]
 
-     try:
+    try:
         supabase.table("messages").insert({
             "conversation_id": str(conversation_id),
             "sender": "AI",
@@ -74,7 +73,7 @@ def create_conversation(request: CreateConversationRequest, user_id: str = Depen
 
     
 @router.post("/{conversation_id}/messages", response_model=MessageResponse)
-def send_message(conversation_id: UUID, request: SendMessageRequest, user_id: str = Depends(get_user_id)):
+def send_message(conversation_id: UUID, request: SendMessageRequest, user_id: str = TEST_USER_ID):
     conversation_response = supabase.table("conversations").select("language_id").eq("id", str(conversation_id)).execute()
     if not conversation_response.data:
         raise HTTPException(status_code=404, detail="Conversation not found")
@@ -155,9 +154,9 @@ def send_message(conversation_id: UUID, request: SendMessageRequest, user_id: st
     
 
 @router.get('/me')
-async def get_conversation(current_user = Depends(get_current_user)):
+async def get_conversation(current_user_id: str = TEST_USER_ID):
     try:
-        response = supabase.table('conversations').select('*').eq('user_id', current_user.id).execute()
+        response = supabase.table('conversations').select('*').eq('user_id', current_user_id).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

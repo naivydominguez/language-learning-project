@@ -2,6 +2,7 @@
 /frontend/.env
 /backend/.env
 venv/
+.venv
 
 # Python
 __pycache__/

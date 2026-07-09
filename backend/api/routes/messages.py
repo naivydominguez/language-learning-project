@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from backend.api.utils.auth import get_current_user
 from backend.api.utils.supabase_client import supabase
+from backend.api.utils.user_id import TEST_USER_ID
 
 router = APIRouter(prefix="/messages", tags=["messages"])
 
@@ -17,9 +17,9 @@ class Messages(BaseModel):
 
 
 @router.post('', status_code=201)
-async def post_messages(messages: Messages, current_user = Depends(get_current_user)):
+async def post_messages(messages: Messages, current_user_id: str = TEST_USER_ID):
     data = messages.model_dump(exclude_unset=True)
-    data['sender'] = current_user.id
+    data['sender'] = current_user_id
 
     try:
         response = supabase.table('messages').insert(data).execute()
