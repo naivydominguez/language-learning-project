@@ -1,6 +1,6 @@
 import { View, Text, Pressable, Animated } from "react-native";
 import { useRouter, usePathname } from "expo-router";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import Logo from "./logo";
 import { ChevronLeft, Plus, MessageCircle, Settings, TrendingUp } from "lucide-react-native";
 import { Motion } from "@/constants/theme";
@@ -10,6 +10,7 @@ type Props = {
   visible: boolean;
   onClose: () => void;
 };
+const accessToken = ""; // Replace with your actual access token
 
 const NAV_ITEMS = [
   { label: "Chat", path: "/", icon: MessageCircle },
@@ -19,11 +20,38 @@ const NAV_ITEMS = [
 
 const RECENT_ITEMS = ["Conversation 1", "Conversation 2"];
 
+type RecentConversation = {
+  id: string;
+  title?: string;
+  created_at: string;
+};
 export default function Navbar({ visible, onClose }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
+  const [recentConversations, setRecentConversations] = useState<RecentConversation[]>([]); // Store recent conversations
+
+  useEffect(() => {
+    const convosFetch = async () => {
+      try {
+        const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/me`, {
+          method: "get",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch recent conversations");
+        }
+
+        setRecentConversations(await response.json());
+      } catch (error) {
+        console.error("Error fetching recent conversations:", error);
+      }
+    };
+    convosFetch();
+  }, []);
 
   useEffect(() => {
     Animated.parallel([
@@ -121,16 +149,26 @@ export default function Navbar({ visible, onClose }: Props) {
           <Text className="font-sans px-5 pt-4 pb-1 text-sm text-sidebar-foreground/60">Recent</Text>
 
           <View className="px-5 pl-4">
-            {RECENT_ITEMS.map((label) => (
-              <Pressable key={label} onPress={() => navigate("/")} className="py-2">
-                <Text className="font-sans text-base text-sidebar-foreground/60">{label}</Text>
+            {recentConversations.map((convo) => (
+              <Pressable
+                key={convo.id}
+                onPress={() => {
+                  onClose();
+                  router.push({
+                    pathname: "/chatScreen",
+                    params: { conversationId: convo.id, title: convo.title },
+                  });
+                }}
+                className="py-2"
+              >
+                <Text className="font-sans text-base text-sidebar-foreground/60">
+                  {convo.title}
+                </Text>
               </Pressable>
             ))}
           </View>
         </View>
 
-        <View className="flex-row items-center justify-center gap-3 py-4 border-t bg-sidebar border-sidebar-border">
-        </View>
       </Animated.View>
     </View>
   );
