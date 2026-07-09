@@ -35,7 +35,7 @@ export default function ChatScreen() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            target_lang: "Spanish", // Replace with your target language
+            target_lang: "spanish", // Replace with your target language
           }),
         },
       );
