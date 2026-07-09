@@ -53,6 +53,18 @@ def create_conversation(request: CreateConversationRequest, user_id: str = Depen
         raise HTTPException(status_code=500, detail=f"Failed to create conversation: {e}")
 
     row = response.data[0]
+    conversation_id = row["id"]
+
+     try:
+        supabase.table("messages").insert({
+            "conversation_id": str(conversation_id),
+            "sender": "ai",
+            "content": "Time to get started!",
+        }).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create opening message: {e}")
+
+
     return ConversationResponse(
         id=row["id"],
         target_lang=request.target_lang,
