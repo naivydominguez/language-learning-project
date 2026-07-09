@@ -24,9 +24,9 @@ export default function ChatInputBar({ onSend, isWaiting = false }: Props) {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={{ marginBottom: insets.bottom }}
         >
-            <View className="flex-row items-center gap-2 p-2 bg-gray-200 rounded-lg">
+            <View className="flex-row items-center gap-2 p-2 bg-white rounded-lg shadow-md">
                 <TextInput
-                    className="flex-1 text-base text-forground px-4 py-3 mr-2 rounded-3xl bg-background-element max-h-32 p-2"
+                    className="flex-1 text-base text-foreground px-4 py-3 mr-2 rounded-xl bg-white max-h-32 p-2"
                     value={message}
                     onChangeText={setMessage}
                     placeholder="Message Immer bot..."

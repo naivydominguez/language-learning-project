@@ -34,7 +34,7 @@ export default function Navbar({ visible, onClose }: Props) {
         useNativeDriver: true,
       }),
       Animated.timing(overlayOpacity, {
-        toValue: visible ? 1 : 0,
+        toValue: visible ? 0.6 : 0,
         duration: Motion.duration.normal,
         easing: Motion.easing.easeOut,
         useNativeDriver: true,
@@ -54,8 +54,15 @@ export default function Navbar({ visible, onClose }: Props) {
     >
       {/* Backdrop */}
       <Animated.View
-        style={{ position: "absolute", top: 0, left: 0, height: "100%", width: "100%", opacity: overlayOpacity }}
-        className="bg-black"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          height: "100%",
+          width: "100%",
+          opacity: overlayOpacity,
+          backgroundColor: "#000000",
+        }}
       >
         <Pressable style={{ flex: 1 }} onPress={onClose} />
       </Animated.View>
