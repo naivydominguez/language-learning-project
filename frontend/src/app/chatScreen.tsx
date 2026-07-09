@@ -13,7 +13,6 @@ type Message = {
 };
 const accessToken = ""; // Replace with your actual access token
 
-
 export default function ChatScreen() {
   const router = useRouter();
   const { start,initialMessage, title, conversationId } = useLocalSearchParams<{
@@ -26,96 +25,67 @@ export default function ChatScreen() {
   const [isWaiting, setIsWaiting] = React.useState(false);
   const hasSentInitial = React.useRef(false);
 
-   const createConversation = async () => {
-     try {
-       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/`, {
-         method: "POST",
-         headers: {
-           "Content-Type": "application/json",
-         },
-         body: JSON.stringify({
-           target_lang: "Spanish", // Replace with your target language
-         }),
-       });
+  const createConversation = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            target_lang: "Spanish", // Replace with your target language
+          }),
+        },
+      );
 
-       if (!response.ok) {
-         throw new Error("Failed to create conversation");
-       }
+      if (!response.ok) {
+        throw new Error("Failed to create conversation");
+      }
 
-       return response.json();
-     } catch (error) {
-       console.error("Error creating conversation:", error);
-       throw error;
-     }
-   };
+      return response.json();
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+      throw error;
+    }
+  };
 
-   const getMessages = async (conversationId: string, accessToken: string) => {
-     try {
-       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/messages/${conversationId}`, {
-         headers: {
-           Authorization: `Bearer ${accessToken}`,
-         },
-       });
-       if (!response.ok) {
-         throw new Error("Failed to fetch messages");
-       }
-       return response.json();
-     } catch (error) {
-       console.error("Error fetching messages:", error);
-       throw error;
-     }
-   };
+  const sendMessageToAI = async (
+    context: string,
+    conversationId: string,
+    accessToken: string,
+  ) => {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${conversationId}/messages`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            content: context,
+          }),
+        },
+      );
 
-
-    React.useEffect(() => {
-       const loadConvos = async () => {
-         try {
-           const response = await getMessages(conversationId as string, accessToken);
-           setMessages(
-             response.map((msg: any) => ({
-               id: msg.id,
-               sender: msg.sender,
-               messageContent: msg.content,
-             }))
-           );
-           
-         } catch (error) {
-           console.error("Error fetching messages:", error);
-         }
-          };
-         loadConvos();
-       }, [conversationId]);
-   
-  
-   const sendMessageToAI = async (context: string, conversationId: string, accessToken: string) => {
-     try {
-       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${conversationId}/messages`, {
-         method: "POST",
-         headers: {
-           "Content-Type": "application/json",
-           Authorization: `Bearer ${accessToken}`,
-         },
-         body: JSON.stringify({
-           content: context,
-         }),
-       });
-
-       if (!response.ok) {
-         throw new Error("Failed to send message");
-       }
-       return response.json();
-     } catch (error) {
-       console.error("Error sending message:", error);
-       throw error;
-     }
-   };
-
+      if (!response.ok) {
+        throw new Error("Failed to send message");
+      }
+      return response.json();
+    } catch (error) {
+      console.error("Error sending message:", error);
+      throw error;
+    }
+  };
 
   const handleSend = async (messageText: string) => {
     setIsWaiting(true);
     try {
       const newMessage: Message = {
-        id: Date.now().toString()+messageText,
+        id: Date.now().toString() + messageText,
         sender: "user",
         messageContent: messageText,
       };
@@ -125,7 +95,7 @@ export default function ChatScreen() {
           setMessages((prev) => [
             ...prev,
             {
-              id: Date.now().toString()+`AI reply to: ${messageText}`,
+              id: Date.now().toString() + `AI reply to: ${messageText}`,
               messageContent: `AI reply to: ${messageText}`,
               sender: "ai",
             },
@@ -138,13 +108,11 @@ export default function ChatScreen() {
     }
   };
 
-
-   
   const handleSendBackend = async (messageText: string) => {
     setIsWaiting(true);
     try {
       const newMessage: Message = {
-        id: Date.now().toString()+messageText,
+        id: Date.now().toString() + messageText,
         sender: "user",
         messageContent: messageText,
       };
@@ -153,8 +121,19 @@ export default function ChatScreen() {
       const convoData = await createConversation();
       const conversationId = convoData.id;
       const accessToken = "temporary-access-token"; // Replace with your actual access token
-      const aiMessage = await sendMessageToAI(messageText, conversationId, accessToken);
-      setMessages((prev) => [...prev, { id: Date.now().toString()+aiMessage.content, sender: "ai", messageContent: aiMessage.content }]);
+      const aiMessage = await sendMessageToAI(
+        messageText,
+        conversationId,
+        accessToken,
+      );
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString() + aiMessage.content,
+          sender: "ai",
+          messageContent: aiMessage.content,
+        },
+      ]);
     } finally {
       setIsWaiting(false);
     }
@@ -166,7 +145,11 @@ export default function ChatScreen() {
       if (start) {
         setMessages((prev) => [
           ...prev,
-          { id: Date.now().toString()+start, sender: "ai", messageContent: start },
+          {
+            id: Date.now().toString() + start,
+            sender: "ai",
+            messageContent: start,
+          },
         ]);
       }
       if (initialMessage) {
