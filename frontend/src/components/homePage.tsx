@@ -11,7 +11,20 @@ export default function HomePage() {
       const [navOpen, setNavOpen] = React.useState(false);
 
   const router = useRouter();
-    const convStarter="hello, how are you?"; // Replace with your generated conversation start
+const convStarters = [
+     "Hey! I just watched a really interesting video — have you seen anything good lately?",
+     "What are your plans for the weekend? I'm trying to decide what to do.",
+     "I've been thinking about trying a new restaurant. Do you like trying new foods?",
+     "It's been so busy lately! How do you usually relax after a long day?",
+     "I just finished a great book. Do you enjoy reading? What kinds of books do you like?",
+     "The weather today is beautiful. Do you prefer sunny days or rainy ones?",
+     "I'm thinking about learning a new skill. Is there something you've always wanted to learn?",
+     "I saw something funny on the way here today. Do you ever notice interesting things on your commute?",
+     "I can't decide what to cook for dinner tonight. Do you enjoy cooking?",
+     "A friend just recommended a podcast to me. Do you listen to podcasts? What kind do you like?",
+   ];
+const convStarter = convStarters[Math.floor(Math.random() * convStarters.length)];
+
   const handleSend = (messageText: string) => {
     const start = convStarter; // Replace with your generated conversation start
     const title = messageText.split(" ").slice(0, 4).join(" ");
