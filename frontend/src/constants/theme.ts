@@ -5,7 +5,7 @@
 
 import '@/global.css';
 
-import { Platform } from 'react-native';
+import { Easing, Platform } from 'react-native';
 
 export const Colors = {
   light: {
@@ -63,3 +63,16 @@ export const Spacing = {
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
+
+export const Motion = {
+  duration: {
+    fast: 150,
+    normal: 250,
+    slow: 400,
+  },
+  easing: {
+    easeOut: Easing.out(Easing.cubic),
+    easeIn: Easing.in(Easing.cubic),
+    easeInOut: Easing.inOut(Easing.cubic),
+  },
+} as const;

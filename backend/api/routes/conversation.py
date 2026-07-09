@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from datetime import datetime, timezone
 from uuid import UUID
 from supabase import create_client, Client
+from backend.api.utils.auth import get_current_user
 from backend.api.utils.supabase_client import supabase
 from backend.api.utils.user_id import get_user_id
 

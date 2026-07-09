@@ -1,6 +1,7 @@
 import React from "react";
-import { View, Text } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { View, Text, Pressable } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { ChevronLeft } from "lucide-react-native";
 import ChatInputBar from "../components/ui/chatInputBar";
 import MessageBubble from "../components/messageBubble";
 import { FlatList } from "react-native-gesture-handler";
@@ -8,11 +9,12 @@ import { FlatList } from "react-native-gesture-handler";
 type Message = {
   id: string;
   sender: "user" | "ai";
-  context: string;
+  messageContent: string;
 };
 
 
 export default function ChatScreen() {
+  const router = useRouter();
   const { start,initialMessage, title } = useLocalSearchParams<{
     start? :string;
     initialMessage?: string;
@@ -77,7 +79,7 @@ export default function ChatScreen() {
       const newMessage: Message = {
         id: Date.now().toString()+messageText,
         sender: "user",
-        context: messageText,
+        messageContent: messageText,
       };
       setMessages((prev) => [...prev, newMessage]);
       await new Promise<void>((resolve) => {
@@ -86,7 +88,7 @@ export default function ChatScreen() {
             ...prev,
             {
               id: Date.now().toString()+`AI reply to: ${messageText}`,
-              context: `AI reply to: ${messageText}`,
+              messageContent: `AI reply to: ${messageText}`,
               sender: "ai",
             },
           ]);
@@ -106,7 +108,7 @@ export default function ChatScreen() {
       const newMessage: Message = {
         id: Date.now().toString()+messageText,
         sender: "user",
-        context: messageText,
+        messageContent: messageText,
       };
       setMessages((prev) => [...prev, newMessage]);
 
@@ -114,7 +116,7 @@ export default function ChatScreen() {
       const conversationId = convoData.id;
       const accessToken = "temporary-access-token"; // Replace with your actual access token
       const aiMessage = await sendMessageToAI(messageText, conversationId, accessToken);
-      setMessages((prev) => [...prev, { id: Date.now().toString()+aiMessage.content, sender: "ai", context: aiMessage.content }]);
+      setMessages((prev) => [...prev, { id: Date.now().toString()+aiMessage.content, sender: "ai", messageContent: aiMessage.content }]);
     } finally {
       setIsWaiting(false);
     }
@@ -126,7 +128,7 @@ export default function ChatScreen() {
       if (start) {
         setMessages((prev) => [
           ...prev,
-          { id: Date.now().toString()+start, sender: "ai", context: start },
+          { id: Date.now().toString()+start, sender: "ai", messageContent: start },
         ]);
       }
       if (initialMessage) {
@@ -136,19 +138,23 @@ export default function ChatScreen() {
   }, [start, initialMessage]);
 
   return (
-    <View className="flex-1 bg-background p-4" style={{ paddingTop: 60 }}>
-      <View className="items-center justify-center mb-4 border-b border-border pb-2">
-      {title ? (
-        <Text className="font-sans text-lg font-semibold text-foreground text-center mb-2">
-          {title}
-        </Text>
-      ) : null}
+    <View className="flex-1 bg-background">
+      <View
+        className="flex-row items-center gap-2 mb-4 bg-white border-shadow border-border pl-4 pb-2"
+        style={{ paddingTop: 60 }}
+      >
+        {title ? (
+          <Text className="font-sans text-lg font-semibold text-foreground mb-2">
+            {title}
+          </Text>
+        ) : null}
       </View>
       <FlatList
         data={messages}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <MessageBubble message={item} />}
         contentContainerStyle={{ padding: 16, gap: 8 }}
+        className="p-4"
       />
       <ChatInputBar onSend={handleSend} isWaiting={isWaiting} />
     </View>
