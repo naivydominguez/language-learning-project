@@ -35,7 +35,6 @@ class MessageResponse(BaseModel):
     created_at: datetime
     unknown_words: list[str]
     
-# Conversation response now returns name    
 @router.post("/", response_model=ConversationResponse)
 def create_conversation(request: CreateConversationRequest, user_id: str = Depends(get_user_id)):
     language_response = supabase.table("languages").select("id").eq("name", request.target_lang).execute()
@@ -74,28 +73,43 @@ def send_message(conversation_id: UUID, request: SendMessageRequest, user_id: st
             "sender": "user",
             "content": request.content,
         }).execute()
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save message: {e}")
 
     known_words = set()
     try:
         known_word_ids_response = supabase.table("user_known_words").select("word_id").eq("user_id", user_id).execute()
-        known_word_ids = [w["word_id"] for w in known_word_ids_response.data]
+        known_word_ids = [word_row["word_id"] for word_row in known_word_ids_response.data]
 
         if known_word_ids:
-            known_words_response = supabase.table("known_words").select("word").eq("language_id", language_id).in_("id", known_word_ids).execute()
-            known_words = {w["word"].lower() for w in known_words_response.data}
+            
+            known_words_response = (
+                supabase.table("known_words")
+                .select("word")
+                .eq("language_id", language_id)
+                .in_("id", known_word_ids)
+                .execute()
+            )
+            
+            known_words = {word_row["word"].lower() for word_row in known_words_response.data}
     except Exception:
         known_words = set()
 
     try:
-        history_response = supabase.table("messages").select("sender, content").eq("conversation_id", str(conversation_id)).order("created_at").execute()
+        history_response = (
+            supabase.table("messages")
+            .select("sender, content")
+            .eq("conversation_id", str(conversation_id))
+            .order("created_at")
+            .execute()
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to load conversation history: {e}")
 
     chat_history = [
-        {"role": "assistant" if m["sender"] == "ai" else "user", "content": m["content"]}
-        for m in history_response.data
+        {"role": "assistant" if message["sender"] == "ai" else "user", "content": message["content"]}
+        for message in history_response.data
     ]
     
     try:
@@ -138,5 +152,3 @@ async def get_conversation(current_user = Depends(get_current_user)):
         raise HTTPException(status_code=404, detail="Conversations not found")
 
     return response.data
-
-
