@@ -11,11 +11,12 @@ type Message = {
   sender: "user" | "ai";
   messageContent: string;
 };
+const accessToken = ""; // Replace with your actual access token
 
 
 export default function ChatScreen() {
   const router = useRouter();
-  const { start,initialMessage, title } = useLocalSearchParams<{
+  const { start,initialMessage, title, conversationId } = useLocalSearchParams<{
     start? :string;
     initialMessage?: string;
     title?: string;
@@ -48,6 +49,43 @@ export default function ChatScreen() {
      }
    };
 
+   const getMessages = async (conversationId: string, accessToken: string) => {
+     try {
+       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/messages/${conversationId}`, {
+         headers: {
+           Authorization: `Bearer ${accessToken}`,
+         },
+       });
+       if (!response.ok) {
+         throw new Error("Failed to fetch messages");
+       }
+       return response.json();
+     } catch (error) {
+       console.error("Error fetching messages:", error);
+       throw error;
+     }
+   };
+
+
+    React.useEffect(() => {
+       const loadConvos = async () => {
+         try {
+           const response = await getMessages(conversationId as string, accessToken);
+           setMessages(
+             response.map((msg: any) => ({
+               id: msg.id,
+               sender: msg.sender,
+               messageContent: msg.content,
+             }))
+           );
+           
+         } catch (error) {
+           console.error("Error fetching messages:", error);
+         }
+          };
+         loadConvos();
+       }, [conversationId]);
+   
   
    const sendMessageToAI = async (context: string, conversationId: string, accessToken: string) => {
      try {
@@ -142,7 +180,10 @@ export default function ChatScreen() {
       <View
         className="flex-row items-center gap-2 mb-4 bg-white border-shadow border-border pl-4 pb-2"
         style={{ paddingTop: 60 }}
-      >
+      > 
+       <Pressable onPress={() => router.push("/")} className="p-2">
+          <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
+        </Pressable>
         {title ? (
           <Text className="font-sans text-lg font-semibold text-foreground mb-2">
             {title}
@@ -156,7 +197,7 @@ export default function ChatScreen() {
         contentContainerStyle={{ padding: 16, gap: 8 }}
         className="p-4"
       />
-      <ChatInputBar onSend={handleSend} isWaiting={isWaiting} />
+      <ChatInputBar onSend={handleSendBackend} isWaiting={isWaiting} />
     </View>
   );
 }

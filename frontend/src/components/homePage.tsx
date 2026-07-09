@@ -1,10 +1,15 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { RotateCcw } from "lucide-react-native";
+import HamburgerButton from "../components/hamburgerBtn";
+import Navbar from "@/components/navbar";
 import Logo from "./logo";
 import ChatInputBar from "./ui/chatInputBar";
+import React from "react";
 
 export default function HomePage() {
+      const [navOpen, setNavOpen] = React.useState(false);
+
   const router = useRouter();
     const convStarter="hello, how are you?"; // Replace with your generated conversation start
   const handleSend = (messageText: string) => {
@@ -19,6 +24,13 @@ export default function HomePage() {
   };
 
   return (
+    <View className="flex-1">
+      <View style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
+        <HamburgerButton onPress={() => setNavOpen(!navOpen)} />
+      </View>
+
+      <Navbar visible={navOpen} onClose={() => setNavOpen(false)} />
+    
     <View className="flex-1 items-center justify-center bg-background-dark  p-6 gap-6" >
       <Logo size="lg" />
       <Text className="text-4xl font-bold text-black-500">Hello, Learner </Text>
@@ -34,6 +46,7 @@ export default function HomePage() {
       <View className="w-full bg-white rounded-md" >
       <ChatInputBar onSend={handleSend} />
       </View>
+    </View>
     </View>
   );
 }

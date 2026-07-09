@@ -53,6 +53,7 @@ export default function Navbar({ visible, onClose }: Props) {
     convosFetch();
   }, []);
 
+ 
   useEffect(() => {
     Animated.parallel([
       Animated.timing(translateX, {
