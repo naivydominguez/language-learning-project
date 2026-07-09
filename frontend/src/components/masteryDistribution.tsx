@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, Text } from "react-native";
 import { BarChart } from "react-native-gifted-charts/dist/BarChart";
 import PointerComponentCreator from "./GraphPointerComponent";
+import GraphLegendItem from "@/app/progress/_components/GraphLegendItem";
 
 const POINTER_CONFIG = {
   activatePointersOnLongPress: true,
@@ -37,9 +38,9 @@ const MasteryDistribution = ({ axisTextStyles }: Props) => {
 
   return (
     <View className="w-full h-max flex flex-col bg-white p-4 pr-0 rounded-md border border-background-dark">
-      <Text className="font-bold text-lg">Words by mastery</Text>
+      <Text className="font-bold text-xl">Words by mastery</Text>
       <View
-        className="w-full mt-4"
+        className="w-full mt-6"
         onLayout={(e) => setChartWidth(e.nativeEvent.layout.width)}
       >
         <BarChart
@@ -70,21 +71,6 @@ const MasteryDistribution = ({ axisTextStyles }: Props) => {
           ),
         )}
       </View>
-    </View>
-  );
-};
-
-const GraphLegendItem = ({
-  color,
-  label,
-}: {
-  color: string;
-  label: string;
-}) => {
-  return (
-    <View className="flex flex-row items-center gap-1">
-      <View className="size-2 rounded-[2px]" style={{ backgroundColor: color }} />
-      <Text className="text-xs text-foreground-tertiary">{label}</Text>
     </View>
   );
 };
