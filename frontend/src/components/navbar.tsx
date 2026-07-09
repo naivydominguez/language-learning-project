@@ -3,6 +3,7 @@ import { useRouter, usePathname } from "expo-router";
 import { useRef, useEffect } from "react";
 import Logo from "./logo";
 import { ChevronLeft, Plus, MessageCircle, Settings, TrendingUp } from "lucide-react-native";
+import { Motion } from "@/constants/theme";
 const DRAWER_WIDTH = 220;
 
 type Props = {
@@ -28,12 +29,14 @@ export default function Navbar({ visible, onClose }: Props) {
     Animated.parallel([
       Animated.timing(translateX, {
         toValue: visible ? 0 : -DRAWER_WIDTH,
-        duration: 250,
+        duration: Motion.duration.normal,
+        easing: Motion.easing.easeOut,
         useNativeDriver: true,
       }),
       Animated.timing(overlayOpacity, {
-        toValue: visible ? 1 : 0,
-        duration: 250,
+        toValue: visible ? 0.6 : 0,
+        duration: Motion.duration.normal,
+        easing: Motion.easing.easeOut,
         useNativeDriver: true,
       }),
     ]).start();
@@ -51,8 +54,15 @@ export default function Navbar({ visible, onClose }: Props) {
     >
       {/* Backdrop */}
       <Animated.View
-        style={{ position: "absolute", top: 0, left: 0, height: "100%", width: "100%", opacity: overlayOpacity }}
-        className="bg-black"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          height: "100%",
+          width: "100%",
+          opacity: overlayOpacity,
+          backgroundColor: "#000000",
+        }}
       >
         <Pressable style={{ flex: 1 }} onPress={onClose} />
       </Animated.View>
@@ -73,7 +83,7 @@ export default function Navbar({ visible, onClose }: Props) {
           <View className="px-5 pl-4 py-4 border-b border-sidebar-border">
             <View className="flex-row items-center justify-between">
               <Logo size="md" />
-              <Text className="font-sans text-lg font-semibold text-sidebar-foreground"> Immer bot</Text>
+              <Text className="font-sans text-lg font-semibold text-sidebar-foreground"> Immerbot</Text>
               <Pressable onPress={onClose}>
                 <ChevronLeft size={20} color="#BFAD9F" />
               </Pressable>
