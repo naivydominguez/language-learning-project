@@ -18,13 +18,7 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaView className="flex-1">
-        <View className="flex-1">
-          <Stack screenOptions={{ headerShown: false }} />
-          <View style={{ position: "absolute", top: 10, left: 20, zIndex: 10 }}>
-            <HamburgerButton onPress={() => setNavOpen(!navOpen)} />
-          </View>
-          <Navbar visible={navOpen} onClose={() => setNavOpen(false)} />
-        </View>
+       
       </SafeAreaView>
     </QueryClientProvider>
   );
