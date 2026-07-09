@@ -7,9 +7,9 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from backend.api.utils.user_id import TEST_USER_ID
-from backend.db.db_models import User, UserKnownWord, Word
-from backend.db.session import get_db_session
+from api.utils.user_id import TEST_USER_ID
+from db.db_models import User, UserKnownWord, Word
+from db.session import get_db_session
 
 router = APIRouter(prefix="/jpdb", tags=["jpdb"])
 JPDB_URL = os.environ.get("JPDB_URL")
