@@ -6,3 +6,4 @@ from .user_languages import router as user_languages_router
 from .user_statistics import router as user_statistics_router
 from .messages import router as messages_router
 from .known_words import router as known_words_router
+from .user_known_words import router as user_known_words_router
