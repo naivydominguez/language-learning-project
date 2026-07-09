@@ -181,7 +181,7 @@ export default function ChatScreen() {
         className="flex-row items-center gap-2 mb-4 bg-white border-shadow border-border pl-4 pb-2"
         style={{ paddingTop: 60 }}
       > 
-       <Pressable onPress={() => router.push("/")} className="p-2">
+       <Pressable onPress={() => router.push("/homePage")} className="p-2">
           <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
         </Pressable>
         {title ? (

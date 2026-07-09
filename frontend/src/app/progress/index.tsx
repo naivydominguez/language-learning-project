@@ -17,7 +17,7 @@ export default function ProgressRoute() {
 
   return (
     <ScrollView className="flex flex-col bg-background pt-4 px-6" contentContainerClassName="gap-6 pb-6">
-      <Pressable onPress={() => router.push("/")} className="p-2">
+      <Pressable onPress={() => router.push("/homePage")} className="p-2">
         <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
       </Pressable>
 
