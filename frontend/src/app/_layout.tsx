@@ -9,6 +9,7 @@ import HamburgerButton from "../components/hamburgerBtn";
 import Navbar from "@/components/navbar";
 
 import "../global.css";
+import Toast from "react-native-toast-message";
 
 export default function RootLayout() {
   const [navOpen, setNavOpen] = React.useState(false);
@@ -18,7 +19,8 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaView className="flex-1">
-       
+        <Stack screenOptions={{ headerShown: false }} />
+        <Toast />
       </SafeAreaView>
     </QueryClientProvider>
   );
