@@ -87,10 +87,10 @@ export default function LanguageSelections() {
       <View>
         <OnboardingButton
         title="Continue"
-        onPress={() => router.push("/chat")}
+        onPress={() => router.push("/")}
       />
 
-      <Pressable onPress={()=> router.push("/chat")}>
+      <Pressable onPress={()=> router.push("/chatScreen")}>
       <Text className={"mt-3 text-xl text-[#8C6E60] text-center"}>
             Skip for now
         </Text>
