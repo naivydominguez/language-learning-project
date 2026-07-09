@@ -3,6 +3,7 @@ import { useRouter, usePathname } from "expo-router";
 import { useRef, useEffect, useState } from "react";
 import Logo from "./logo";
 import { ChevronLeft, Plus, MessageCircle, Settings, TrendingUp } from "lucide-react-native";
+import Toast from "react-native-toast-message";
 import { Motion } from "@/constants/theme";
 const DRAWER_WIDTH = 220;
 
@@ -48,6 +49,11 @@ export default function Navbar({ visible, onClose }: Props) {
         setRecentConversations(await response.json());
       } catch (error) {
         console.error("Error fetching recent conversations:", error);
+        Toast.show({
+          type: "error",
+          text1: "Couldn't load recent conversations",
+          text2: "Please try again later.",
+        });
       }
     };
     convosFetch();
