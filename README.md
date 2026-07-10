@@ -26,8 +26,9 @@ Create frontend/.env:
 Open two terminals and run the commands (commands start from root dir):
 ```
 # Terminal 1
+cd backend
 source venv/bin/activate
-uvicorn backend.main:app --reload
+uvicorn main:app --reload
 ```
 
 ```
