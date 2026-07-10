@@ -45,7 +45,7 @@ export default function Navbar({ visible, onClose }: Props) {
 
         setRecentConversations(await response.json());
       } catch (error) {
-        console.error("Error fetching recent conversations:", error);
+       // console.error("Error fetching recent conversations:", error);
         Toast.show({
           type: "error",
           text1: "Couldn't load recent conversations",
