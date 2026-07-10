@@ -1,10 +1,11 @@
 import { View, Text, Pressable, Animated } from "react-native";
 import { useRouter, usePathname } from "expo-router";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import Logo from "./logo";
 import { ChevronLeft, Plus, MessageCircle, Settings, TrendingUp } from "lucide-react-native";
 import Toast from "react-native-toast-message";
 import { Motion } from "@/constants/theme";
+import { useQuery } from "@tanstack/react-query";
 const DRAWER_WIDTH = 220;
 
 type Props = {
@@ -21,42 +22,37 @@ const NAV_ITEMS = [
 
 type RecentConversation = {
   id: string;
-  title?: string;
+  name?: string;
   created_at: string;
 };
+
 export default function Navbar({ visible, onClose }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
-  const [recentConversations, setRecentConversations] = useState<RecentConversation[]>([]); // Store recent conversations
 
-  useEffect(() => {
-    const convosFetch = async () => {
-      try {
-        const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/me`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        if (!response.ok) {
-          throw new Error("Failed to fetch recent conversations");
-        }
-
-        setRecentConversations(await response.json());
-      } catch (error) {
-       // console.error("Error fetching recent conversations:", error);
+  const recentConversationsData = useQuery({
+    queryKey: ["recentConversations"],
+    queryFn: async () => {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/me`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      if (!response.ok) {
         Toast.show({
           type: "error",
           text1: "Couldn't load recent conversations",
           text2: "Please try again later.",
-        });
+        })
       }
-    };
-    convosFetch();
-  }, []);
+      const data = await response.json();
+      console.log(data);
+      return data as RecentConversation[];
+    },
+  });
 
- 
   useEffect(() => {
     Animated.parallel([
       Animated.timing(translateX, {
@@ -153,20 +149,20 @@ export default function Navbar({ visible, onClose }: Props) {
           <Text className="font-sans px-5 pt-4 pb-1 text-sm text-sidebar-foreground/60">Recent</Text>
 
           <View className="px-5 pl-4">
-            {recentConversations.map((convo) => (
+            {recentConversationsData.data?.map((convo) => (
               <Pressable
                 key={convo.id}
                 onPress={() => {
                   onClose();
                   router.push({
                     pathname: "/chatScreen",
-                    params: { conversationId: convo.id, title: convo.title },
+                    params: { conversationId: convo.id, title: convo.name },
                   });
                 }}
                 className="py-2"
               >
                 <Text className="font-sans text-base text-sidebar-foreground/60">
-                  {convo.title}
+                  {convo.name}
                 </Text>
               </Pressable>
             ))}
