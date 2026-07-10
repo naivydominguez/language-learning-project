@@ -33,7 +33,7 @@ export default function Navbar({ visible, onClose }: Props) {
   const overlayOpacity = useRef(new Animated.Value(0)).current;
 
   const recentConversationsData = useQuery({
-    queryKey: ["recentConversations"],
+    queryKey: ["recentConversations" , visible],
     queryFn: async () => {
       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/me`, {
         headers: {
@@ -52,7 +52,7 @@ export default function Navbar({ visible, onClose }: Props) {
       return data as RecentConversation[];
     },
   });
-
+  
   useEffect(() => {
     Animated.parallel([
       Animated.timing(translateX, {

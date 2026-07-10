@@ -26,37 +26,6 @@ export default function ChatScreen() {
   const [isWaiting, setIsWaiting] = React.useState(false);
   const hasSentInitial = React.useRef(false);
 
-  const createConversation = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            target_lang: "spanish", // Replace with your target language
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to create conversation");
-      }
-
-      return response.json();
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Error creating conversation",
-        text2: "Please try again later.",
-      });
-      //console.error("Error creating conversation:", error);
-      //throw error;
-    }
-  };
-
   const sendMessageToAI = async (
     context: string,
     conversationId: string,
@@ -92,41 +61,40 @@ export default function ChatScreen() {
     }
   };
 
-  const handleSend = async (messageText: string) => {
-    setIsWaiting(true);
+  const getbackendMessages = async (conversationId: string, accessToken: string) => {
     try {
-      const newMessage: Message = {
-        id: Date.now().toString() + messageText,
-        sender: "user",
-        messageContent: messageText,
-      };
-      setMessages((prev) => [...prev, newMessage]);
-      await new Promise<void>((resolve) => {
-        setTimeout(() => {
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: Date.now().toString() + `AI reply to: ${messageText}`,
-              messageContent: `AI reply to: ${messageText}`,
-              sender: "ai",
-            },
-          ]);
-          resolve();
-        }, 500);
-      });
-    }catch (error) {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/messages/${conversationId}`,
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch backend messages");
+      }
+      const data = await response.json();
+      const loaded: Message[] = data.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map((msg: any) => ({
+        id: msg.id,
+        sender: msg.sender,
+        messageContent: msg.content,
+      }));
+      setMessages(loaded);
+    } catch (error) {
       Toast.show({
         type: "error",
-        text1: "Error sending message",
+        text1: "Error fetching messages",
         text2: "Please try again later.",
       });
-     // console.error("Error sending message:", error);
-    } finally {
-      setIsWaiting(false);
+      //console.error("Error fetching messages:", error);
     }
   };
 
   const handleSendBackend = async (messageText: string) => {
+    if (!conversationId) {
+      Toast.show({
+        type: "error",
+        text1: "No active conversation",
+        text2: "Please start a new conversation from the home screen.",
+      });
+      return;
+    }
     setIsWaiting(true);
     try {
       const newMessage: Message = {
@@ -136,8 +104,6 @@ export default function ChatScreen() {
       };
       setMessages((prev) => [...prev, newMessage]);
 
-      const convoData = await createConversation();
-      const conversationId = convoData.id;
       const accessToken = "temporary-access-token"; // Replace with your actual access token
       const aiMessage = await sendMessageToAI(
         messageText,
@@ -165,9 +131,10 @@ export default function ChatScreen() {
   };
 
   React.useEffect(() => {
-    if (!hasSentInitial.current) {
+    if (hasSentInitial.current) return;
       hasSentInitial.current = true;
-      if (start) {
+      if (start || initialMessage) {
+        if (start){
         setMessages((prev) => [
           ...prev,
           {
@@ -178,10 +145,12 @@ export default function ChatScreen() {
         ]);
       }
       if (initialMessage) {
-        handleSend(initialMessage);
+        handleSendBackend(initialMessage);
       }
+    }else if (conversationId) {
+      getbackendMessages(conversationId, accessToken);
     }
-  }, [start, initialMessage]);
+  }, [start, initialMessage, conversationId]);
 
   return (
     <View className="flex-1 bg-background">

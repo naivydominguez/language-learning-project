@@ -5,6 +5,7 @@ import HamburgerButton from "../components/hamburgerBtn";
 import Navbar from "@/components/navbar";
 import Logo from "../components/logo";
 import ChatInputBar from "../components/ui/chatInputBar";
+import Toast from "react-native-toast-message";
 import React from "react";
 
 export default function HomePage() {
@@ -27,15 +28,42 @@ export default function HomePage() {
     setConvoStart(convStarters[Math.floor(Math.random() * convStarters.length)]);
   }, []);
 
-  const handleSend = (messageText: string) => {
+  const handleSend = async (messageText: string) => {
     const start = convStart; // Replace with your generated conversation start
     const title = messageText.split(" ").slice(0, 4).join(" ");
-    const conversationId = Date.now().toString();
 
-    router.push({
-      pathname: "/chatScreen",
-      params: { start, initialMessage: messageText, title, conversationId },
-    });
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/?starterPrompt=${encodeURIComponent(start)}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            target_lang: "spanish",
+            name: title // Replace with your target language
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to create conversation");
+      }
+
+      const convoData = await response.json();
+
+      router.push({
+        pathname: "/chatScreen",
+        params: { start, initialMessage: messageText, title, conversationId: convoData.id },
+      });
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error creating conversation",
+        text2: "Please try again later.",
+      });
+    }
   };
 
   return (
@@ -50,7 +78,7 @@ export default function HomePage() {
         <Logo size="lg" />
         <Text className="text-4xl font-bold text-black-500">Hello, Learner </Text>
         <View className="flex-row items-center justify-between w-full gap-2 p-2 bg-white rounded-lg mt-4">
-          <View>
+          <View className="w-full">
             {/* Place generated conversation start in here*/}
             <Text className="text-1xl">{convStart}</Text>
           </View>
