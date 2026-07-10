@@ -5,14 +5,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { View } from "react-native";
 import { Stack } from "expo-router";
 
-import HamburgerButton from "../components/hamburgerBtn";
-import Navbar from "@/components/navbar";
 
 import "../global.css";
 import Toast from "react-native-toast-message";
 
 export default function RootLayout() {
-  const [navOpen, setNavOpen] = React.useState(false);
 
   const queryClient = new QueryClient();
 

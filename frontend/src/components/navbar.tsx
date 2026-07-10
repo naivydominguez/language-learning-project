@@ -37,7 +37,6 @@ export default function Navbar({ visible, onClose }: Props) {
     const convosFetch = async () => {
       try {
         const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/me`, {
-          method: "get",
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
