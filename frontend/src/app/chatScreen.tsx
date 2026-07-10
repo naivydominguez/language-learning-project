@@ -5,6 +5,7 @@ import { ChevronLeft } from "lucide-react-native";
 import ChatInputBar from "../components/ui/chatInputBar";
 import MessageBubble from "../components/messageBubble";
 import { FlatList } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
 type Message = {
   id: string;
@@ -46,6 +47,11 @@ export default function ChatScreen() {
 
       return response.json();
     } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error creating conversation",
+        text2: "Please try again later.",
+      });
       console.error("Error creating conversation:", error);
       throw error;
     }
@@ -76,6 +82,11 @@ export default function ChatScreen() {
       }
       return response.json();
     } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error sending message",
+        text2: "Please try again later.",
+      });
       console.error("Error sending message:", error);
       throw error;
     }
@@ -103,6 +114,13 @@ export default function ChatScreen() {
           resolve();
         }, 500);
       });
+    }catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error sending message",
+        text2: "Please try again later.",
+      });
+      console.error("Error sending message:", error);
     } finally {
       setIsWaiting(false);
     }
@@ -134,6 +152,13 @@ export default function ChatScreen() {
           messageContent: aiMessage.content,
         },
       ]);
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error sending message",
+        text2: "Please try again later.",
+      });
+      console.error("Error sending message:", error);
     } finally {
       setIsWaiting(false);
     }

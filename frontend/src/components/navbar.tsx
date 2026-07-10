@@ -19,8 +19,6 @@ const NAV_ITEMS = [
   { label: "Progress", path: "/progress", icon: TrendingUp },
 ] as const;
 
-const RECENT_ITEMS = ["Conversation 1", "Conversation 2"];
-
 type RecentConversation = {
   id: string;
   title?: string;
