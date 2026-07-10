@@ -61,15 +61,13 @@ const MasteryDistribution = ({ axisTextStyles }: Props) => {
         />
       </View>
       <View className="flex flex-row justify-center gap-3 pr-8 text-sm text-foreground-tertiary">
-        {["New", "Learning", "Comfortable", "Mastered"].map(
-          (label, index) => (
-            <GraphLegendItem
-              key={label}
-              color={["#bfad9f", "#d67a4a", "#b5613a", "#6f3a22"][index]}
-              label={label}
-            />
-          ),
-        )}
+        {["New", "Learning", "Comfortable", "Mastered"].map((label, index) => (
+          <GraphLegendItem
+            key={label}
+            color={["#bfad9f", "#d67a4a", "#b5613a", "#6f3a22"][index]}
+            label={label}
+          />
+        ))}
       </View>
     </View>
   );
