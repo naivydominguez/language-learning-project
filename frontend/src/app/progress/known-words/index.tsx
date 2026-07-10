@@ -18,14 +18,21 @@ const knownWords = () => {
     queryKey: ["knownWords"],
     queryFn: async () => {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/known-words/me`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_known_words/me`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         },
       );
-      return response.json();
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch known words");
+      }
+
+      const data = await response.json();
+      console.log(data);
+      return data;
     },
   });
 

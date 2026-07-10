@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from backend.api.utils.supabase_client import supabase
-from backend.api.utils.user_id import TEST_USER_ID
+from api.utils.supabase_client import supabase
+from api.utils.user_id import TEST_USER_ID
 
 router = APIRouter(tags=["user-statistics"])
 
@@ -29,7 +29,7 @@ async def get_known_words_user_statistics(current_user_id: str = TEST_USER_ID):
 @router.get('/user_statistics/me')
 async def get_user_statistics(current_user_id: str = TEST_USER_ID):
     try:
-        response = supabase.table('temporal_user_statistics').select('*').eq('user_id', current_user_id).execute()
+        response = supabase.table('temporal_user_statistics').select('date', 'known_words', 'streak', 'number_messages').eq('user_id', current_user_id).order('date', desc=False).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

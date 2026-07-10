@@ -1,8 +1,10 @@
+import os
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 load_dotenv()
 
-from backend.api.routes import (
+from api.routes import (
     jpdb_router,
     conversations_router,
     language_tools_router,
@@ -15,6 +17,15 @@ from backend.api.routes import (
 )
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[os.getenv("FRONTEND_ORIGIN")],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(jpdb_router)
 app.include_router(conversations_router)
 app.include_router(language_tools_router)

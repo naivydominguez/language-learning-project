@@ -3,11 +3,13 @@ import { View, Text } from "react-native";
 interface Props {
   labelPretext?: string;
   units?: string;
+  offset?: number;
 }
 
 export default function PointerComponentCreator({
   labelPretext,
   units,
+  offset = 0,
 }: Props) {
   return function PointerComponent(dataPoints: any) {
     if (!dataPoints) return null;
@@ -18,10 +20,10 @@ export default function PointerComponentCreator({
     if (Array.isArray(dataPoints)) {
       if (!dataPoints[0]) return null;
       label = dataPoints[0].label;
-      value = dataPoints[0].value;
+      value = dataPoints[0].value + offset;
     } else {
       label = dataPoints.label;
-      value = dataPoints.value;
+      value = dataPoints.value + offset;
     }
 
     return (
