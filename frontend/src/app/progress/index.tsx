@@ -1,8 +1,8 @@
 import KnownWordsPreview from "@/components/knownWordsPreview";
-import MasteryDistribution from "@/components/masteryDistribution";
-import StreakCalendar from "@/components/streakCalendar";
-import VocabGraph from "@/components/vocabGraph";
-import WeeklyMessages from "@/components/weeklyMessages";
+import MasteryDistribution from "@/app/progress/_components/masteryDistribution";
+import StreakCalendar from "@/app/progress/_components/streakCalendar";
+import VocabGraph from "@/app/progress/_components/vocabGraph";
+import WeeklyMessages from "@/app/progress/_components/weeklyMessages";
 import { useQuery } from "@tanstack/react-query";
 import { ScrollView } from "react-native";
 
@@ -16,10 +16,9 @@ export type UserStatisticsResponse = {
   known_words: number;
   streak: boolean;
   number_messages: number;
-}
+};
 
 export default function ProgressRoute() {
-  
   const accessToken = "temp, TODO replace with actual token"; // TODO
 
   const { data, isLoading, error } = useQuery({

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text } from "react-native";
 import { BarChart } from "react-native-gifted-charts/dist/BarChart";
-import PointerComponentCreator from "./GraphPointerComponent";
+import PointerComponentCreator from "../../../components/GraphPointerComponent";
 import GraphLegendItem from "@/app/progress/_components/GraphLegendItem";
 import { useQuery } from "@tanstack/react-query";
 
@@ -33,7 +33,7 @@ const MasteryDistribution = ({ axisTextStyles }: Props) => {
     queryKey: ["masteryDistribution"],
     queryFn: async () => {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_mastery_distribution/me`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_known_words/mastery_distribution`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

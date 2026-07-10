@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
-import PointerComponentCreator from "./GraphPointerComponent";
+import PointerComponentCreator from "../../../components/GraphPointerComponent";
 import { UserStatisticsResponse } from "@/app/progress";
 
 interface Props {
