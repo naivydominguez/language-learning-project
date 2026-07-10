@@ -2,40 +2,49 @@ import { useState } from "react";
 import { View, Text } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
 import PointerComponentCreator from "./GraphPointerComponent";
-
-const POINTER_CONFIG = {
-  activatePointersOnLongPress: true,
-  showPointerStrip: false,
-  pointerComponent: PointerComponentCreator({
-    units: "words",
-  }),
-  autoAdjustPointerLabelPosition: true,
-};
+import { UserStatisticsResponse } from "@/app/progress";
 
 interface Props {
+  data: UserStatisticsResponse[];
   axisTextStyles: {
     color: string;
     fontSize: number;
   };
 }
 
-const VocabGraph = ({ axisTextStyles }: Props) => {
+const VocabGraph = ({ data: userData, axisTextStyles }: Props) => {
   const [chartWidth, setChartWidth] = useState(0);
-  // TODO: Load data from backend
-  // map: data -> label, number of words -> value
 
-  const data = [
-    { label: "", value: 14 },
-    { label: "May 3", value: 31 },
-    { label: "May 10", value: 52 },
-    { label: "May 17", value: 78 },
-    { label: "May 24", value: 103 },
-    { label: "May 31", value: 128 },
-    { label: "Jun 7", value: 156 },
-    { label: "Jun 14", value: 178 },
-    { label: "Jun 21", value: 198 },
-    { label: "Jun 28", value: 218 },
-  ];
+  const data = userData
+    .filter((_, index) => {
+      const overOneMonthOfEntries = userData.length > 30;
+      if (!overOneMonthOfEntries) {
+        return true;
+      } else {
+        if (index % 7 === 0) {
+          return true;
+        }
+      }
+    })
+    .map((item) => ({
+      label: new Date(item.date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+      value: item.known_words,
+    }));
+  const minValue = Math.min(...data.map((item) => item.value));
+  const maxValue = Math.max(...data.map((item) => item.value));
+
+  const pointerConfig = {
+    activatePointersOnLongPress: true,
+    showPointerStrip: false,
+    pointerComponent: PointerComponentCreator({
+      units: "words",
+      offset: minValue,
+    }),
+    autoAdjustPointerLabelPosition: true,
+  };
 
   return (
     <View className="w-full h-max flex flex-col bg-white p-4 rounded-md border border-background-dark">
@@ -54,6 +63,8 @@ const VocabGraph = ({ axisTextStyles }: Props) => {
           endOpacity={0}
           width={chartWidth - 40} // subtract 40 to account for the space that the y-axis labels take up
           height={120}
+          yAxisOffset={minValue}
+          maxValue={maxValue - minValue}
           initialSpacing={0}
           endSpacing={0}
           noOfSections={4}
@@ -62,7 +73,7 @@ const VocabGraph = ({ axisTextStyles }: Props) => {
             ...axisTextStyles,
             transform: [{ translateX: 0 }],
           }}
-          pointerConfig={POINTER_CONFIG}
+          pointerConfig={pointerConfig}
         />
       </View>
     </View>

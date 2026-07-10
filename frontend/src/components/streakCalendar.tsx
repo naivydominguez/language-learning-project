@@ -1,5 +1,6 @@
 import { View, Text } from "react-native";
 import { WeeklyHeatMap } from "@symbiot.dev/react-native-heatmap";
+import { UserStatisticsResponse } from "@/app/progress";
 
 const HEATMAP_COLORS = {
   cellDefaultColor: "#faf7f4", // background-light
@@ -13,15 +14,14 @@ const HEATMAP_COLORS = {
   headerTextColor: "#bfad9f", // foreground-tertiary
 };
 
-const StreakCalendar = () => {
-  // Query server for streak data: get back an array of booleans representing streak completions.
-  // We can count backwards from the current data to fill the whole calendar grid.
-  // (For now, we have a mock list of dates)
-  const streakDays = [
-    new Date(),
-    new Date(Date.now() - 86400000),
-    new Date(Date.now() - 172800000),
-  ];
+interface Props {
+  data: UserStatisticsResponse[];
+}
+
+const StreakCalendar = ({ data }: Props) => {
+  const streakDays = data
+    .filter((stat) => stat.streak)
+    .map((stat) => new Date(stat.date));
 
   return (
     <View className="w-full h-max flex flex-col bg-white p-4 rounded-md border border-background-dark">
@@ -30,7 +30,9 @@ const StreakCalendar = () => {
           {/* TODO: fire icon */}
           <Text className="font-bold text-xl">12 day streak</Text>
         </View>
-        <Text className="text-sm font-light text-foreground-secondary/100">Longest: 15 days</Text>
+        <Text className="text-sm font-light text-foreground-secondary/100">
+          Longest: 15 days
+        </Text>
       </View>
       <WeeklyHeatMap
         data={streakDays}
