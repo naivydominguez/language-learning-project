@@ -15,7 +15,7 @@ router=APIRouter(prefix="/conversations", tags=["conversations"])
 
 class CreateConversationRequest(BaseModel):
     target_lang: str
-    name : str | None = None
+    name: str | None = None
     
 class ConversationResponse(BaseModel):
     id: UUID
@@ -36,7 +36,7 @@ class MessageResponse(BaseModel):
     unknown_words: list[str]
     
 @router.post("/", response_model=ConversationResponse)
-def create_conversation(request: CreateConversationRequest, starterPrompt, user_id: str = TEST_USER_ID):
+def create_conversation(request: CreateConversationRequest, starterPrompt: str, user_id: str = TEST_USER_ID):
     language_response = supabase.table("languages").select("id").eq("name", request.target_lang).execute()
     if not language_response.data:
         raise HTTPException(status_code=400, detail=f"Unknown language: {request.target_lang}")
@@ -57,7 +57,7 @@ def create_conversation(request: CreateConversationRequest, starterPrompt, user_
     try:
         supabase.table("messages").insert({
             "conversation_id": str(conversation_id),
-            "sender": "AI",
+            "sender": "ai",
             "content": starterPrompt,
         }).execute()
     except Exception as e:
@@ -156,7 +156,7 @@ def send_message(conversation_id: UUID, request: SendMessageRequest, user_id: st
 @router.get('/me')
 async def get_conversation(current_user_id: str = TEST_USER_ID):
     try:
-        response = supabase.table('conversations').select('*').eq('user_id', current_user_id).execute()
+        response = supabase.table('conversations').select('*').eq('user_id', current_user_id).order('created_at', desc=True).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
