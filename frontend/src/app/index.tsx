@@ -2,7 +2,7 @@
 import { View } from "react-native";
 import { Redirect } from "expo-router"; // N
 import ChatScreen from "./chatScreen";
-import HomePage from "@/components/homePage";
+import HomePage from "./homePage";
 
 // import ChatScreen from "@/components/chatScreen";
 

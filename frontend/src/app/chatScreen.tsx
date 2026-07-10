@@ -5,17 +5,19 @@ import { ChevronLeft } from "lucide-react-native";
 import ChatInputBar from "../components/ui/chatInputBar";
 import MessageBubble from "../components/messageBubble";
 import { FlatList } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
 type Message = {
   id: string;
   sender: "user" | "ai";
   messageContent: string;
 };
+const accessToken = ""; // Replace with your actual access token
 
 export default function ChatScreen() {
   const router = useRouter();
-  const { start, initialMessage, title } = useLocalSearchParams<{
-    start?: string;
+  const { start,initialMessage, title, conversationId } = useLocalSearchParams<{
+    start? :string;
     initialMessage?: string;
     title?: string;
     conversationId?: string;
@@ -34,7 +36,7 @@ export default function ChatScreen() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            target_lang: "Spanish", // Replace with your target language
+            target_lang: "spanish", // Replace with your target language
           }),
         },
       );
@@ -45,8 +47,13 @@ export default function ChatScreen() {
 
       return response.json();
     } catch (error) {
-      console.error("Error creating conversation:", error);
-      throw error;
+      Toast.show({
+        type: "error",
+        text1: "Error creating conversation",
+        text2: "Please try again later.",
+      });
+      //console.error("Error creating conversation:", error);
+      //throw error;
     }
   };
 
@@ -75,8 +82,13 @@ export default function ChatScreen() {
       }
       return response.json();
     } catch (error) {
-      console.error("Error sending message:", error);
-      throw error;
+      Toast.show({
+        type: "error",
+        text1: "Error sending message",
+        text2: "Please try again later.",
+      });
+    //  console.error("Error sending message:", error);
+    //  throw error;
     }
   };
 
@@ -102,6 +114,13 @@ export default function ChatScreen() {
           resolve();
         }, 500);
       });
+    }catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error sending message",
+        text2: "Please try again later.",
+      });
+     // console.error("Error sending message:", error);
     } finally {
       setIsWaiting(false);
     }
@@ -133,6 +152,13 @@ export default function ChatScreen() {
           messageContent: aiMessage.content,
         },
       ]);
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error sending message",
+        text2: "Please try again later.",
+      });
+      //console.error("Error sending message:", error);
     } finally {
       setIsWaiting(false);
     }
@@ -162,7 +188,10 @@ export default function ChatScreen() {
       <View
         className="flex-row items-center gap-2 mb-4 bg-white border-shadow border-border pl-4 pb-2"
         style={{ paddingTop: 60 }}
-      >
+      > 
+       <Pressable onPress={() => router.push("/homePage")} className="p-2">
+          <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
+        </Pressable>
         {title ? (
           <Text className="font-sans text-lg font-semibold text-foreground mb-2">
             {title}
@@ -176,7 +205,7 @@ export default function ChatScreen() {
         contentContainerStyle={{ padding: 16, gap: 8 }}
         className="p-4"
       />
-      <ChatInputBar onSend={handleSend} isWaiting={isWaiting} />
+      <ChatInputBar onSend={handleSendBackend} isWaiting={isWaiting} />
     </View>
   );
 }
