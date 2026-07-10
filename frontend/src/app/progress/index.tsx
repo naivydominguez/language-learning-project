@@ -23,7 +23,7 @@ export type UserStatisticsResponse = {
 export default function ProgressRoute() {
   const accessToken = "temp, TODO replace with actual token"; // TODO
 
-  const { data, isLoading, error } = useQuery({
+  const statsData = useQuery({
     queryKey: ["temporalUserStatistics"],
     queryFn: async () => {
       const response = await fetch(
@@ -44,6 +44,53 @@ export default function ProgressRoute() {
     },
   });
 
+  const wordsData = useQuery({
+    queryKey: ["knownWords10Recent"],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set("limit", "10");
+      params.set("sort_by", "recent");
+
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_known_words/me?${params.toString()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch known words");
+      }
+
+      const data = await response.json();
+      return data;
+    },
+  });
+
+  const wordsCountData = useQuery({
+    queryKey: ["knownWordsCount"],
+    queryFn: async () => {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_known_words/count`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch known words count");
+      }
+
+      const data = await response.json();
+      console.log(data)
+      return data;
+    },
+  });
+
   const router = useRouter();
 
   return (
@@ -55,11 +102,20 @@ export default function ProgressRoute() {
         <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
       </Pressable>
 
-      <StreakCalendar data={data ?? []} />
-      <VocabGraph data={data ?? []} axisTextStyles={AXIS_TEXT_STYLES} />
-      <WeeklyMessages data={data ?? []} axisTextStyles={AXIS_TEXT_STYLES} />
+      <StreakCalendar data={statsData.data ?? []} />
+      <VocabGraph
+        data={statsData.data ?? []}
+        axisTextStyles={AXIS_TEXT_STYLES}
+      />
+      <WeeklyMessages
+        data={statsData.data ?? []}
+        axisTextStyles={AXIS_TEXT_STYLES}
+      />
       <MasteryDistribution axisTextStyles={AXIS_TEXT_STYLES} />
-      <KnownWordsPreview />
+      <KnownWordsPreview
+        numWords={wordsCountData.data?.count || 0}
+        mostRecentWords={wordsData.data ?? []}
+      />
     </ScrollView>
   );
 }
