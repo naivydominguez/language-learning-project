@@ -4,6 +4,7 @@ To test locally:
 ```
 python3 -m venv venv
 source venv/bin/activate
+windows: .\venv\Scripts\Activate.ps1
 pip install -r backend/requirements.txt
 
 cd frontend
@@ -28,7 +29,10 @@ Open two terminals and run the commands (commands start from root dir):
 # Terminal 1
 cd backend
 source venv/bin/activate
+windows: ..\venv\Scripts\Activate.ps1
 uvicorn main:app --reload
+
+
 ```
 
 ```
