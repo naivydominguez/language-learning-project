@@ -33,7 +33,7 @@ const MasteryDistribution = ({ axisTextStyles }: Props) => {
     queryKey: ["masteryDistribution"],
     queryFn: async () => {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_known_words/mastery_distribution`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_known_words/mastery_level`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -46,6 +46,7 @@ const MasteryDistribution = ({ axisTextStyles }: Props) => {
       }
 
       const data = await response.json();
+      console.log(data)
       return data;
     },
   });
