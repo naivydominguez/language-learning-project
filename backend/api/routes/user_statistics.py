@@ -12,6 +12,9 @@ class StatsCreate(BaseModel):
     number_messages: int
     steak: bool
 
+class StreakCreate(BaseModel):
+    time_logged: int
+
 
 @router.get('/known_words_user_statistics/me')
 async def get_known_words_user_statistics(current_user = Depends(get_current_user)):
@@ -51,5 +54,33 @@ async def post_user_statistics(stat: StatsCreate, current_user = Depends(get_cur
 
     if not response.data:
         raise HTTPException(status_code=400, detail="Insert failed")
+
+    return response.data
+
+@router.post('/streak', status_code=201)
+async def post_streak(time: StreakCreate, current_user = Depends(get_current_user)):
+    data = time.model_dump()
+    data['user_id'] = current_user.id
+
+    try:
+        response = supabase.table('temporal_user_statistics').insert(data).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    if not response.data:
+        raise HTTPException(status_code=400, detail="Insert failed")
+
+    return response.data
+
+
+@router.patch('/streak')
+async def patch_streak(time: StreakCreate, current_user = Depends(get_current_user)):
+    try:
+        response = supabase.table('temporal_user_statistics').update(time.model_dump()).eq('user_id', current_user.id).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    if not response.data:
+        raise HTTPException(status_code=400, detail="Update failed")
 
     return response.data
