@@ -35,7 +35,7 @@ async def post_known_words(userknownwords: UserKnownWords, current_user = Depend
     data['user_id'] = current_user.id
 
     try:
-        response = supabase.table('user_known_words').insert(data).execute()
+        response = supabase.table('user_words').insert(data).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -83,7 +83,7 @@ async def get_words(
 @router.delete('/{word_id}', status_code=204)
 async def delete_known_word(word_id: str, current_user = Depends(get_current_user)):
     try:
-        supabase.table('user_known_words').delete().eq('word_id', word_id).eq('user_id', current_user.id).execute()
+        supabase.table('user_words').delete().eq('word_id', word_id).eq('user_id', current_user.id).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

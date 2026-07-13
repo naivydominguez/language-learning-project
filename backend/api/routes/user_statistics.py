@@ -16,7 +16,7 @@ class StatsCreate(BaseModel):
 @router.get('/known_words_user_statistics/me')
 async def get_known_words_user_statistics(current_user = Depends(get_current_user)):
     try:
-        response = supabase.table('temporal_user_statistics').select('known_words').eq('user_id', current_user.id).execute()
+        response = supabase.table('temporal_user_statistics').select('words').eq('user_id', current_user.id).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
