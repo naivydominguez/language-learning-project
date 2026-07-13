@@ -78,7 +78,7 @@ export default function HomePage() {
         <Logo size="lg" />
         <Text className="text-4xl font-bold text-black-500">Hello, Learner </Text>
         <View className="flex-row items-center justify-between w-full gap-2 p-2 bg-white rounded-lg mt-4">
-          <View className="w-full">
+          <View className="w-80%">
             {/* Place generated conversation start in here*/}
             <Text className="text-1xl">{convStart}</Text>
           </View>
