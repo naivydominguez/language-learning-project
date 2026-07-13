@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 from backend.api.utils.auth import get_current_user
 from backend.api.utils.supabase_client import supabase
-
+from datetime import date
 router = APIRouter(tags=["user-statistics"])
 
 
@@ -59,28 +59,48 @@ async def post_user_statistics(stat: StatsCreate, current_user = Depends(get_cur
 
 @router.post('/streak', status_code=201)
 async def post_streak(time: StreakCreate, current_user = Depends(get_current_user)):
-    data = time.model_dump()
-    data['user_id'] = current_user.id
+    today = date.today().isoformat()
 
     try:
-        response = supabase.table('temporal_user_statistics').insert(data).execute()
+        existing = (
+            supabase.table('temporal_user_statistics')
+            .select('id, time_logged')
+            .eq('user_id', current_user.id)
+            .eq('date', today)
+            .execute()
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+    if existing.data:
+        current_total = existing.data[0]['time_logged']
+        row_id = existing.data[0]['id']
+
+        try:
+            response = (
+                supabase.table('temporal_user_statistics')
+                .update({'time_logged': current_total + time.time_logged})
+                .eq('id', row_id)
+                .execute()
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    else:
+        try:
+            response = (
+                supabase.table('temporal_user_statistics')
+                .insert({
+                    'user_id': current_user.id,
+                    'date': today,
+                    'time_logged': time.time_logged,
+                })
+                .execute()
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
     if not response.data:
-        raise HTTPException(status_code=400, detail="Insert failed")
-
-    return response.data
-
-
-@router.patch('/streak')
-async def patch_streak(time: StreakCreate, current_user = Depends(get_current_user)):
-    try:
-        response = supabase.table('temporal_user_statistics').update(time.model_dump()).eq('user_id', current_user.id).execute()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-    if not response.data:
-        raise HTTPException(status_code=400, detail="Update failed")
+        raise HTTPException(status_code=400, detail="Failed to log time")
 
     return response.data
