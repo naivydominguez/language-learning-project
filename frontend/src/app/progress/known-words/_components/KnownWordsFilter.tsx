@@ -1,13 +1,10 @@
 import Searchbar from "@/components/Searchbar";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { View } from "react-native";
+import { FilterArgs } from "..";
 
 interface Props {
-  onFilter: (
-    sortType: "recent" | "alphabetical" | "mastery",
-    searchTerm?: string,
-    languageCode?: string,
-  ) => void;
+  onFilter: (filter: FilterArgs) => void;
 }
 
 const KnownWordsFilter = ({ onFilter }: Props) => {
@@ -19,7 +16,7 @@ const KnownWordsFilter = ({ onFilter }: Props) => {
     undefined,
   );
 
-  const updateFilter = ({
+  const updateFilter = useCallback(({
     sort,
     search,
     language,
@@ -28,19 +25,31 @@ const KnownWordsFilter = ({ onFilter }: Props) => {
     search?: string;
     language?: string;
   }) => {
-    if (sort) setSortType(sort);
-    if (search !== undefined) setSearchTerm(search);
-    if (language !== undefined) setLanguageCode(language);
+    const newSortType = sort ?? sortType;
+    const newSearch = search !== undefined ? search : searchTerm;
+    const newLanguage = language !== undefined ? language : languageCode;
 
-    onFilter(sortType || "recent", searchTerm || "", languageCode);
-  };
+    if (sort) setSortType(newSortType);
+    if (search !== undefined) setSearchTerm(newSearch);
+    if (language !== undefined) setLanguageCode(newLanguage);
+
+    onFilter({
+      sortType: newSortType,
+      searchTerm: newSearch,
+      languageCode: newLanguage,
+    });
+  }, [onFilter, sortType, searchTerm, languageCode]);
+
+  const onSearch = useCallback(
+    (search: string) => {
+      updateFilter({ search });
+    },
+    [updateFilter],
+  );
 
   return (
-    <View>
-      <Searchbar
-        searchPrompt="Search words..."
-        onSearch={(search) => updateFilter({ search })}
-      />
+    <View className="mx-6 my-2">
+      <Searchbar searchPrompt="Search words..." onSearch={onSearch} />
     </View>
   );
 };

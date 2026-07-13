@@ -14,7 +14,7 @@ const KnownWordItem = ({
   mastery,
 }: Props) => {
   return (
-    <View className="w-full flex flex-col gap-2 py-4">
+    <View className="w-full flex flex-col gap-2 px-6 py-4">
       <View className="w-full flex flex-row items-center justify-between">
         <View className="flex flex-row gap-1 items-end">
           <Text

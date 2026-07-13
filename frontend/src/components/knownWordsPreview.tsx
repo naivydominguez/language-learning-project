@@ -3,21 +3,22 @@ import { useRouter } from "expo-router";
 import KnownWordsPill from "@/app/progress/_components/KnownWordsPill";
 import { ChevronRight } from "lucide-react-native";
 
-const KnownWordsPreview = () => {
+
+
+interface Props {
+  numWords: number;
+  mostRecentWords: { word: string; translation: string }[];
+}
+
+const KnownWordsPreview = ({ numWords, mostRecentWords }: Props) => {
   const router = useRouter();
 
   const navigateToKnownWords = () => {
     router.push("/progress/known-words");
   };
 
-  const mostRecentWords = [
-    { word: "Bonjour", translation: "Hello" },
-    { word: "Merci", translation: "Thank you" },
-    { word: "Hi", translation: "Goodbye" },
-    { word: "Au revoir", translation: "Goodbye" },
-  ];
-
-  const numKnownWords = 244; // This should be fetched from your data source
+  const numKnownWords = numWords; 
+  const numNotDisplayedWords = Math.max(numKnownWords - mostRecentWords.length, 0); // Floor at 0 to avoid negative numbers during loading
 
   return (
     <View className="w-full h-max flex flex-col bg-white p-4 rounded-md border border-background-dark">
@@ -37,7 +38,7 @@ const KnownWordsPreview = () => {
           <KnownWordsPill key={word} word={word} translation={translation} />
         ))}
         <Text className="text-sm text-foreground-secondary/80">
-          +{numKnownWords - mostRecentWords.length} more
+          +{numNotDisplayedWords} more
         </Text>
       </View>
     </View>
