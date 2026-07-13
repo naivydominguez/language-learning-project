@@ -98,7 +98,7 @@ def send_message(conversation_id: UUID, request: SendMessageRequest, user_id: st
         if known_word_ids:
             
             known_words_response = (
-                supabase.table("known_words")
+                supabase.table("words")
                 .select("word")
                 .eq("language_id", language_id)
                 .in_("id", known_word_ids)

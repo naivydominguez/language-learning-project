@@ -22,7 +22,7 @@ async def post_known_words(knownwords: KnownWords, current_user = Depends(get_cu
     data['user_id'] = current_user.id
 
     try:
-        response = supabase.table('known_words').insert(data).execute()
+        response = supabase.table('words').insert(data).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -32,10 +32,10 @@ async def post_known_words(knownwords: KnownWords, current_user = Depends(get_cu
     return response.data
 
 
-@router.get('/me')
+@router.get('/')
 async def get_words(current_user = Depends(get_current_user)):
     try:
-        response = supabase.table('known_words').select('*').eq('user_id', current_user.id).execute()
+        response = supabase.table('words').select('*').execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
