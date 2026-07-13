@@ -29,7 +29,7 @@ export default function ChatInputBar({ onSend, isWaiting = false }: Props) {
                     className="flex-1 text-base text-foreground px-4 py-3 mr-2 rounded-xl bg-white max-h-32 p-2"
                     value={message}
                     onChangeText={setMessage}
-                    placeholder="Message Immer bot..."
+                    placeholder="Message Immerbot..."
                     placeholderTextColor="#8C6E60"
                     multiline
                     textAlignVertical="top"

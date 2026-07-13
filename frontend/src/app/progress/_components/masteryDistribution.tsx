@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { View, Text } from "react-native";
 import { BarChart } from "react-native-gifted-charts/dist/BarChart";
-import PointerComponentCreator from "./GraphPointerComponent";
+import PointerComponentCreator from "../../../components/GraphPointerComponent";
 import GraphLegendItem from "@/app/progress/_components/GraphLegendItem";
+import { useQuery } from "@tanstack/react-query";
 
 const POINTER_CONFIG = {
   activatePointersOnLongPress: true,
@@ -26,15 +27,46 @@ interface Props {
 const MasteryDistribution = ({ axisTextStyles }: Props) => {
   const [chartWidth, setChartWidth] = useState(0);
 
-  const data = [
-    { label: String(1), value: 10, frontColor: "#bfad9f" }, // foreground-tertiary
-    { label: String(2), value: 20, frontColor: "#d67a4a" }, // primary-light
-    { label: String(3), value: 35, frontColor: "#d67a4a" }, // primary-light
-    { label: String(4), value: 40, frontColor: "#b5613a" }, // primary
-    { label: String(5), value: 50, frontColor: "#b5613a" }, // primary
-    { label: String(6), value: 14, frontColor: "#6f3a22" }, // primary-dark
-    { label: String(7), value: 7, frontColor: "#6f3a22" }, // primary-dark
-  ];
+  const accessToken = "temp"; // TODO: replace with supabase token
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["masteryDistribution"],
+    queryFn: async () => {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_known_words/mastery_level`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch mastery distribution");
+      }
+
+      const data = await response.json();
+      return data;
+    },
+  });
+
+  const masteryData = data
+    ?.sort(
+      (a: { mastery_level: number }, b: { mastery_level: number }) =>
+        a.mastery_level - b.mastery_level,
+    )
+    .map((item: { mastery_level: number; count: number }) => ({
+      label: String(item.mastery_level),
+      value: item.count,
+      frontColor:
+        item.mastery_level === 1
+          ? "#bfad9f" // foreground-tertiary
+          : item.mastery_level === 2 || item.mastery_level === 3
+            ? "#d67a4a" // primary-light
+            : item.mastery_level === 4 || item.mastery_level === 5
+              ? "#b5613a" // primary
+              : "#6f3a22", // primary-dark
+    }));
 
   return (
     <View className="w-full h-max flex flex-col bg-white p-4 pr-0 rounded-md border border-background-dark">
@@ -44,7 +76,7 @@ const MasteryDistribution = ({ axisTextStyles }: Props) => {
         onLayout={(e) => setChartWidth(e.nativeEvent.layout.width)}
       >
         <BarChart
-          data={data}
+          data={masteryData}
           adjustToWidth
           disableScroll
           parentWidth={chartWidth}
