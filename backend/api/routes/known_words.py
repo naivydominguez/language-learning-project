@@ -3,8 +3,8 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from backend.api.utils.auth import get_current_user
-from backend.api.utils.supabase_client import supabase
+from api.utils.auth import get_current_user
+from api.utils.supabase_client import supabase
 
 router = APIRouter(prefix="/known_words", tags=["known-words"])
 
