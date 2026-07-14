@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Text } from "./Text";
+import { Text } from "@/components/Text";
 
 interface Props {
   labelPretext?: string;

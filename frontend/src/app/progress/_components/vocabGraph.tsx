@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View } from "react-native";
 import { Text } from "@/components/Text";
 import { LineChart } from "react-native-gifted-charts";
-import PointerComponentCreator from "../../../components/GraphPointerComponent";
+import PointerComponentCreator from "../_components/GraphPointerComponent";
 import { UserStatisticsResponse } from "@/app/progress";
 
 interface Props {
