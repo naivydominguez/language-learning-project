@@ -1,5 +1,6 @@
+import Text from "@/components/Text";
 import React from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 
 type Message = {
   id: string;
@@ -18,6 +19,7 @@ export default function MessageBubble({ message, onWordPress }: MessageBubblePro
   return (
     <View className={`w-full flex-row mb-2 items-end  ${isUser ? "justify-end" : "justify-start"}`}>
      
+<<<<<<< HEAD:frontend/src/components/messageBubble.tsx
       <View className={`max-w-[80%] rounded-xl px-4 py-3 ${isUser ? "bg-accent-subtle" : "bg-surface"} ${isUser ? "rounded-tr-none" : "rounded-tl-none"}`}>
         <Text className={`text-base ${isUser ? "text-accent-subtle-fg" : "text-foreground"}`}>
           {words.map((word, index) => {
@@ -28,6 +30,10 @@ export default function MessageBubble({ message, onWordPress }: MessageBubblePro
               }
             })}
           </Text>
+=======
+      <View className={`max-w-[80%] rounded-xl px-4 py-3 ${isUser ? "bg-[#f4d6c6]" : "bg-white"} ${isUser ? "rounded-tr-none" : "rounded-tl-none"}`}>
+        <Text className={`text-base ${isUser ? "text-primary-dark" : "text-foreground"}`}>{message.messageContent}</Text>
+>>>>>>> origin/main:frontend/src/app/chat/_components/MessageBubble.tsx
       </View>
       
     </View>

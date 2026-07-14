@@ -4,8 +4,14 @@ from pydantic import BaseModel
 from datetime import datetime, timezone
 from uuid import UUID
 from supabase import create_client, Client
+<<<<<<< HEAD
 from api.utils.supabase_client import supabase
 from api.utils.user_id import TEST_USER_ID
+=======
+from api.utils.auth import get_current_user
+from api.utils.supabase_client import supabase
+from api.utils.user_id import get_user_id
+>>>>>>> origin/main
 from chatbot.generation import generate_response
 
 UNKNOWN_WORDS_PERCENTAGE = 10

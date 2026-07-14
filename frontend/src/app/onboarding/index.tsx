@@ -1,20 +1,19 @@
-import { View, Text } from "react-native";
+import { View } from "react-native";
+import { Text } from "@/components/Text";
 import { router } from "expo-router";
-import OnboardingButton from "@/components/onboardingButton";
-import InfoCard from "@/components/infoCard";
+import OnboardingButton from "./_components/OnboardingButton";
+import InfoCard from "@/app/onboarding/_components/InfoCard";
 import { BookOpen, MessageCircle, Sparkles } from "lucide-react-native";
-
 
 export default function OnboardingIndex() {
   return (
-    
     <View className="flex-1 justify-between p-8 bg-[#F8F3EF]">
       <View>
-        <Text className="text-[#B8663A] font-bold tracking-widest mb-4">
+        <Text weight="bold" className="text-[#B8663A] tracking-widest mb-4">
           THE SCIENCE
         </Text>
 
-        <Text className="text-4xl font-bold mb-6">
+        <Text weight="bold" className="text-4xl mb-6">
           Language is acquired, not studied.
         </Text>
 

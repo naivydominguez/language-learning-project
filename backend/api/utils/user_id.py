@@ -1,10 +1,13 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from api.utils.supabase_client import supabase
+<<<<<<< HEAD
 
 # Testing-branch only: static user id used in place of real auth (see
 # backend/api/routes/*.py). Do not merge into main.
 TEST_USER_ID = "11111111-1111-1111-1111-111111111111"
+=======
+>>>>>>> origin/main
 
 bearer_scheme = HTTPBearer()
 

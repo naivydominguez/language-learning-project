@@ -2,8 +2,13 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 from backend.api.utils.auth import get_current_user
 from backend.api.utils.supabase_client import supabase
+=======
+from api.utils.auth import get_current_user
+from api.utils.supabase_client import supabase
+>>>>>>> origin/main
 from datetime import date
 =======
 from api.utils.supabase_client import supabase

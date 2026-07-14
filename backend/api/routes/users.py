@@ -2,8 +2,13 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 
+<<<<<<< HEAD
 from api.utils.supabase_client import supabase
 from api.utils.user_id import TEST_USER_ID
+=======
+from api.utils.auth import get_current_user
+from api.utils.supabase_client import supabase
+>>>>>>> origin/main
 
 router = APIRouter(prefix="/users", tags=["users"])
 

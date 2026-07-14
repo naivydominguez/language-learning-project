@@ -7,7 +7,11 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
+<<<<<<< HEAD
 from api.utils.user_id import TEST_USER_ID
+=======
+from api.utils.user_id import get_user_id
+>>>>>>> origin/main
 from db.db_models import User, UserKnownWord, Word
 from db.session import get_db_session
 

@@ -2,8 +2,13 @@ from datetime import datetime
 from enum import Enum
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
+<<<<<<< HEAD
 from api.utils.supabase_client import supabase
 from api.utils.user_id import TEST_USER_ID
+=======
+from api.utils.auth import get_current_user
+from api.utils.supabase_client import supabase
+>>>>>>> origin/main
 
 router = APIRouter(prefix="/user_known_words", tags=["user-known-words"])
 
