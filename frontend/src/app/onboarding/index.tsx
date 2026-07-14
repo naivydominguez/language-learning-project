@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { Text } from "@/components/Text";
 import { router } from "expo-router";
-import OnboardingButton from "@/components/OnboardingButton";
+import OnboardingButton from "./_components/OnboardingButton";
 import InfoCard from "@/app/onboarding/_components/InfoCard";
 import { BookOpen, MessageCircle, Sparkles } from "lucide-react-native";
 

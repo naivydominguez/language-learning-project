@@ -4,7 +4,7 @@ import { Text } from "../../components/Text";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import ChatInputBar from "./_components/ChatInputBar";
-import MessageBubble from "../../components/MessageBubble";
+import MessageBubble from "./_components/MessageBubble";
 import { FlatList } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 
