@@ -58,19 +58,6 @@ module.exports = {
         "info-light": "rgb(var(--info-light) / <alpha-value>)",
         info: "rgb(var(--info) / <alpha-value>)",
         "info-dark": "rgb(var(--info-dark) / <alpha-value>)",
-
-        // ── Sidebar ──────────────────────────────
-        sidebar: "rgb(var(--sidebar) / <alpha-value>)",
-        "sidebar-foreground": "rgb(var(--sidebar-foreground) / <alpha-value>)",
-        "sidebar-border": "rgb(var(--sidebar-border) / <alpha-value>)",
-        "sidebar-accent": "rgb(var(--sidebar-accent) / <alpha-value>)",
-        "sidebar-accent-foreground":
-          "rgb(var(--sidebar-accent-foreground) / <alpha-value>)",
-
-        // ── Chat bubbles ─────────────────────────
-        surface: "rgb(var(--surface) / <alpha-value>)",
-        "accent-subtle": "rgb(var(--accent-subtle) / <alpha-value>)",
-        "accent-subtle-fg": "rgb(var(--accent-subtle-fg) / <alpha-value>)",
       },
       boxShadow: {
         xs: "var(--shadow-xs)",

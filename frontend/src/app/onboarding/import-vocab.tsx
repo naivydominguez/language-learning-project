@@ -1,7 +1,8 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Pressable } from "react-native";
+import { Text } from "@/components/Text";
 import { ArrowLeft } from "lucide-react-native";
 import { router } from "expo-router";
-import OnboardingButton from "@/components/onboardingButton";
+import OnboardingButton from "./_components/OnboardingButton";
 import { OnboardingColors } from "@/constants/onboardingTheme";
 import { useState } from "react";
 import { Check } from "lucide-react-native";
@@ -46,7 +47,7 @@ export default function LanguageSelections() {
         </View>
         
 
-        <Text className="text-3xl font-bold mb-3">
+        <Text weight="bold" className="text-3xl mb-3">
           Import your vocabulary
         </Text>
 
@@ -66,7 +67,7 @@ export default function LanguageSelections() {
                     : "border-[#E4E1DF] bg-white"
                 }`}>
                     <View className="flex-1">
-                        <Text className="text-[18px] font-bold text-[#4A2A1F]">{option.title}</Text>
+                        <Text weight="bold" className="text-[18px] text-[#4A2A1F]">{option.title}</Text>
                         <Text className="mt-2 text-[15px] text-[#8F7164]">{option.subtitle}</Text>
                     </View>
 
@@ -90,7 +91,7 @@ export default function LanguageSelections() {
         onPress={() => router.push("/")}
       />
 
-      <Pressable onPress={()=> router.push("/chatScreen")}>
+      <Pressable onPress={()=> router.push("/")}>
       <Text className={"mt-3 text-xl text-[#8C6E60] text-center"}>
             Skip for now
         </Text>

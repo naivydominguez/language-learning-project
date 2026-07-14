@@ -1,4 +1,5 @@
-import { View, Text } from "react-native";
+import { View } from "react-native";
+import { Text } from "./Text";
 
 const SIZES = {
   sm: { padding: "p-1", fontSize: "text-base" },
@@ -13,7 +14,7 @@ type LogoProps = {
 function Logo({ size = "md" }: LogoProps) {
   const { padding, fontSize } = SIZES[size];
   return (
-    <View className={`bg-sidebar-accent rounded-lg ${padding}`}>
+    <View className={`bg-primary-light rounded-lg ${padding}`}>
       <Text className={fontSize}>🌿</Text>
     </View>
   );

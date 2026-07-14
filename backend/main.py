@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from dotenv import load_dotenv
 load_dotenv()
 
-from backend.api.routes import (
+from api.routes import (
     jpdb_router,
     conversations_router,
     language_tools_router,

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from backend.api.utils.auth import get_current_user
-from backend.api.utils.supabase_client import supabase
+from api.utils.auth import get_current_user
+from api.utils.supabase_client import supabase
 
 router = APIRouter(prefix="/user_languages", tags=["user-languages"])
 
