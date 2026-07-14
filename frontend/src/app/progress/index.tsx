@@ -1,8 +1,8 @@
-import KnownWordsPreview from "@/components/knownWordsPreview";
-import MasteryDistribution from "@/app/progress/_components/masteryDistribution";
-import StreakCalendar from "@/app/progress/_components/streakCalendar";
-import VocabGraph from "@/app/progress/_components/vocabGraph";
-import WeeklyMessages from "@/app/progress/_components/weeklyMessages";
+import KnownWordsPreview from "@/app/progress/_components/KnownWordsPreview";
+import MasteryDistribution from "@/app/progress/_components/MasteryDistribution";
+import StreakCalendar from "@/app/progress/_components/StreakCalendar";
+import VocabGraph from "@/app/progress/_components/VocabGraph";
+import WeeklyMessages from "@/app/progress/_components/WeeklyMessages";
 import { useQuery } from "@tanstack/react-query";
 import { Pressable, ScrollView } from "react-native";
 import { useRouter } from "expo-router";

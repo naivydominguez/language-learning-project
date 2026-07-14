@@ -1,10 +1,10 @@
 import React from "react";
 import { View, Pressable } from "react-native";
-import { Text } from "../components/Text";
+import { Text } from "../../components/Text";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
-import ChatInputBar from "../components/chatInputBar";
-import MessageBubble from "../components/messageBubble";
+import ChatInputBar from "./_components/ChatInputBar";
+import MessageBubble from "../../components/MessageBubble";
 import { FlatList } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 
@@ -168,7 +168,7 @@ export default function ChatScreen() {
         className="flex-row items-center gap-2 mb-4 bg-white border-shadow border-border pl-4 pb-2"
         style={{ paddingTop: 60 }}
       >
-        <Pressable onPress={() => router.push("/homePage")} className="p-2">
+        <Pressable onPress={() => router.push("/")} className="p-2">
           <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
         </Pressable>
         {title ? (

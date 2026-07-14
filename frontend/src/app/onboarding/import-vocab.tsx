@@ -2,7 +2,7 @@ import { View, Pressable } from "react-native";
 import { Text } from "@/components/Text";
 import { ArrowLeft } from "lucide-react-native";
 import { router } from "expo-router";
-import OnboardingButton from "@/components/onboardingButton";
+import OnboardingButton from "@/components/OnboardingButton";
 import { OnboardingColors } from "@/constants/onboardingTheme";
 import { useState } from "react";
 import { Check } from "lucide-react-native";
@@ -91,7 +91,7 @@ export default function LanguageSelections() {
         onPress={() => router.push("/")}
       />
 
-      <Pressable onPress={()=> router.push("/chatScreen")}>
+      <Pressable onPress={()=> router.push("/")}>
       <Text className={"mt-3 text-xl text-[#8C6E60] text-center"}>
             Skip for now
         </Text>

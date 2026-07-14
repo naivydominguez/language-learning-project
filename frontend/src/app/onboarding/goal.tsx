@@ -2,7 +2,7 @@ import { View, Pressable } from "react-native";
 import { Text } from "@/components/Text";
 import { ArrowLeft } from "lucide-react-native";
 import { router } from "expo-router";
-import OnboardingButton from "@/components/onboardingButton";
+import OnboardingButton from "@/components/OnboardingButton";
 import { OnboardingColors } from "@/constants/onboardingTheme";
 import { useState } from "react";
 

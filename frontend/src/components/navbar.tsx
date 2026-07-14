@@ -2,7 +2,7 @@ import { View, Pressable, Animated } from "react-native";
 import { Text } from "./Text";
 import { useRouter, usePathname } from "expo-router";
 import { useRef, useEffect } from "react";
-import Logo from "./logo";
+import Logo from "./Logo";
 import { ChevronLeft, Plus, MessageCircle, Settings, TrendingUp } from "lucide-react-native";
 import Toast from "react-native-toast-message";
 import { Motion } from "@/constants/theme";
@@ -157,7 +157,7 @@ export default function Navbar({ visible, onClose }: Props) {
                 onPress={() => {
                   onClose();
                   router.push({
-                    pathname: "/chatScreen",
+                    pathname: "/chat",
                     params: { conversationId: convo.id, title: convo.name },
                   });
                 }}

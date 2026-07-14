@@ -1,14 +1,12 @@
 import { View } from "react-native";
 import { Text } from "@/components/Text";
 import { router } from "expo-router";
-import OnboardingButton from "@/components/onboardingButton";
-import InfoCard from "@/components/infoCard";
+import OnboardingButton from "@/components/OnboardingButton";
+import InfoCard from "@/app/onboarding/_components/InfoCard";
 import { BookOpen, MessageCircle, Sparkles } from "lucide-react-native";
-
 
 export default function OnboardingIndex() {
   return (
-    
     <View className="flex-1 justify-between p-8 bg-[#F8F3EF]">
       <View>
         <Text weight="bold" className="text-[#B8663A] tracking-widest mb-4">

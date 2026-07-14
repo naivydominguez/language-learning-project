@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Text } from "./Text";
+import { Text } from "../../components/Text";
 export default function settingScreen() {
   return (
     <View className="flex-1 items-center justify-center bg-white">
