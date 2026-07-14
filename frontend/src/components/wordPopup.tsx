@@ -19,7 +19,7 @@ export default function WordPopup({ word, language, visible, OnDismiss }: WordPo
             <Text className="text-foreground  mt-2">word english definition endpoint </Text>
           </View>
           <View className="flex-row justify-between mt-4">
-            <Pressable onPress={OnDismiss} className="bg-primary rounded-full px-4 py-2">
+            <Pressable onPress={OnDismiss} className="bg-background-light rounded-full px-4 py-2">
               <Text className="text-foreground">Dismiss</Text>
             </Pressable>
             <Pressable className="bg-primary rounded-full px-4 py-2">
