@@ -1,10 +1,11 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Pressable } from "react-native";
+import { Text } from "../components/Text";
 import { useRouter } from "expo-router";
 import { RotateCcw } from "lucide-react-native";
 import HamburgerButton from "../components/hamburgerBtn";
 import Navbar from "@/components/navbar";
 import Logo from "../components/logo";
-import ChatInputBar from "../components/ui/chatInputBar";
+import ChatInputBar from "../components/chatInputBar";
 import Toast from "react-native-toast-message";
 import React from "react";
 
@@ -25,7 +26,9 @@ export default function HomePage() {
     "A friend just recommended a podcast to me. Do you listen to podcasts? What kind do you like?",
   ];
   React.useEffect(() => {
-    setConvoStart(convStarters[Math.floor(Math.random() * convStarters.length)]);
+    setConvoStart(
+      convStarters[Math.floor(Math.random() * convStarters.length)],
+    );
   }, []);
 
   const handleSend = async (messageText: string) => {
@@ -41,8 +44,8 @@ export default function HomePage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            target_lang: "spanish",
-            name: title // Replace with your target language
+            target_lang: "spanish", // Replace with actual target language
+            name: title, 
           }),
         },
       );
@@ -55,7 +58,12 @@ export default function HomePage() {
 
       router.push({
         pathname: "/chatScreen",
-        params: { start, initialMessage: messageText, title, conversationId: convoData.id },
+        params: {
+          start,
+          initialMessage: messageText,
+          title,
+          conversationId: convoData.id,
+        },
       });
     } catch (error) {
       Toast.show({
@@ -76,13 +84,22 @@ export default function HomePage() {
 
       <View className="flex-1 items-center justify-center bg-background-dark  p-6 gap-6">
         <Logo size="lg" />
-        <Text className="text-4xl font-bold text-black-500">Hello, Learner </Text>
+        <Text weight="bold" className="text-4xl text-black-500">
+          Hello, Learner{" "}
+        </Text>
         <View className="flex-row items-center justify-between w-full gap-2 p-2 bg-white rounded-lg mt-4">
           <View className="w-80%">
             {/* Place generated conversation start in here*/}
             <Text className="text-1xl">{convStart}</Text>
           </View>
-          <Pressable className="flex-row items-center gap-1 p-2" onPress={() => setConvoStart(convStarters[Math.floor(Math.random() * convStarters.length)])}>
+          <Pressable
+            className="flex-row items-center gap-1 p-2"
+            onPress={() =>
+              setConvoStart(
+                convStarters[Math.floor(Math.random() * convStarters.length)],
+              )
+            }
+          >
             <RotateCcw size={14} color="#8C6E60" strokeWidth={1.75} />
           </Pressable>
         </View>

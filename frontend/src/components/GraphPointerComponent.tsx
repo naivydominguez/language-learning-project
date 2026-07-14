@@ -1,4 +1,5 @@
-import { View, Text } from "react-native";
+import { View } from "react-native";
+import { Text } from "./Text";
 
 interface Props {
   labelPretext?: string;
@@ -31,7 +32,7 @@ export default function PointerComponentCreator({
         <Text numberOfLines={1} className="text-lg text-foreground">
           {labelPretext ? `${labelPretext} ${label}` : label}
         </Text>
-        <Text numberOfLines={1} className="text-sm font-thin text-primary">
+        <Text numberOfLines={1} weight="thin" className="text-sm text-primary">
           {value} {units}
         </Text>
       </View>

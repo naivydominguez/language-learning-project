@@ -1,4 +1,5 @@
-import { Pressable, Text } from "react-native";
+import { Pressable } from "react-native";
+import { Text } from "./Text";
 
 type Props = {
   title: string;
@@ -20,7 +21,7 @@ export default function OnboardingButton({
         disabled ? "bg-[#DED9D6]" : "bg-[#BF693F]"
       }`}
     >
-      <Text className={`text-xl font-bold ${
+      <Text weight="bold" className={`text-xl ${
           disabled ? "text-[#8B6F63]" : "text-white" }`}>
             {title}
         </Text>

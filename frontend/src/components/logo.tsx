@@ -1,4 +1,5 @@
-import { View, Text } from "react-native";
+import { View } from "react-native";
+import { Text } from "./Text";
 
 const SIZES = {
   sm: { padding: "p-1", fontSize: "text-base" },

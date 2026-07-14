@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { KeyboardAvoidingView, View, TextInput, Platform } from "react-native";
+import { KeyboardAvoidingView, View, Platform } from "react-native";
+import { TextInput } from "./Text";
 import { useDebounce } from "use-debounce";
 
 interface Props {

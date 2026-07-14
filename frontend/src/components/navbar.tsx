@@ -1,4 +1,5 @@
-import { View, Text, Pressable, Animated } from "react-native";
+import { View, Pressable, Animated } from "react-native";
+import { Text } from "./Text";
 import { useRouter, usePathname } from "expo-router";
 import { useRef, useEffect } from "react";
 import Logo from "./logo";
@@ -111,7 +112,7 @@ export default function Navbar({ visible, onClose }: Props) {
           <View className="px-5 pl-4 py-4 border-b border-sidebar-border">
             <View className="flex-row items-center justify-between">
               <Logo size="md" />
-              <Text className="font-sans text-lg font-semibold text-sidebar-foreground"> Immerbot</Text>
+              <Text weight="semibold" className="text-lg text-sidebar-foreground"> Immerbot</Text>
               <Pressable onPress={onClose}>
                 <ChevronLeft size={20} color="#BFAD9F" />
               </Pressable>
@@ -121,7 +122,7 @@ export default function Navbar({ visible, onClose }: Props) {
               className="flex-row items-center justify-center gap-1.5 mt-3 px-2.5 py-2 rounded-lg border border-primary/25 bg-primary/10"
             >
               <Plus size={13} color="#B5613A" strokeWidth={2.5} />
-              <Text className="font-sans text-xs font-semibold text-primary">New conversation</Text>
+              <Text weight="semibold" className="text-xs text-primary">New conversation</Text>
             </Pressable>
           </View>
 
@@ -136,7 +137,8 @@ export default function Navbar({ visible, onClose }: Props) {
               >
                 {Icon && <Icon size={16} color={isActive ? "#FFFFFF" : "#201810"} />}
                 <Text
-                  className={`font-sans text-base font-medium ${
+                  weight="medium"
+                  className={`text-base ${
                     isActive ? "text-sidebar-accent-foreground" : "text-sidebar-foreground"
                   }`}
                 >
@@ -146,7 +148,7 @@ export default function Navbar({ visible, onClose }: Props) {
             );
           })}
 
-          <Text className="font-sans px-5 pt-4 pb-1 text-sm text-sidebar-foreground/60">Recent</Text>
+          <Text className="px-5 pt-4 pb-1 text-sm text-sidebar-foreground/60">Recent</Text>
 
           <View className="px-5 pl-4">
             {recentConversationsData.data?.map((convo) => (
@@ -161,7 +163,7 @@ export default function Navbar({ visible, onClose }: Props) {
                 }}
                 className="py-2"
               >
-                <Text className="font-sans text-base text-sidebar-foreground/60">
+                <Text className="text-base text-sidebar-foreground/60">
                   {convo.name}
                 </Text>
               </Pressable>

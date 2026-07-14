@@ -1,5 +1,6 @@
 import React from "react";
-import { Text, View, TextInput, Pressable, KeyboardAvoidingView, Platform} from "react-native";
+import { View, Pressable, KeyboardAvoidingView, Platform} from "react-native";
+import { TextInput } from "./Text";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import { ArrowUp } from "lucide-react-native";
 

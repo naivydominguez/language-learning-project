@@ -1,4 +1,5 @@
-import { View, Text, Pressable,ScrollView } from "react-native";
+import { View, Pressable, ScrollView } from "react-native";
+import { Text } from "@/components/Text";
 import { ArrowLeft } from "lucide-react-native";
 import { router } from "expo-router";
 import OnboardingButton from "@/components/onboardingButton";
@@ -54,7 +55,7 @@ export default function LanguageSelections() {
         </Text>
         </View>
 
-        <Text className="text-3xl font-bold mb-3">
+        <Text weight="bold" className="text-3xl mb-3">
           What are you learning?
         </Text>
 
@@ -76,7 +77,7 @@ export default function LanguageSelections() {
                         <Text className={`text-xl ${isSelected ? "text-[#7A3F2A]" : "text-[#1F1A17]"}`}>{language.name}</Text>
                     </View>
                     {isSelected && (<View className="w-9 h-9 rounded-full bg-[#BF693F] items-center justify-center">
-                        <Text className="text-white text-xl font-bold">✓</Text>
+                        <Text weight="bold" className="text-white text-xl">✓</Text>
                     </View>)}
 
                 </Pressable>
@@ -86,7 +87,7 @@ export default function LanguageSelections() {
       </ScrollView>
 
       <View className="mt-6">
-        <Text className="text-[#B8A99F] font-bold tracking-widest mb-3">
+        <Text weight="bold" className="text-[#B8A99F] tracking-widest mb-3">
             YOUR NATIVE LANGUAGE
         </Text>
 

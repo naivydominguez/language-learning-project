@@ -1,8 +1,9 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Pressable } from "react-native";
+import { Text } from "../components/Text";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
-import ChatInputBar from "../components/ui/chatInputBar";
+import ChatInputBar from "../components/chatInputBar";
 import MessageBubble from "../components/messageBubble";
 import { FlatList } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
@@ -12,16 +13,17 @@ type Message = {
   sender: "user" | "ai";
   messageContent: string;
 };
-const accessToken = ""; // Replace with your actual access token
+const accessToken = ""; // Replace with supabase auth token
 
 export default function ChatScreen() {
   const router = useRouter();
-  const { start,initialMessage, title, conversationId } = useLocalSearchParams<{
-    start? :string;
-    initialMessage?: string;
-    title?: string;
-    conversationId?: string;
-  }>();
+  const { start, initialMessage, title, conversationId } =
+    useLocalSearchParams<{
+      start?: string;
+      initialMessage?: string;
+      title?: string;
+      conversationId?: string;
+    }>();
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [isWaiting, setIsWaiting] = React.useState(false);
   const hasSentInitial = React.useRef(false);
@@ -56,12 +58,15 @@ export default function ChatScreen() {
         text1: "Error sending message",
         text2: "Please try again later.",
       });
-    //  console.error("Error sending message:", error);
-    //  throw error;
+      //  console.error("Error sending message:", error);
+      //  throw error;
     }
   };
 
-  const getbackendMessages = async (conversationId: string, accessToken: string) => {
+  const getbackendMessages = async (
+    conversationId: string,
+    accessToken: string,
+  ) => {
     try {
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/messages/${conversationId}`,
@@ -70,11 +75,16 @@ export default function ChatScreen() {
         throw new Error("Failed to fetch backend messages");
       }
       const data = await response.json();
-      const loaded: Message[] = data.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map((msg: any) => ({
-        id: msg.id,
-        sender: msg.sender,
-        messageContent: msg.content,
-      }));
+      const loaded: Message[] = data
+        .sort(
+          (a: any, b: any) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+        )
+        .map((msg: any) => ({
+          id: msg.id,
+          sender: msg.sender,
+          messageContent: msg.content,
+        }));
       setMessages(loaded);
     } catch (error) {
       Toast.show({
@@ -104,7 +114,7 @@ export default function ChatScreen() {
       };
       setMessages((prev) => [...prev, newMessage]);
 
-      const accessToken = "temporary-access-token"; // Replace with your actual access token
+      const accessToken = "temporary-access-token"; // Replace access token from supabase auth
       const aiMessage = await sendMessageToAI(
         messageText,
         conversationId,
@@ -132,9 +142,9 @@ export default function ChatScreen() {
 
   React.useEffect(() => {
     if (hasSentInitial.current) return;
-      hasSentInitial.current = true;
-      if (start || initialMessage) {
-        if (start){
+    hasSentInitial.current = true;
+    if (start || initialMessage) {
+      if (start) {
         setMessages((prev) => [
           ...prev,
           {
@@ -147,7 +157,7 @@ export default function ChatScreen() {
       if (initialMessage) {
         handleSendBackend(initialMessage);
       }
-    }else if (conversationId) {
+    } else if (conversationId) {
       getbackendMessages(conversationId, accessToken);
     }
   }, [start, initialMessage, conversationId]);
@@ -157,12 +167,12 @@ export default function ChatScreen() {
       <View
         className="flex-row items-center gap-2 mb-4 bg-white border-shadow border-border pl-4 pb-2"
         style={{ paddingTop: 60 }}
-      > 
-       <Pressable onPress={() => router.push("/homePage")} className="p-2">
+      >
+        <Pressable onPress={() => router.push("/homePage")} className="p-2">
           <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
         </Pressable>
         {title ? (
-          <Text className="font-sans text-lg font-semibold text-foreground mb-2">
+          <Text weight="semibold" className="text-lg text-foreground mb-2">
             {title}
           </Text>
         ) : null}

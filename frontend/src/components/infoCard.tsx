@@ -1,4 +1,5 @@
-import { View, Text } from "react-native";
+import { View } from "react-native";
+import { Text } from "./Text";
 import { LucideIcon } from "lucide-react-native";
 import { OnboardingColors } from "@/constants/onboardingTheme";
 
@@ -36,9 +37,9 @@ export default function InfoCard({
 
       <View className="flex-1">
         <Text
+          weight={500}
           style={{
             fontSize: 18,
-            fontWeight: "500",
             color: OnboardingColors.text,
           }}
         >
