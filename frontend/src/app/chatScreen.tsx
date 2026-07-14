@@ -26,7 +26,7 @@ export default function ChatScreen() {
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [isWaiting, setIsWaiting] = React.useState(false);
   const hasSentInitial = React.useRef(false);
-
+  const [selectedWord, setSelectedWord] = React.useState<string | null>(null);
   const sendMessageToAI = async (
     context: string,
     conversationId: string,
