@@ -11,7 +11,8 @@ from backend.api.routes import (
     user_statistics_router,
     messages_router,
     known_words_router,
-    user_known_words_router
+    user_known_words_router,
+    realtime_router
 )
 
 app = FastAPI()
@@ -24,3 +25,4 @@ app.include_router(user_statistics_router)
 app.include_router(messages_router)
 app.include_router(known_words_router)
 app.include_router(user_known_words_router)
+app.include_router(realtime_router)
