@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from backend.api.utils.gemini_client import client, GEMINI_MODEL
+from api.utils.gemini_client import client, GEMINI_MODEL
 from google.genai import types
 
 
-router = APIRouter(tags=["language-tools"])
+router = APIRouter(prefix="/language-tools", tags=["language-tools"])
 
 class TranslationResult(BaseModel):
     result:str
@@ -31,7 +31,8 @@ def translate(text: str, target_lang: str):
 
     return TranslationResponse(
         original_text=text,
-        result=result.result,
+        translated_text=result.result,
+        target_lang=target_lang,
     )
 
 

@@ -6,6 +6,7 @@ import ChatInputBar from "../components/ui/chatInputBar";
 import MessageBubble from "../components/messageBubble";
 import { FlatList } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
+import WordPopup from "../components/wordPopup";
 
 type Message = {
   id: string;
@@ -16,8 +17,8 @@ const accessToken = ""; // Replace with your actual access token
 
 export default function ChatScreen() {
   const router = useRouter();
-  const { start,initialMessage, title, conversationId } = useLocalSearchParams<{
-    start? :string;
+  const { start, initialMessage, title, conversationId } = useLocalSearchParams<{
+    start?: string;
     initialMessage?: string;
     title?: string;
     conversationId?: string;
@@ -56,8 +57,8 @@ export default function ChatScreen() {
         text1: "Error sending message",
         text2: "Please try again later.",
       });
-    //  console.error("Error sending message:", error);
-    //  throw error;
+      //  console.error("Error sending message:", error);
+      //  throw error;
     }
   };
 
@@ -105,11 +106,7 @@ export default function ChatScreen() {
       setMessages((prev) => [...prev, newMessage]);
 
       const accessToken = "temporary-access-token"; // Replace with your actual access token
-      const aiMessage = await sendMessageToAI(
-        messageText,
-        conversationId,
-        accessToken,
-      );
+      const aiMessage = await sendMessageToAI(messageText, conversationId, accessToken);
       setMessages((prev) => [
         ...prev,
         {
@@ -157,22 +154,25 @@ export default function ChatScreen() {
       <View
         className="flex-row items-center gap-2 mb-4 bg-white border-shadow border-border pl-4 pb-2"
         style={{ paddingTop: 60 }}
-      > 
-       <Pressable onPress={() => router.push("/homePage")} className="p-2">
+      >
+        <Pressable onPress={() => router.push("/homePage")} className="p-2">
           <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
         </Pressable>
-        {title ? (
-          <Text className="font-sans text-lg font-semibold text-foreground mb-2">
-            {title}
-          </Text>
-        ) : null}
+        {title ? <Text className="font-sans text-lg font-semibold text-foreground mb-2">{title}</Text> : null}
       </View>
       <FlatList
         data={messages}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <MessageBubble message={item} />}
+        renderItem={({ item }) => <MessageBubble message={item} onWordPress={setSelectedWord} />}
         contentContainerStyle={{ padding: 16, gap: 8 }}
         className="p-4"
+      />
+
+      <WordPopup
+        word={selectedWord || ""}
+        language="english"
+        visible={selectedWord !== null}
+        OnDismiss={() => setSelectedWord(null)}
       />
       <ChatInputBar onSend={handleSendBackend} isWaiting={isWaiting} />
     </View>

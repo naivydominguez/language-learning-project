@@ -5,6 +5,7 @@ SQLAlchemy==2.0.51
 sympy==1.14.0
 torch==2.12.1
 transformers==5.12.1
+accelerate
 fastapi==0.139.0
 uvicorn[standard]==0.49.0
 python-dotenv==1.2.2
@@ -12,3 +13,4 @@ supabase==2.31.0
 requests==2.34.2
 psycopg2-binary==2.9.12
 pydantic==2.13.4
+google-genai

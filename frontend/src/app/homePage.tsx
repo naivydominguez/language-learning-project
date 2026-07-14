@@ -66,6 +66,33 @@ export default function HomePage() {
     }
   };
 
+  
+      const PromptTranslation = async () => {
+        const starter = convStarters[Math.floor(Math.random() * convStarters.length)];
+        setConvoStart(starter);
+        try {
+          const response = await fetch(
+            `${process.env.EXPO_PUBLIC_BACKEND_URL}/language-tools/translate?${new URLSearchParams({
+              text: starter,
+              target_lang: "spanish",
+            })}`,
+          );
+
+          if (!response.ok) {
+            throw new Error("Failed to translate conversation start");
+          }
+
+          const data = await response.json();
+          setConvoStart(data.translated_text); // Update the conversation start with the translated text
+        } catch (error) {
+          Toast.show({
+            type: "error",
+            text1: "Error translating conversation start",
+            text2: "Please try again later.",
+          });
+        }
+      };
+
   return (
     <View className="flex-1">
       <View style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
@@ -82,7 +109,7 @@ export default function HomePage() {
             {/* Place generated conversation start in here*/}
             <Text className="text-1xl">{convStart}</Text>
           </View>
-          <Pressable className="flex-row items-center gap-1 p-2" onPress={() => setConvoStart(convStarters[Math.floor(Math.random() * convStarters.length)])}>
+          <Pressable className="flex-row items-center gap-1 p-2" onPress={() => PromptTranslation()}>
             <RotateCcw size={14} color="#8C6E60" strokeWidth={1.75} />
           </Pressable>
         </View>

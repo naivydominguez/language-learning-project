@@ -7,9 +7,9 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from backend.api.utils.user_id import get_user_id
-from backend.db.db_models import User, UserKnownWord, Word
-from backend.db.session import get_db_session
+from api.utils.user_id import TEST_USER_ID
+from db.db_models import User, UserKnownWord, Word
+from db.session import get_db_session
 
 router = APIRouter(prefix="/jpdb", tags=["jpdb"])
 JPDB_URL = os.environ.get("JPDB_URL")
@@ -24,8 +24,8 @@ class RegisterKeyPost(BaseModel):
 @router.post("/register-key")
 def register_key(
     request: RegisterKeyPost,
-    user_id: str = Depends(get_user_id),
     db: Session = Depends(get_db_session),
+    user_id: str = TEST_USER_ID,
 ):
     key = request.api_key
     # Syncing the user with their API key.
@@ -40,7 +40,7 @@ def register_key(
 
 @router.put("/sync")
 def sync_jpdb(
-    user_id: str = Depends(get_user_id), db: Session = Depends(get_db_session)
+    db: Session = Depends(get_db_session), user_id: str = TEST_USER_ID
 ):
     user = db.get(User, user_id)
     sync_jpdb_words(user, db)
