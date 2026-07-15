@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from api.utils.gemini_client import client, GEMINI_MODEL
 from google.genai import types
@@ -19,14 +19,18 @@ class TranslationResponse(BaseModel):
 @router.get("/translate", response_model=TranslationResponse)
 def translate(text: str, target_lang: str):
     prompt = f"Translate the following text to {target_lang}. Respond with only the translation, no extra commentary.\n\nText: {text}"
-    response = client.models.generate_content(
-        model=GEMINI_MODEL,
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            response_mime_type="application/json",
-            response_schema=TranslationResult,
-        ),
-    )
+    try:
+        response = client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=TranslationResult,
+            ),
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to translate text: {e}")
+
     result = TranslationResult.model_validate_json(response.text)
 
     return TranslationResponse(
@@ -51,14 +55,18 @@ def get_feedback(text: str, target_lang: str):
         f"mistakes or word choice issues, and briefly explain why, in a "
         f"supportive tone.\n\nText: {text}"
     )
-    response = client.models.generate_content(
-        model=GEMINI_MODEL,
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            response_mime_type="application/json",
-            response_schema=FeedbackResult,
-        ),
-    )
+    try:
+        response = client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=FeedbackResult,
+            ),
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate feedback: {e}")
+
     result = FeedbackResult.model_validate_json(response.text)
 
     return FeedbackResponse(
@@ -67,13 +75,13 @@ def get_feedback(text: str, target_lang: str):
     )
 
 class StarterPromptResult(BaseModel):
-    start: list[str]
+    starters: list[str]
     
 class StarterPromptResponse(BaseModel):
-    start: list[str]
+    starters: list[str]
     
 @router.get("/conversation-starters", response_model=StarterPromptResponse)
-def get_conversatrion_starters(target_lang:str, count: int = 10):
+def get_conversation_starters(target_lang:str, count: int = 10):
     prompt = (
         f"Generate {count} short, casual conversation-starter opening messages "
         f"in {target_lang} for a language-learning chat app. Keep each one "
@@ -91,3 +99,6 @@ def get_conversatrion_starters(target_lang:str, count: int = 10):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate conversation starters: {e}")
+    
+    result = StarterPromptResult.model_validate_json(response.text)
+    return StarterPromptResponse(starters=result.starters)
