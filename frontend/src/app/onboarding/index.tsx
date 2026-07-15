@@ -45,12 +45,23 @@ export default function OnboardingIndex() {
         </View>
       </View>
 
-      <View className="py-3">
+      <View className="py-2">
         <OnboardingButton
           title="Let's get started"
           onPress={() => router.push("/onboarding/language")}
         />
+
+        <Text className={"text-xl text-center"}>
+            <Text className="text-[#8C6E60]"> Returning User? </Text>
+            
+            <Text className="text-[#B5613A]" onPress={() => router.push("/acount/signIn")}>
+                Sign In
+            </Text>
+        </Text>
+
       </View>
+
+
     </View>
   );
 }

@@ -23,6 +23,8 @@ export default function LanguageSelections() {
             setSelectedApps([...selectedApps,id]);
         }
     }
+
+    const canContinue = selectedApps.length > 0
     
   return (
     <View className="flex-1 justify-between bg-[#F8F3EF] px-6 pt-8 pb-6">
@@ -87,10 +89,13 @@ export default function LanguageSelections() {
       <View>
         <OnboardingButton
         title="Continue"
-        onPress={() => router.push("/")}
+        disabled={!canContinue}
+        onPress={() => {
+            if (!canContinue) return;
+                router.push("/acount/signUp")}}
       />
 
-      <Pressable onPress={()=> router.push("/chatScreen")}>
+      <Pressable onPress={()=> router.push("/acount/signUp")}>
       <Text className={"mt-3 text-xl text-[#8C6E60] text-center"}>
             Skip for now
         </Text>

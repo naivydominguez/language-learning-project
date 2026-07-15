@@ -17,6 +17,7 @@ router=APIRouter(prefix="/conversations", tags=["conversations"])
 class CreateConversationRequest(BaseModel):
     target_lang: str
     name : str | None = None
+    starterPrompt: str #added -Naivy
     
 class ConversationResponse(BaseModel):
     id: UUID
@@ -37,7 +38,8 @@ class MessageResponse(BaseModel):
     unknown_words: list[str]
     
 @router.post("/", response_model=ConversationResponse)
-def create_conversation(request: CreateConversationRequest, user_id: str = Depends(get_user_id), starterPrompt):
+#removed starterPrompt
+def create_conversation(request: CreateConversationRequest, starterPrompt: str, user_id: str = Depends(get_user_id)):
     language_response = supabase.table("languages").select("id").eq("name", request.target_lang).execute()
     if not language_response.data:
         raise HTTPException(status_code=400, detail=f"Unknown language: {request.target_lang}")
@@ -55,11 +57,11 @@ def create_conversation(request: CreateConversationRequest, user_id: str = Depen
     row = response.data[0]
     conversation_id = row["id"]
 
-     try:
+    try:
         supabase.table("messages").insert({
             "conversation_id": str(conversation_id),
             "sender": "AI",
-            "content": starterPrompt,
+            "content": request.starterPrompt, #changed to request.
         }).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create opening message: {e}")
