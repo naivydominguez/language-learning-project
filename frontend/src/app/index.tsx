@@ -72,31 +72,7 @@ export default function HomePage() {
     }
   };
 
-  const PromptTranslation = async () => {
-    const starter = convStarters[Math.floor(Math.random() * convStarters.length)];
-    setConvoStart(starter);
-    try {
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/language-tools/translate?${new URLSearchParams({
-          text: starter,
-          target_lang: "spanish",
-        })}`,
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to translate conversation start");
-      }
-
-      const data = await response.json();
-      setConvoStart(data.translated_text); // Update the conversation start with the translated text
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Error translating conversation start",
-        text2: "Please try again later.",
-      });
-    }
-  };
+  
 
   return (
     <View className="flex-1">
@@ -124,7 +100,7 @@ export default function HomePage() {
           </Pressable>
         </View>
         <View className="w-full bg-white rounded-md">
-          <ChatInputBar onSend={handleSend} />
+          <ChatInputBar onSend={handleSend} showLanguagePicker={true} />
         </View>
       </View>
     </View>

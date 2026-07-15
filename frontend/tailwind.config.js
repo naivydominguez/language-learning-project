@@ -42,6 +42,10 @@ module.exports = {
         primary: "rgb(var(--primary) / <alpha-value>)",
         "primary-dark": "rgb(var(--primary-dark) / <alpha-value>)",
 
+        // ── Accent ───────────────────────────────
+        "accent-light": "rgb(var(--accent-light) / <alpha-value>)",
+        accent: "rgb(var(--accent) / <alpha-value>)",
+
         // ── Secondary ────────────────────────────
         "secondary-light": "rgb(var(--secondary-light) / <alpha-value>)",
         secondary: "rgb(var(--secondary) / <alpha-value>)",

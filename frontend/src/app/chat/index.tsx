@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import ChatInputBar from "./_components/ChatInputBar";
 import MessageBubble from "./_components/MessageBubble";
-import { FlatList } from "react-native-gesture-handler";
+import { FlatList, ScrollView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 import WordPopup from "./_components/WordPopup";
 
@@ -165,27 +165,29 @@ export default function ChatScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <View
-        className="flex-row items-center gap-2 mb-4 bg-white border-shadow border-border pl-4 pb-2"
-        style={{ paddingTop: 60 }}
-      >
-        <Pressable onPress={() => router.push("/")} className="p-2">
-          <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
-        </Pressable>
-        {title ? (
-          <Text weight="semibold" className="text-lg text-foreground mb-2">
-            {title}
-          </Text>
-        ) : null}
-      </View>
-      <FlatList
-        data={messages}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <MessageBubble message={item} onWordPress={setSelectedWord} />}
-        contentContainerStyle={{ padding: 16, gap: 8 }}
-        className="p-4"
-      />
-      <ChatInputBar onSend={handleSendBackend} isWaiting={isWaiting} />
+      <ScrollView className="flex-1 bg-background">
+        <View
+          className="flex-row items-center gap-2 mb-4 bg-white border-shadow border-border pl-4 pb-2"
+          style={{ paddingTop: 60 }}
+        >
+          <Pressable onPress={() => router.push("/")} className="p-2">
+            <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
+          </Pressable>
+          {title ? (
+            <Text weight="semibold" className="text-lg text-foreground mb-2">
+              {title}
+            </Text>
+          ) : null}
+        </View>
+        <FlatList
+          data={messages}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <MessageBubble message={item} onWordPress={setSelectedWord} />}
+          contentContainerStyle={{ padding: 16, gap: 8 }}
+          className="p-4"
+        />
+      </ScrollView>
+      <ChatInputBar onSend={handleSendBackend} isWaiting={isWaiting} showLanguagePicker={false} />
       <WordPopup
         word={selectedWord || ""}
         language="spanish"

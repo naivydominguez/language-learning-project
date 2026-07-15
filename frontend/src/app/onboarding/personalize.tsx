@@ -11,7 +11,7 @@ export default function Personalization() {
   const [personality, setPersonality] = useState("");
 
   return (
-    <View className="flex-1 justify-between bg-[#F8F3EF] px-6 pt-8 pb-6">
+    <View className="flex-1 justify-between bg-background-light px-6 pt-8 pb-6">
       <View>
         <View className="flex-row items-center justify-between">
           <Pressable
@@ -32,13 +32,13 @@ export default function Personalization() {
 
         <Text weight="bold" className="text-3xl mb-3">Make it yours</Text>
 
-        <Text className="text-lg text-[#8B6F63]">
+        <Text className="text-lg text-foreground-secondary">
           You can change these later in Settings.
         </Text>
 
-        <Text weight="bold" className="mt-14 mb-3 text-lg text-[#8B6A5B]">
+        <Text weight="bold" className="mt-14 mb-3 text-lg text-foreground-secondary">
           What should Immerbot call you?{" "}
-          <Text weight="normal" className="text-[#B8A79E]">(optional)</Text>
+          <Text weight="normal" className="text-foreground-tertiary">(optional)</Text>
         </Text>
 
         <TextInput
@@ -48,12 +48,12 @@ export default function Personalization() {
           placeholderTextColor="#9B9692"
           multiline
           style={{ outlineWidth: 0 } as any}
-          className="rounded-xl border border-[#E2DEDB] bg-white px-5 py-4 text-xl text-[#241A14]"
+          className="rounded-xl border border-gray-200 bg-white px-5 py-4 text-xl text-foreground"
         />
 
-        <Text weight="bold" className="mt-14 mb-3 text-lg text-[#8B6A5B]">
+        <Text weight="bold" className="mt-14 mb-3 text-lg text-foreground-secondary">
           Give Immerbot a personality{" "}
-          <Text weight="normal" className="text-[#B8A79E]">(optional)</Text>
+          <Text weight="normal" className="text-foreground-tertiary">(optional)</Text>
         </Text>
 
         <TextInput
@@ -63,7 +63,7 @@ export default function Personalization() {
           placeholderTextColor="#9B9692"
           multiline
           style={{ outlineWidth: 0 } as any}
-          className="rounded-xl border border-[#E2DEDB] bg-white px-5 py-8 text-xl text-[#241A14]"
+          className="rounded-xl border border-gray-200 bg-white px-5 py-8 text-xl text-foreground"
         ></TextInput>
       </View>
 

@@ -18,11 +18,11 @@ export default function OnboardingButton({
       disabled={disabled}
       onPress={onPress}
       className={`rounded-2xl py-5 items-center ${
-        disabled ? "bg-[#DED9D6]" : "bg-[#BF693F]"
+        disabled ? "bg-foreground-tertiary/40" : "bg-accent"
       }`}
     >
       <Text weight="bold" className={`text-xl ${
-          disabled ? "text-[#8B6F63]" : "text-white" }`}>
+          disabled ? "text-foreground-secondary" : "text-white" }`}>
             {title}
         </Text>
     </Pressable>
