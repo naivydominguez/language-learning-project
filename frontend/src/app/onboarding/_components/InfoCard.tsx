@@ -1,4 +1,5 @@
-import { View, Text } from "react-native";
+import { View } from "react-native";
+import { Text } from "../../../components/Text";
 import { LucideIcon } from "lucide-react-native";
 import { OnboardingColors } from "@/constants/onboardingTheme";
 
@@ -8,11 +9,7 @@ type InfoCardProps = {
   Icon: LucideIcon;
 };
 
-export default function InfoCard({
-  title,
-  body,
-  Icon,
-}: InfoCardProps) {
+export default function InfoCard({ title, body, Icon }: InfoCardProps) {
   return (
     <View
       className="flex-row rounded-lg border p-3 mb-2"
@@ -27,18 +24,14 @@ export default function InfoCard({
           backgroundColor: OnboardingColors.accentSubtle,
         }}
       >
-        <Icon
-          size={16}
-          color={OnboardingColors.accent}
-          strokeWidth={1.75}
-        />
+        <Icon size={16} color={OnboardingColors.accent} strokeWidth={1.75} />
       </View>
 
       <View className="flex-1">
         <Text
+          weight={500}
           style={{
             fontSize: 18,
-            fontWeight: "500",
             color: OnboardingColors.text,
           }}
         >

@@ -1,7 +1,8 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Pressable } from "react-native";
+import { Text } from "@/components/Text";
 import { ArrowLeft } from "lucide-react-native";
 import { router } from "expo-router";
-import OnboardingButton from "@/components/onboardingButton";
+import OnboardingButton from "./_components/OnboardingButton";
 import { OnboardingColors } from "@/constants/onboardingTheme";
 import { useState } from "react";
 
@@ -30,7 +31,7 @@ export default function DailyGoal() {
         </View>
         
 
-        <Text className="text-3xl font-bold mb-3">
+        <Text weight="bold" className="text-3xl mb-3">
           Daily goal
         </Text>
 

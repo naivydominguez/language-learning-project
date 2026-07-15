@@ -1,7 +1,8 @@
-import { View, Text, Pressable, Animated } from "react-native";
+import { View, Pressable, Animated } from "react-native";
+import { Text } from "./Text";
 import { useRouter, usePathname } from "expo-router";
 import { useRef, useEffect } from "react";
-import Logo from "./logo";
+import Logo from "./Logo";
 import { ChevronLeft, Plus, MessageCircle, Settings, TrendingUp } from "lucide-react-native";
 import Toast from "react-native-toast-message";
 import { Motion } from "@/constants/theme";
@@ -105,13 +106,13 @@ export default function Navbar({ visible, onClose }: Props) {
           width: DRAWER_WIDTH,
           transform: [{ translateX }],
         }}
-        className="rounded-r-lg border-r border-sidebar-border shadow-lg"
+        className="rounded-r-lg border-r border-background-dark shadow-lg"
       >
-        <View className="flex-1 bg-sidebar">
-          <View className="px-5 pl-4 py-4 border-b border-sidebar-border">
+        <View className="flex-1 bg-background-light">
+          <View className="px-5 pl-4 py-4 border-b border-background-dark">
             <View className="flex-row items-center justify-between">
               <Logo size="md" />
-              <Text className="font-sans text-lg font-semibold text-sidebar-foreground"> Immerbot</Text>
+              <Text weight="semibold" className="text-lg text-foreground"> Immerbot</Text>
               <Pressable onPress={onClose}>
                 <ChevronLeft size={20} color="#BFAD9F" />
               </Pressable>
@@ -121,7 +122,7 @@ export default function Navbar({ visible, onClose }: Props) {
               className="flex-row items-center justify-center gap-1.5 mt-3 px-2.5 py-2 rounded-lg border border-primary/25 bg-primary/10"
             >
               <Plus size={13} color="#B5613A" strokeWidth={2.5} />
-              <Text className="font-sans text-xs font-semibold text-primary">New conversation</Text>
+              <Text weight="semibold" className="text-xs text-primary">New conversation</Text>
             </Pressable>
           </View>
 
@@ -132,12 +133,13 @@ export default function Navbar({ visible, onClose }: Props) {
               <Pressable
                 key={item.label}
                 onPress={() => navigate(item.path)}
-                className={`flex-row items-center gap-2 px-5 pl-4 py-3 ${isActive ? "bg-sidebar-accent" : ""}`}
+                className={`flex-row items-center gap-2 px-5 pl-4 py-3 ${isActive ? "bg-primary-light" : ""}`}
               >
                 {Icon && <Icon size={16} color={isActive ? "#FFFFFF" : "#201810"} />}
                 <Text
-                  className={`font-sans text-base font-medium ${
-                    isActive ? "text-sidebar-accent-foreground" : "text-sidebar-foreground"
+                  weight="medium"
+                  className={`text-base ${
+                    isActive ? "text-white" : "text-foreground"
                   }`}
                 >
                   {item.label}
@@ -146,7 +148,7 @@ export default function Navbar({ visible, onClose }: Props) {
             );
           })}
 
-          <Text className="font-sans px-5 pt-4 pb-1 text-sm text-sidebar-foreground/60">Recent</Text>
+          <Text className="px-5 pt-4 pb-1 text-sm text-foreground/60">Recent</Text>
 
           <View className="px-5 pl-4">
             {recentConversationsData.data?.map((convo) => (
@@ -155,13 +157,13 @@ export default function Navbar({ visible, onClose }: Props) {
                 onPress={() => {
                   onClose();
                   router.push({
-                    pathname: "/chatScreen",
+                    pathname: "/chat",
                     params: { conversationId: convo.id, title: convo.name },
                   });
                 }}
                 className="py-2"
               >
-                <Text className="font-sans text-base text-sidebar-foreground/60">
+                <Text className="text-base text-foreground/60">
                   {convo.name}
                 </Text>
               </Pressable>

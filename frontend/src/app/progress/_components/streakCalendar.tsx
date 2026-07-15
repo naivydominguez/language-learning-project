@@ -1,4 +1,5 @@
-import { View, Text } from "react-native";
+import { View } from "react-native";
+import { Text } from "@/components/Text";
 import { WeeklyHeatMap } from "@symbiot.dev/react-native-heatmap";
 import { UserStatisticsResponse } from "@/app/progress";
 
@@ -28,9 +29,9 @@ const StreakCalendar = ({ data }: Props) => {
       <View className="flex flex-col gap-y-1 text-foreground mb-4">
         <View className="flex flex-row items-center gap-2">
           {/* TODO: fire icon */}
-          <Text className="font-bold text-xl">12 day streak</Text>
+          <Text weight="bold" className="text-xl">12 day streak</Text>
         </View>
-        <Text className="text-sm font-light text-foreground-secondary/100">
+        <Text weight="light" className="text-sm text-foreground-secondary/100">
           Longest: 15 days
         </Text>
       </View>

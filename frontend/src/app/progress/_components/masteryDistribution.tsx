@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
+import { Text } from "@/components/Text";
 import { BarChart } from "react-native-gifted-charts/dist/BarChart";
-import PointerComponentCreator from "../../../components/GraphPointerComponent";
+import PointerComponentCreator from "../_components/GraphPointerComponent";
 import GraphLegendItem from "@/app/progress/_components/GraphLegendItem";
 import { useQuery } from "@tanstack/react-query";
 
@@ -70,7 +71,7 @@ const MasteryDistribution = ({ axisTextStyles }: Props) => {
 
   return (
     <View className="w-full h-max flex flex-col bg-white p-4 pr-0 rounded-md border border-background-dark">
-      <Text className="font-bold text-xl">Words by mastery</Text>
+      <Text weight="bold" className="text-xl">Words by mastery</Text>
       <View
         className="w-full mt-6"
         onLayout={(e) => setChartWidth(e.nativeEvent.layout.width)}

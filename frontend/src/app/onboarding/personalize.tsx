@@ -1,7 +1,8 @@
-import { View, Text, Pressable, TextInput } from "react-native";
+import { View, Pressable } from "react-native";
+import { Text, TextInput } from "@/components/Text";
 import { ArrowLeft } from "lucide-react-native";
 import { router } from "expo-router";
-import OnboardingButton from "@/components/onboardingButton";
+import OnboardingButton from "./_components/OnboardingButton";
 import { OnboardingColors } from "@/constants/onboardingTheme";
 import { useState } from "react";
 
@@ -29,15 +30,15 @@ export default function Personalization() {
           </Text>
         </View>
 
-        <Text className="text-3xl font-bold mb-3">Make it yours</Text>
+        <Text weight="bold" className="text-3xl mb-3">Make it yours</Text>
 
         <Text className="text-lg text-[#8B6F63]">
           You can change these later in Settings.
         </Text>
 
-        <Text className="mt-14 mb-3 text-lg font-bold text-[#8B6A5B]">
+        <Text weight="bold" className="mt-14 mb-3 text-lg text-[#8B6A5B]">
           What should Immerbot call you?{" "}
-          <Text className="font-normal text-[#B8A79E]">(optional)</Text>
+          <Text weight="normal" className="text-[#B8A79E]">(optional)</Text>
         </Text>
 
         <TextInput
@@ -50,9 +51,9 @@ export default function Personalization() {
           className="rounded-xl border border-[#E2DEDB] bg-white px-5 py-4 text-xl text-[#241A14]"
         />
 
-        <Text className="mt-14 mb-3 text-lg font-bold text-[#8B6A5B]">
+        <Text weight="bold" className="mt-14 mb-3 text-lg text-[#8B6A5B]">
           Give Immerbot a personality{" "}
-          <Text className="font-normal text-[#B8A79E]">(optional)</Text>
+          <Text weight="normal" className="text-[#B8A79E]">(optional)</Text>
         </Text>
 
         <TextInput
