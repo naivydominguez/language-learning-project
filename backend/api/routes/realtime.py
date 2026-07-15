@@ -30,16 +30,15 @@ async def create_realtime_client_secret(current_user = Depends(get_current_user)
 
     known_words = [row['word'] for row in known_words_response.data]
 
-    instructions = user_settings.get('personality_prompt') or "You are a language tutor."
-
+    instructions = f"# Personality Prompt\n{user_settings.get('personality_prompt') or 'You are a friendly, encouraging language tutor.'}"
     name = user_settings.get('name')
     if name:
-        instructions += f" Call the user by their name, {name}."
+        instructions += f" \n\n# Name\nCall the user by their name, {name}."
 
     if known_words:
         word_list = ", ".join(known_words)
         instructions += (
-            f" The user currently knows these words: {word_list}. "
+            f"\n\n# Vocab List\n{word_list}\n\n"
             f"Use these known words for approximately 90% of your response. You may use "
             f"a small number of new words to help the user learn, but keep the vocabulary "
             f"mostly within what they already know."
