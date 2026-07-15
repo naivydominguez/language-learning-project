@@ -7,6 +7,7 @@ import ChatInputBar from "./_components/ChatInputBar";
 import MessageBubble from "./_components/MessageBubble";
 import { FlatList } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
+import WordPopup from "./_components/WordPopup";
 
 type Message = {
   id: string;
@@ -27,7 +28,7 @@ export default function ChatScreen() {
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [isWaiting, setIsWaiting] = React.useState(false);
   const hasSentInitial = React.useRef(false);
-
+ const [selectedWord, setSelectedWord] = React.useState<string | null>(null);
   const sendMessageToAI = async (
     context: string,
     conversationId: string,
@@ -180,11 +181,18 @@ export default function ChatScreen() {
       <FlatList
         data={messages}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <MessageBubble message={item} />}
+        renderItem={({ item }) => <MessageBubble message={item} onWordPress={setSelectedWord} />}
         contentContainerStyle={{ padding: 16, gap: 8 }}
         className="p-4"
       />
       <ChatInputBar onSend={handleSendBackend} isWaiting={isWaiting} />
+      <WordPopup
+        word={selectedWord || ""}
+        language="spanish"
+        visible={!!selectedWord}
+        OnDismiss={() => setSelectedWord(null)}
+      />
     </View>
   );
 }
+   

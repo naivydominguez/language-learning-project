@@ -11,7 +11,7 @@ type LogoProps = {
   size?: keyof typeof SIZES;
 };
 
-function Logo({ size = "md" }: LogoProps) {
+export default function Logo({ size = "md" }: LogoProps) {
   const { padding, fontSize } = SIZES[size];
   return (
     <View className={`bg-primary-light rounded-lg ${padding}`}>
@@ -19,6 +19,4 @@ function Logo({ size = "md" }: LogoProps) {
     </View>
   );
 }
-
-export default Logo;
 

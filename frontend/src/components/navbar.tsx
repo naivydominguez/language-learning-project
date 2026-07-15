@@ -1,12 +1,13 @@
 import { View, Pressable, Animated } from "react-native";
 import { Text } from "./Text";
 import { useRouter, usePathname } from "expo-router";
-import { useRef, useEffect } from "react";
-import Logo from "./Logo";
+import { useRef, useEffect } from "react"
+
 import { ChevronLeft, Plus, MessageCircle, Settings, TrendingUp } from "lucide-react-native";
 import Toast from "react-native-toast-message";
 import { Motion } from "@/constants/theme";
 import { useQuery } from "@tanstack/react-query";
+import Logo from "./Logo";
 const DRAWER_WIDTH = 220;
 
 type Props = {
@@ -111,7 +112,7 @@ export default function Navbar({ visible, onClose }: Props) {
         <View className="flex-1 bg-background-light">
           <View className="px-5 pl-4 py-4 border-b border-background-dark">
             <View className="flex-row items-center justify-between">
-              <Logo size="md" />
+             <Logo size="md" />
               <Text weight="semibold" className="text-lg text-foreground"> Immerbot</Text>
               <Pressable onPress={onClose}>
                 <ChevronLeft size={20} color="#BFAD9F" />

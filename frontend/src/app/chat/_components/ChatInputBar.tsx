@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Pressable, KeyboardAvoidingView, Platform, Modal} from "react-native";
-import { Text ,TextInput } from "../../../components/Text";
+import { View, Pressable, KeyboardAvoidingView, Platform, Modal } from "react-native";
+import { Text, TextInput } from "../../../components/Text";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ArrowUp, ChevronDown } from "lucide-react-native";
 
@@ -43,6 +43,16 @@ export default function ChatInputBar({ onSend, isWaiting = false }: Props) {
           multiline
           textAlignVertical="top"
         />
+        <Pressable
+          onPress={handleSend}
+          disabled={!canSend}
+          className={`w-10 h-10 rounded-full items-center justify-center mb-1 ${
+            canSend ? "bg-primary-light" : "bg-background-element"
+          }`}
+        >
+          <Text className="text-sm text-foreground">{selectedLanguage?.name}</Text>
+          <ChevronDown size={14} color="#8C6E60" strokeWidth={2} />
+        </Pressable>
         <Pressable
           onPress={handleSend}
           disabled={!canSend}
