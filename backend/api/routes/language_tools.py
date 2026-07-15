@@ -65,3 +65,29 @@ def get_feedback(text: str, target_lang: str):
         original_text=text,
         result=result.result,
     )
+
+class StarterPromptResult(BaseModel):
+    start: list[str]
+    
+class StarterPromptResponse(BaseModel):
+    start: list[str]
+    
+@router.get("/conversation-starters", response_model=StarterPromptResponse)
+def get_conversatrion_starters(target_lang:str, count: int = 10):
+    prompt = (
+        f"Generate {count} short, casual conversation-starter opening messages "
+        f"in {target_lang} for a language-learning chat app. Keep each one "
+        f"friendly and open-ended."
+    )
+    
+    try:
+        response = client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents = prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=StarterPromptResult,
+            ),
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate conversation starters: {e}")
