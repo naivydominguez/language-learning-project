@@ -1,5 +1,5 @@
 import os
 
-from openai import OpenAI
+from openai import AsyncOpenAI
 
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
+client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))

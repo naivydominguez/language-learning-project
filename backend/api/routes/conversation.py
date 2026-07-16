@@ -22,7 +22,6 @@ model = os.environ.get("OPENAI_CHAT_MODEL")
 
 class CreateConversationRequest(BaseModel):
     target_lang: str
-    first_message: str
     starting_prompt: str | None = None
     name: str | None = None
 
@@ -51,53 +50,6 @@ class MessageResponse(BaseModel):
 async def create_conversation(
     request: CreateConversationRequest,
     user_id: str = Depends(get_user_id),
-    current_user=Depends(get_current_user),
-):
-    if request.starting_prompt:
-        input = [
-            {"role": "assistant", "content": request.starting_prompt},
-            {"role": "user", "content": request.first_message},
-        ]
-    else:
-        input = request.first_message
-
-    # Get streaming response from OpenAI
-    try:
-        # Streams OpenAI responses in the form of {event: event_name, data: event_data} to the client
-        async def chat_stream():
-            streaming_response = await client.responses.create(
-                model=model,
-                instructions=create_instructions(current_user),
-                input=input,
-                stream=True,
-            )
-
-            async for event in streaming_response:
-                if event.type == "response.output_text.delta":
-                    data = event.delta
-                    yield f"event: delta\ndata: {data}\n\n"
-                elif event.type == "response.completed":
-                    yield "event: completed\ndata: {{}}\n\n"
-
-                    ai_response_id = event.response.id
-                    ai_message = event.response.output_text
-
-                    create_db_conversation(user_id, request, ai_message, ai_response_id)
-                elif event.type == "response.error":
-                    yield f"event: error\ndata: {event.error}\n\n"
-
-        return StreamingResponse(chat_stream(), media_type="text/event-stream")
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get response from OpenAI: {e}"
-        )
-
-
-def create_db_conversation(
-    user_id: str,
-    request: CreateConversationRequest,
-    ai_message: str,
-    ai_response_id: str,
 ):
     try:
         # Get language id
@@ -124,39 +76,29 @@ def create_db_conversation(
             .execute()
         )
         conversation_id = conversation_response.data[0]["id"]
+        conversation_created_at = conversation_response.data[0]["created_at"]
 
-        # Insert starter prompt (if applicable), first user message, and 2nd AI message
+        # Insert starter prompt (if applicable). First user message should be sent again by the client in send_message.
         if request.starting_prompt:
             supabase.table("messages").insert(
                 {
                     "conversation_id": conversation_id,
-                    "sender": "ai",
+                    "sender": "assistant",
                     "content": request.starting_prompt,
                 }
             ).execute()
 
-        supabase.table("messages").insert(
-            [
-                {
-                    "conversation_id": conversation_id,
-                    "sender": "user",
-                    "content": request.first_message,
-                },
-                {
-                    "openai_response_id": ai_response_id,
-                    "conversation_id": conversation_id,
-                    "sender": "ai",
-                    "content": ai_message,
-                },
-            ]
-        ).execute()
-
-        # Insert the AI's response into the database
-
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to create conversation in DB: {e}"
+            status_code=500, detail=f"Failed to create conversation: {e}"
         )
+
+    return ConversationResponse(
+        id=conversation_id,
+        target_lang=request.target_lang,
+        created_at=conversation_created_at,
+        name=request.name,
+    )
 
 @router.post("/{conversation_id}/messages", response_model=MessageResponse)
 def send_message(
@@ -171,16 +113,44 @@ def send_message(
     try:
         previous_message_response = (
             supabase.table("messages")
-            .select("id")
+            .select("openai_response_id")
             .eq("conversation_id", str(conversation_id))
             .order("created_at", desc=True)
             .limit(1)
             .execute()
         )
-        previous_message_id = previous_message_response.data[0]["openai_response_id"] if previous_message_response.data else None
+        previous_message_id = previous_message_response.data[0]["openai_response_id"] if previous_message_response.data else None  
 
         if previous_message_id is None:
-            raise HTTPException(status_code=404, detail="Previous message not found")
+            # Then we are sending the first message in the conversation, so we need to include and send the whole conversation context
+            starter_prompt_response = (
+                supabase.table("messages")
+                .select("sender, content")
+                .eq("conversation_id", str(conversation_id))
+                .order("created_at", desc=False)
+                .limit(1)
+                .execute()
+            )
+            if starter_prompt_response.data:
+                starter_prompt = starter_prompt_response.data[0]["content"]
+                input = [{"role": "assistant", "content": starter_prompt}, {"role": "user", "content": request.content}]
+            else:
+                input = [{"role": "user", "content": request.content}]
+            
+            responses_args = {
+                "model": model,
+                "instructions": create_instructions(current_user),
+                "input": input,
+                "stream": True,
+            }
+        else:
+            responses_args = {
+                "model": model,
+                "instructions": create_instructions(current_user),
+                "input": input,
+                "stream": True,
+                "previous_response_id": previous_message_id
+            }
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Failed to get previous message from DB: {e}"
@@ -188,15 +158,9 @@ def send_message(
 
     # Get streaming response from OpenAI
     try:
-        # Streams OpenAI responses in the form of {event: event_name, data: event_data} to the client
+        # Streams OpenAI responses in the form of `event: event_name\ndata: event_data\n\n` to the client
         async def chat_stream():
-            streaming_response = await client.responses.create(
-                model=model,
-                instructions=create_instructions(current_user),
-                input=input,
-                stream=True,
-                previous_response_id=previous_message_id
-            )
+            streaming_response = await client.responses.create(**responses_args)
 
             async for event in streaming_response:
                 if event.type == "response.output_text.delta":
@@ -236,15 +200,13 @@ def update_db_messages(
                 {
                     "openai_response_id": ai_response_id,
                     "conversation_id": conversation_id,
-                    "sender": "ai",
+                    "sender": "assistant",
                     "content": ai_message,
                 },
             ]
         ).execute()
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to update messages in DB: {e}"
-        )
+        print(f"Failed to update messages in DB: {e}")
 
 @router.get("/me")
 async def get_conversation(current_user=Depends(get_current_user)):
