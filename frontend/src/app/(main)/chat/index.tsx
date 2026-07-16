@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Pressable } from "react-native";
-import { Text } from "../../components/Text";
+import { Text } from "../../../components/Text";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import ChatInputBar from "./_components/ChatInputBar";
@@ -64,6 +64,28 @@ export default function ChatScreen() {
     }
   };
 
+
+  const translateResponse = async (word: string, language: string) => {
+    try {
+      const parmas = new URLSearchParams({ word, language });
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/translate-language?${parmas}`,
+        
+      );
+      if (!response.ok) {
+        throw new Error("Failed to translate word");
+      }
+      const data = await response.json();
+      return data.result;
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error translating word",
+        text2: "Please try again later.",
+      });
+    }
+  };
+
   const getbackendMessages = async (
     conversationId: string,
     accessToken: string,
@@ -121,6 +143,7 @@ export default function ChatScreen() {
         conversationId,
         accessToken,
       );
+      const translatedMessage = await translateResponse(aiMessage.content, "spanish");
       setMessages((prev) => [
         ...prev,
         {

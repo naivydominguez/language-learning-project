@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { Text } from "@/components/Text";
 import { LineChart } from "react-native-gifted-charts";
 import PointerComponentCreator from "./GraphPointerComponent";
-import { UserStatisticsResponse } from "@/app/progress";
+import { UserStatisticsResponse } from "@/app/(main)/progress";
 
 interface Props {
   data: UserStatisticsResponse[];

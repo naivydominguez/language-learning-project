@@ -1,8 +1,8 @@
 import React from "react";
 import { View, KeyboardAvoidingView, Platform } from "react-native";
-import {  TextInput } from "../../../components/Text";
+import {  TextInput } from "../../../../components/Text";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ChatboxActions from "../../../components/ChatboxActions";
+import ChatboxActions from "../../../../components/ChatboxActions";
 
 type Props = {
   onSend: (message: string) => void;

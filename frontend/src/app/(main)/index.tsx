@@ -1,10 +1,10 @@
 import { View, Pressable } from "react-native";
-import { Text } from "../components/Text";
+import { Text } from "../../components/Text";
 import { useRouter } from "expo-router";
 import { RotateCcw } from "lucide-react-native";
-import HamburgerButton from "../components/HamburgerBtn";
-import Navbar from "../components/Navbar";
-import Logo from "../components/Logo";
+import HamburgerButton from "../../components/HamburgerBtn";
+import Navbar from "../../components/Navbar";
+import Logo from "../../components/Logo";
 import ChatInputBar from "./chat/_components/ChatInputBar";
 import Toast from "react-native-toast-message";
 import React from "react";

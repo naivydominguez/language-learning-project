@@ -1,5 +1,5 @@
 import { View,  Pressable, Modal } from "react-native";
-import { Text } from "../../../components/Text";
+import { Text } from "../../../../components/Text";
 type WordPopupProps = {
   word: string;
   language: string;
