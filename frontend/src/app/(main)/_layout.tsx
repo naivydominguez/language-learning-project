@@ -1,7 +1,8 @@
 import { View } from "react-native";
 import HamburgerButton from "../../components/HamburgerBtn";
 import { useState } from "react";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/Navbar";
+import { Stack } from "expo-router";
 export default function RootLayout() {
   const [navOpen, setNavOpen] = useState(false);
 
@@ -12,6 +13,7 @@ export default function RootLayout() {
       </View>
 
       <Navbar visible={navOpen} onClose={() => setNavOpen(false)} />
+      <Stack screenOptions={{ headerShown: false }} />
     </View>
   );
 }
