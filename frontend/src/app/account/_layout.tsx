@@ -1,4 +1,4 @@
- import { Stack } from "expo-router";
+import { Stack } from "expo-router";
 import { HeaderShownContext } from "expo-router/build/react-navigation";
 
  export default function AccountLayout() {

@@ -51,16 +51,16 @@ export default function OnboardingIndex() {
         />
 
         <Text className={"text-xl text-center"}>
-            <Text className="text-[#8C6E60]"> Returning User? </Text>
-            
-            <Text className="text-[#B5613A]" onPress={() => router.push("/acount/signIn")}>
-                Sign In
-            </Text>
+          <Text className="text-[#8C6E60]"> Returning User? </Text>
+
+          <Text
+            className="text-[#B5613A]"
+            onPress={() => router.push("/account/signIn")}
+          >
+            Sign In
+          </Text>
         </Text>
-
       </View>
-
-
     </View>
   );
 }

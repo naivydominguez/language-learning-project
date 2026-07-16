@@ -7,30 +7,28 @@ import { OnboardingColors } from "@/constants/onboardingTheme";
 import { useState } from "react";
 import { Check } from "lucide-react-native";
 
-const options =[
-        {id:"jpdb",title:"JPDB", subtitle:"Japanese vocabulary database"},
-        {id:"anki",title:"Anki", subtitle:"Spaced repetition flashcards"},
-        {id:"quizlet",title:"Quizlet", subtitle:"Online flashcard platform"}
-    ]
+const options = [
+  { id: "jpdb", title: "JPDB", subtitle: "Japanese vocabulary database" },
+  { id: "anki", title: "Anki", subtitle: "Spaced repetition flashcards" },
+  { id: "quizlet", title: "Quizlet", subtitle: "Online flashcard platform" },
+];
 
 export default function LanguageSelections() {
-    const [selectedApps,setSelectedApps]= useState<string[]>([]);
+  const [selectedApps, setSelectedApps] = useState<string[]>([]);
 
-    function toggleApp(id:string){
-        if(selectedApps?.includes(id)){
-            setSelectedApps(selectedApps.filter((app) => app !== id));
-        }
-        else{
-            setSelectedApps([...selectedApps,id]);
-        }
+  function toggleApp(id: string) {
+    if (selectedApps?.includes(id)) {
+      setSelectedApps(selectedApps.filter((app) => app !== id));
+    } else {
+      setSelectedApps([...selectedApps, id]);
     }
+  }
 
-    const canContinue = selectedApps.length > 0
-    
+  const canContinue = selectedApps.length > 0;
+
   return (
     <View className="flex-1 justify-between bg-[#F8F3EF] px-6 pt-8 pb-6">
       <View>
-
         <View className="flex-row items-center justify-between">
           <Pressable
             onPress={() => router.push("/onboarding/personalize")}
@@ -47,64 +45,69 @@ export default function LanguageSelections() {
             Step 4 of 4
           </Text>
         </View>
-        
 
         <Text weight="bold" className="text-3xl mb-3">
           Import your vocabulary
         </Text>
 
         <Text className="text-lg text-[#8B6F63]">
-          Already using flashcards? Connect your app to skip words you already 
+          Already using flashcards? Connect your app to skip words you already
           know. You can always do this later.
         </Text>
       </View>
 
       <View>
-        {options.map((option)=>{
-            const isSelected = selectedApps?.includes(option.id);
-            return(
-                <Pressable key={option.id} onPress={()=>toggleApp(option.id)} className={`h-[120px] mt-3 flex-row items-center rounded-2xl border-2 px-8 ${
+        {options.map((option) => {
+          const isSelected = selectedApps?.includes(option.id);
+          return (
+            <Pressable
+              key={option.id}
+              onPress={() => toggleApp(option.id)}
+              className={`h-[120px] mt-3 flex-row items-center rounded-2xl border-2 px-8 ${
+                isSelected
+                  ? "border-[#BA6238] bg-[#FFF3EE]"
+                  : "border-[#E4E1DF] bg-white"
+              }`}
+            >
+              <View className="flex-1">
+                <Text weight="bold" className="text-[18px] text-[#4A2A1F]">
+                  {option.title}
+                </Text>
+                <Text className="mt-2 text-[15px] text-[#8F7164]">
+                  {option.subtitle}
+                </Text>
+              </View>
+
+              <View
+                className={`h-11 w-11 flex-row items-center justify-center rounded-full border-2 ${
                   isSelected
-                    ? "border-[#BA6238] bg-[#FFF3EE]"
+                    ? "border-[#BA6238] bg-[#BA6238]"
                     : "border-[#E4E1DF] bg-white"
-                }`}>
-                    <View className="flex-1">
-                        <Text weight="bold" className="text-[18px] text-[#4A2A1F]">{option.title}</Text>
-                        <Text className="mt-2 text-[15px] text-[#8F7164]">{option.subtitle}</Text>
-                    </View>
-
-                    <View className={`h-11 w-11 flex-row items-center justify-center rounded-full border-2 ${
-                    isSelected
-                      ? "border-[#BA6238] bg-[#BA6238]"
-                      : "border-[#E4E1DF] bg-white"
-                  }`}>
-                    {isSelected && <Check size={20} color="white"/>}
-
-                    </View>
-
-                </Pressable>
-            );
+                }`}
+              >
+                {isSelected && <Check size={20} color="white" />}
+              </View>
+            </Pressable>
+          );
         })}
       </View>
 
       <View>
         <OnboardingButton
-        title="Continue"
-        disabled={!canContinue}
-        onPress={() => {
+          title="Continue"
+          disabled={!canContinue}
+          onPress={() => {
             if (!canContinue) return;
-                router.push("/acount/signUp")}}
-      />
+            router.push("/account/signUp");
+          }}
+        />
 
-      <Pressable onPress={()=> router.push("/acount/signUp")}>
-      <Text className={"mt-3 text-xl text-[#8C6E60] text-center"}>
+        <Pressable onPress={() => router.push("/account/signUp")}>
+          <Text className={"mt-3 text-xl text-[#8C6E60] text-center"}>
             Skip for now
-        </Text>
-    </Pressable>
-
+          </Text>
+        </Pressable>
       </View>
-
-      
     </View>
   );
 }
