@@ -29,13 +29,17 @@ import { JetBrainsMono_500Medium } from "@expo-google-fonts/jetbrains-mono/500Me
 import { JetBrainsMono_600SemiBold } from "@expo-google-fonts/jetbrains-mono/600SemiBold";
 import { JetBrainsMono_700Bold } from "@expo-google-fonts/jetbrains-mono/700Bold";
 
-import "../global.css";
+import "../../global.css";
 import Toast from "react-native-toast-message";
 
 SplashScreen.preventAutoHideAsync();
 import React from "react";
+import { View } from "react-native";
+import HamburgerButton from "../../components/HamburgerBtn";
+import Navbar from "@/components/navbar";
 export default function RootLayout() {
   const queryClient = new QueryClient();
+  const [navOpen, setNavOpen] = React.useState(false);
   
   const [fontsLoaded] = useFonts({
     // Sans serif
@@ -72,11 +76,11 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaView className="flex-1">
-         {/* <View style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
+          <View style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
                 <HamburgerButton onPress={() => setNavOpen(!navOpen)} />
               </View>
         
-              <Navbar visible={navOpen} onClose={() => setNavOpen(false)} /> */}
+              <Navbar visible={navOpen} onClose={() => setNavOpen(false)} /> 
         <Stack screenOptions={{ headerShown: false }} />
         <Toast />
       </SafeAreaView>

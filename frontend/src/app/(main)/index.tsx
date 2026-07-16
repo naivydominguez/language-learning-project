@@ -1,18 +1,19 @@
 import { View, Pressable } from "react-native";
-import { Text } from "../components/Text";
+import { Text } from "../../components/Text";
 import { useRouter } from "expo-router";
 import { RotateCcw } from "lucide-react-native";
-import HamburgerButton from "../components/HamburgerBtn";
-import Navbar from "@/components/Navbar";
-import Logo from "../components/Logo";
+import HamburgerButton from "../../components/HamburgerBtn";
+import Navbar from "@/components/navbar";
+import Logo from "@/components/logo";
 import ChatInputBar from "./chat/_components/ChatInputBar";
 import Toast from "react-native-toast-message";
 import React from "react";
 
 export default function HomePage() {
-  const [navOpen, setNavOpen] = React.useState(false);
   const [convStart, setConvoStart] = React.useState("");
   const router = useRouter();
+  const [navOpen, setNavOpen] = React.useState(false);
+  
   const convStarters = [
     "Hey! I just watched a really interesting video — have you seen anything good lately?",
     "What are your plans for the weekend? I'm trying to decide what to do.",
@@ -26,9 +27,7 @@ export default function HomePage() {
     "A friend just recommended a podcast to me. Do you listen to podcasts? What kind do you like?",
   ];
   React.useEffect(() => {
-    setConvoStart(
-      convStarters[Math.floor(Math.random() * convStarters.length)],
-    );
+    setConvoStart(convStarters[Math.floor(Math.random() * convStarters.length)]);
   }, []);
 
   const handleSend = async (messageText: string) => {
@@ -74,6 +73,8 @@ export default function HomePage() {
     }
   };
 
+  
+
   return (
     <View className="flex-1">
       <View style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
@@ -88,23 +89,19 @@ export default function HomePage() {
           Hello, Learner{" "}
         </Text>
         <View className="flex-row items-center justify-between w-full gap-2 p-2 bg-white rounded-lg mt-4">
-          <View className="w-80%">
+          <View className="flex-1">
             {/* Place generated conversation start in here*/}
             <Text className="text-1xl">{convStart}</Text>
           </View>
           <Pressable
             className="flex-row items-center gap-1 p-2"
-            onPress={() =>
-              setConvoStart(
-                convStarters[Math.floor(Math.random() * convStarters.length)],
-              )
-            }
+            onPress={() => setConvoStart(convStarters[Math.floor(Math.random() * convStarters.length)])}
           >
             <RotateCcw size={14} color="#8C6E60" strokeWidth={1.75} />
           </Pressable>
         </View>
         <View className="w-full bg-white rounded-md">
-          <ChatInputBar onSend={handleSend} />
+          <ChatInputBar onSend={handleSend} showLanguagePicker={true} />
         </View>
       </View>
     </View>

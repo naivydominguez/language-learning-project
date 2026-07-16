@@ -2,8 +2,8 @@ import { useState } from "react";
 import { View } from "react-native";
 import { Text } from "@/components/Text";
 import { BarChart } from "react-native-gifted-charts";
-import PointerComponentCreator from "../_components/GraphPointerComponent";
-import { UserStatisticsResponse } from "@/app/progress";
+import PointerComponentCreator from "./GraphPointerComponent";
+import { UserStatisticsResponse } from "@/app/(main)/progress";
 
 const POINTER_CONFIG = {
   activatePointersOnLongPress: true,

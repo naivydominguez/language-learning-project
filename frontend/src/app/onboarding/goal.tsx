@@ -10,7 +10,7 @@ export default function DailyGoal() {
     const goalOptions=[ "5 minutes","10 minutes","15 minutes","30 minutes","1 hour"];
     const [selectedGoal,setSelectedGoal] = useState("15 minutes");
   return (
-    <View className="flex-1 justify-between bg-[#F8F3EF] px-6 pt-8 pb-6">
+    <View className="flex-1 justify-between bg-background-light px-6 pt-8 pb-6">
       <View>
 
         <View className="flex-row items-center justify-between">
@@ -35,7 +35,7 @@ export default function DailyGoal() {
           Daily goal
         </Text>
 
-        <Text className="text-lg text-[#8B6F63]">
+        <Text className="text-lg text-foreground-secondary">
           How long do you want to practice each day? This counts toward your streak.
         </Text>
       </View>
@@ -46,13 +46,13 @@ export default function DailyGoal() {
             return (
                 <Pressable key={goal} onPress={() => setSelectedGoal(goal)} className={`w-full rounded-xl border px-6 py-6 mb-4 flex-row justify-between items-center 
                     ${
-                    isSelected 
-                    ? "bg-[#FFF3ED] border-[#BF693F]"
+                    isSelected
+                    ? "bg-accent-light border-accent"
                     : "bg-white border-gray-200"}`}>
-                    <Text className={`text-xl ${ isSelected ? "text-[#7A3B25]" : "text-[#1F1A17]"}`}>
+                    <Text className={`text-xl ${ isSelected ? "text-primary-dark" : "text-foreground"}`}>
                         {goal}
                     </Text>
-                    {isSelected && (<Text className="text-lg text-[#B85F38]">✓</Text>)}
+                    {isSelected && (<Text className="text-lg text-primary">✓</Text>)}
 
                 </Pressable>
                 

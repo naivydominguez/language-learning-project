@@ -1,8 +1,8 @@
-import KnownWordsPreview from "@/app/progress/_components/KnownWordsPreview";
-import MasteryDistribution from "@/app/progress/_components/MasteryDistribution";
-import StreakCalendar from "@/app/progress/_components/StreakCalendar";
-import VocabGraph from "@/app/progress/_components/VocabGraph";
-import WeeklyMessages from "@/app/progress/_components/WeeklyMessages";
+import KnownWordsPreview from "@/app/(main)/progress/_components/KnownWordsPreview";
+import MasteryDistribution from "@/app/(main)/progress/_components/MasteryDistribution";
+import StreakCalendar from "@/app/(main)/progress/_components/StreakCalendar";
+import VocabGraph from "@/app/(main)/progress/_components/VocabGraph";
+import WeeklyMessages from "@/app/(main)/progress/_components/WeeklyMessages";
 import { useQuery } from "@tanstack/react-query";
 import { Pressable, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
@@ -97,7 +97,7 @@ export default function ProgressRoute() {
       className="flex flex-col bg-background pt-4 px-6"
       contentContainerClassName="gap-6 pb-6"
     >
-      <Pressable onPress={() => router.push("/homePage")} className="p-2">
+      <Pressable onPress={() => router.push("/")} className="p-2">
         <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
       </Pressable>
 

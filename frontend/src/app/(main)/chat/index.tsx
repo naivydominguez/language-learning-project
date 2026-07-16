@@ -1,12 +1,13 @@
 import React from "react";
 import { View, Pressable } from "react-native";
-import { Text } from "../../components/Text";
+import { Text } from "../../../components/Text";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import ChatInputBar from "./_components/ChatInputBar";
 import MessageBubble from "./_components/MessageBubble";
-import { FlatList } from "react-native-gesture-handler";
+import { FlatList, ScrollView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
+import WordPopup from "./_components/WordPopup";
 
 type Message = {
   id: string;
@@ -14,7 +15,6 @@ type Message = {
   messageContent: string;
 };
 const accessToken = ""; // Replace with supabase auth token
-
 export default function ChatScreen() {
   const router = useRouter();
   const { start, initialMessage, title, conversationId } =
@@ -24,10 +24,13 @@ export default function ChatScreen() {
       title?: string;
       conversationId?: string;
     }>();
+    const nativeLang= "Spanish"; // Replace with user's native language
+
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [isWaiting, setIsWaiting] = React.useState(false);
   const hasSentInitial = React.useRef(false);
-
+  const convLang= "english" // temp
+ const [selectedWord, setSelectedWord] = React.useState<string | null>(null);
   const sendMessageToAI = async (
     context: string,
     conversationId: string,
@@ -62,6 +65,28 @@ export default function ChatScreen() {
       //  throw error;
     }
   };
+
+  const translateResponse = async (word: string, language: string) => {
+    try {
+      const parmas = new URLSearchParams({ word, language });
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/translate-language?${parmas}`,
+        
+      );
+      if (!response.ok) {
+        throw new Error("Failed to translate word");
+      }
+      const data = await response.json();
+      return data.result;
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error translating word",
+        text2: "Please try again later.",
+      });
+    }
+  };
+  
 
   const getbackendMessages = async (
     conversationId: string,
@@ -120,12 +145,18 @@ export default function ChatScreen() {
         conversationId,
         accessToken,
       );
+
+      const tranResponse =
+        nativeLang === "Spanish" && convLang === "english"
+          ? (await translateResponse(aiMessage.content, "spanish")) ?? aiMessage.content
+          : aiMessage.content;
+
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now().toString() + aiMessage.content,
           sender: "ai",
-          messageContent: aiMessage.content,
+          messageContent: tranResponse,
         },
       ]);
     } catch (error) {
@@ -164,27 +195,36 @@ export default function ChatScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <View
-        className="flex-row items-center gap-2 mb-4 bg-white border-shadow border-border pl-4 pb-2"
-        style={{ paddingTop: 60 }}
-      >
-        <Pressable onPress={() => router.push("/")} className="p-2">
-          <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
-        </Pressable>
-        {title ? (
-          <Text weight="semibold" className="text-lg text-foreground mb-2">
-            {title}
-          </Text>
-        ) : null}
-      </View>
-      <FlatList
-        data={messages}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <MessageBubble message={item} />}
-        contentContainerStyle={{ padding: 16, gap: 8 }}
-        className="p-4"
+      <ScrollView className="flex-1 bg-background">
+        <View
+          className="flex-row items-center gap-2 mb-4 bg-white border-shadow border-border pl-4 pb-2"
+          style={{ paddingTop: 60 }}
+        >
+          <Pressable onPress={() => router.push("/")} className="p-2">
+            <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
+          </Pressable>
+          {title ? (
+            <Text weight="semibold" className="text-lg text-foreground mb-2">
+              {title}
+            </Text>
+          ) : null}
+        </View>
+        <FlatList
+          data={messages}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <MessageBubble message={item} onWordPress={setSelectedWord} />}
+          contentContainerStyle={{ padding: 16, gap: 8 }}
+          className="p-4"
+        />
+      </ScrollView>
+      <ChatInputBar onSend={handleSendBackend} isWaiting={isWaiting} showLanguagePicker={false} />
+      <WordPopup
+        word={selectedWord || ""}
+        language="spanish"
+        visible={!!selectedWord}
+        OnDismiss={() => setSelectedWord(null)}
       />
-      <ChatInputBar onSend={handleSendBackend} isWaiting={isWaiting} />
     </View>
   );
 }
+   

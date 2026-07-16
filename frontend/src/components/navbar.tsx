@@ -1,12 +1,13 @@
 import { View, Pressable, Animated } from "react-native";
 import { Text } from "./Text";
 import { useRouter, usePathname } from "expo-router";
-import { useRef, useEffect } from "react";
-import Logo from "./Logo";
+import { useRef, useEffect } from "react"
+
 import { ChevronLeft, Plus, MessageCircle, Settings, TrendingUp } from "lucide-react-native";
 import Toast from "react-native-toast-message";
 import { Motion } from "@/constants/theme";
 import { useQuery } from "@tanstack/react-query";
+import Logo from "./logo";
 const DRAWER_WIDTH = 220;
 
 type Props = {
@@ -34,7 +35,7 @@ export default function Navbar({ visible, onClose }: Props) {
   const overlayOpacity = useRef(new Animated.Value(0)).current;
 
   const recentConversationsData = useQuery({
-    queryKey: ["recentConversations" , visible],
+    queryKey: ["recentConversations", visible],
     queryFn: async () => {
       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/me`, {
         headers: {
@@ -46,7 +47,7 @@ export default function Navbar({ visible, onClose }: Props) {
           type: "error",
           text1: "Couldn't load recent conversations",
           text2: "Please try again later.",
-        })
+        });
       }
       const data = await response.json();
       console.log(data);
@@ -111,7 +112,7 @@ export default function Navbar({ visible, onClose }: Props) {
         <View className="flex-1 bg-background-light">
           <View className="px-5 pl-4 py-4 border-b border-background-dark">
             <View className="flex-row items-center justify-between">
-              <Logo size="md" />
+             <Logo size="md" />
               <Text weight="semibold" className="text-lg text-foreground"> Immerbot</Text>
               <Pressable onPress={onClose}>
                 <ChevronLeft size={20} color="#BFAD9F" />

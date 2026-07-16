@@ -7,9 +7,9 @@ import { BookOpen, MessageCircle, Sparkles } from "lucide-react-native";
 
 export default function OnboardingIndex() {
   return (
-    <View className="flex-1 justify-between p-8 bg-[#F8F3EF]">
+    <View className="flex-1 justify-between p-8 bg-background-light">
       <View>
-        <Text weight="bold" className="text-[#B8663A] tracking-widest mb-4">
+        <Text weight="bold" className="text-primary tracking-widest mb-4">
           THE SCIENCE
         </Text>
 
@@ -17,7 +17,7 @@ export default function OnboardingIndex() {
           Language is acquired, not studied.
         </Text>
 
-        <Text className="text-lg text-[#8B6F63] mb-3">
+        <Text className="text-lg text-foreground-secondary mb-3">
           Research by linguist Stephen Krashen shows that people acquire
           language by understanding input that is slightly beyond their current
           level — not through memorizing grammar rules.

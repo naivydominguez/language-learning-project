@@ -45,6 +45,10 @@
   --primary: 181 97 58; /* #b5613a */
   --primary-dark: 111 58 34; /* #6f3a22 */
 
+  /* ── Accent — selected/active state highlight ── */
+  --accent-light: 255 243 237; /* #fff3ed */
+  --accent: 191 105 63; /* #bf693f */
+
   /* We also use this as the color for successful interactions */
   --secondary-light: 244 245 238; /* #f4f5ee */
   --secondary: 107 122 85; /* #6b7a55 */

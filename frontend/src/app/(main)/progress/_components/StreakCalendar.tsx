@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { Text } from "@/components/Text";
 import { WeeklyHeatMap } from "@symbiot.dev/react-native-heatmap";
-import { UserStatisticsResponse } from "@/app/progress";
+import { UserStatisticsResponse } from "@/app/(main)/progress";
 
 const HEATMAP_COLORS = {
   cellDefaultColor: "#faf7f4", // background-light
