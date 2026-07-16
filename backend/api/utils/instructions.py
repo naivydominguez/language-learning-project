@@ -1,6 +1,5 @@
 from fastapi import Depends, HTTPException
-import supabase
-
+from api.utils.supabase_client import supabase
 from api.utils.auth import get_current_user
 
 
@@ -8,6 +7,7 @@ def create_instructions(current_user = Depends(get_current_user)):
     try:
         user_response = supabase.table('users').select('*').eq('user_id', current_user.id).execute()
     except Exception as e:
+        print(f"Error fetching user settings: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
     if not user_response.data:
@@ -16,11 +16,12 @@ def create_instructions(current_user = Depends(get_current_user)):
     user_settings = user_response.data[0]
 
     try:
-        known_words_response = supabase.table('user_words').select('word').eq('user_id', current_user.id).execute()
+        known_words_response = supabase.table('user_words').select('words(word)').eq('user_id', current_user.id).execute()
     except Exception as e:
+        print(f"Error fetching known words: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-    known_words = [row['word'] for row in known_words_response.data]
+    known_words = [row['words']['word'] for row in known_words_response.data]
 
     instructions = f"# Personality Prompt\n{user_settings.get('personality_prompt') or 'You are a friendly, encouraging language tutor.'}"
     name = user_settings.get('name')
@@ -37,3 +38,4 @@ def create_instructions(current_user = Depends(get_current_user)):
         )
 
     return instructions
+    # return "Respond in fewer than 20 characters."

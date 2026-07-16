@@ -135,7 +135,7 @@ def send_message(
                 input = [{"role": "assistant", "content": starter_prompt}, {"role": "user", "content": request.content}]
             else:
                 input = [{"role": "user", "content": request.content}]
-            
+
             responses_args = {
                 "model": model,
                 "instructions": create_instructions(current_user),
@@ -164,6 +164,7 @@ def send_message(
             async for event in streaming_response:
                 if event.type == "response.output_text.delta":
                     data = event.delta
+                    print(f"Streaming delta: {data}")
                     yield f"event: delta\ndata: {data}\n\n"
                 elif event.type == "response.completed":
                     yield "event: completed\ndata: {{}}\n\n"
@@ -192,13 +193,13 @@ def update_db_messages(
         supabase.table("messages").insert(
             [
                 {
-                    "conversation_id": conversation_id,
+                    "conversation_id": str(conversation_id),
                     "sender": "user",
                     "content": request.content,
                 },
                 {
                     "openai_response_id": ai_response_id,
-                    "conversation_id": conversation_id,
+                    "conversation_id": str(conversation_id),
                     "sender": "assistant",
                     "content": ai_message,
                 },

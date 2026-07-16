@@ -5,15 +5,13 @@ import { supabase } from "@/lib/supabase";
  * Streams chat messages
  */
 export function useChat(conversationId: string) {
-  const [message, setMessage] = useState("");
   const [isWaiting, setIsWaiting] = useState(false);
 
   const buffer = useRef("")
 
-  const sendMessage = useCallback(async (content: string) => {
+  const sendMessage = useCallback(async (content: string, onChunk: (chunk: string) => void) => {
     if (isWaiting) return; // Prevent sending if already waiting for a response
 
-    setMessage("");
     setIsWaiting(true);
 
     const supabaseSession = await supabase.auth.getSession();
@@ -49,7 +47,7 @@ export function useChat(conversationId: string) {
             const eventData = fields[1].replace("data: ", "");
 
             if (eventType === "delta") {
-                setMessage((prev) => prev + eventData);
+                onChunk(eventData);
             } else if (eventType === "completed") {
                 setIsWaiting(false);
             } else if (eventType === "error") {
@@ -66,7 +64,7 @@ export function useChat(conversationId: string) {
     }
   }, [conversationId]);
 
-  return { message, isWaiting, sendMessage };
+  return { isWaiting, sendMessage };
 }
 
 /**
