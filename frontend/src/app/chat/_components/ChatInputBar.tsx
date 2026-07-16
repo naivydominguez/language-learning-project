@@ -23,10 +23,11 @@ export default function ChatInputBar({ onSend, isWaiting = false, showLanguagePi
     
   return (
     <KeyboardAvoidingView
+    
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ marginBottom: insets.bottom }}
     >
-      <View className="flex items-center gap-2 p-2 bg-white rounded-lg shadow-md">
+      <View className="flex  gap-2 p-2 bg-white rounded-lg shadow-md w-full">
         <View>
           <TextInput
             className="flex-1 text-base text-foreground px-4 py-3 mr-2 rounded-xl bg-white max-h-32 p-2"

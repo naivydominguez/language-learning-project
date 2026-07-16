@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View } from "react-native";
 import { Text } from "@/components/Text";
 import { BarChart } from "react-native-gifted-charts/dist/BarChart";
-import PointerComponentCreator from "../_components/GraphPointerComponent";
+import PointerComponentCreator from "./GraphPointerComponent";
 import GraphLegendItem from "@/app/progress/_components/GraphLegendItem";
 import { useQuery } from "@tanstack/react-query";
 

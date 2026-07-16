@@ -55,7 +55,7 @@ def create_conversation(request: CreateConversationRequest, user_id: str = Depen
     row = response.data[0]
     conversation_id = row["id"]
 
-     try:
+    try:
         supabase.table("messages").insert({
             "conversation_id": str(conversation_id),
             "sender": "AI",
