@@ -8,11 +8,11 @@ import { signInWithGoogle, signInWithApple } from "@/lib/socialAuth";
 import GoogleButton from "@/components/GoogleButton";
 import AppleButton from "@/components/AppleButton";
 
-export default function SignIn() {
+export default function SignUp() {
   const handleGoogleSignIn = async () => {
     try {
       const session = await signInWithGoogle();
-
+      //console.log("Sign-in user:",session?.user.email);
       if (session) {
         router.replace("/");
       }
@@ -35,7 +35,7 @@ export default function SignIn() {
   return (
     <View className="flex-1 bg-background-light px-6 pt-8 pb-6">
       <Pressable
-        onPress={() => router.push("/onboarding")}
+        onPress={() => router.push("/onboarding/import-vocab")}
         className="-ml-1 -mt-1 p-2 "
       >
         <ArrowLeft
@@ -44,7 +44,6 @@ export default function SignIn() {
           strokeWidth={1.75}
         />
       </Pressable>
-
       <View className="flex-1 justify-center">
         <View className="mb-10">
           <Text
@@ -76,12 +75,12 @@ export default function SignIn() {
             className="text-foreground text-2xl"
             style={{ fontFamily: "sans-serif", fontWeight: 600 }}
           >
-            Welcome back
+            Create an acccount
           </Text>
 
           <Text className="mt-2 text-base text-foreground-secondary">
             {" "}
-            Sign in to continue your practice
+            Start your immersion journey
           </Text>
 
           <View className="mt-6 gap-3">
@@ -93,15 +92,15 @@ export default function SignIn() {
 
       <View className="mt-8 flex-row justify-center pb-6">
         <Text className="text-base text-foreground-secondary">
-          Don't have an account?{" "}
+          Already have an account{" "}
         </Text>
 
-        <Pressable onPress={() => router.push("/account/signUp")}>
+        <Pressable onPress={() => router.push("/account/sign-in")}>
           <Text
             weight="semibold"
             className="text-base font-semibold text-primary"
           >
-            Get started{" "}
+            Sign in{" "}
           </Text>
         </Pressable>
       </View>

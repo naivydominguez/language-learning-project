@@ -87,10 +87,10 @@ export default function LanguageSelections() {
       <View>
         <OnboardingButton
         title="Continue"
-        onPress={() => router.push("/")}
+        onPress={() => router.push("/account/sign-up")}
       />
 
-      <Pressable onPress={()=> router.push("/")}>
+      <Pressable onPress={()=> router.push("/account/sign-up")}>
       <Text className={"mt-3 text-xl text-foreground-secondary text-center"}>
             Skip for now
           </Text>
