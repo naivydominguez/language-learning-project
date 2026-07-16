@@ -1,7 +1,7 @@
 import { View, Pressable } from "react-native";
-import { Text } from "../../../components/Text";
+import { Text } from "../../../../components/Text";
 import { useRouter } from "expo-router";
-import KnownWordsPill from "@/app/progress/_components/KnownWordsPill";
+import KnownWordsPill from "@/app/(main)/progress/_components/KnownWordsPill";
 import { ChevronRight } from "lucide-react-native";
 
 interface Props {

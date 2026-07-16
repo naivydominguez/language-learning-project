@@ -40,7 +40,7 @@ export default function LanguageSelections() {
     
 
   return (
-    <View className="flex-1 justify-between bg-[#F8F3EF] px-6 pt-8 pb-6">
+    <View className="flex-1 justify-between bg-background-light px-6 pt-8 pb-6">
       <View className="flex-row items-center justify-between">
         <Pressable onPress={() => router.push("/onboarding")} className="-ml-1 -mt-1 p-2">
             <ArrowLeft
@@ -59,7 +59,7 @@ export default function LanguageSelections() {
           What are you learning?
         </Text>
 
-        <Text className="text-lg text-[#8B6F63]">
+        <Text className="text-lg text-foreground-secondary">
           Choose one or more target languages.
         </Text>
 
@@ -69,14 +69,14 @@ export default function LanguageSelections() {
             const isSelected = selectedLanguages.includes(language.name);
             return(
                 <Pressable key={language.name} onPress={() => toggleLang(language.name)}className={`flex-row items-center justify-between border rounded-xl px-6 py-5 mb-4 ${
-                    isSelected 
-                    ? "bg-[#FFF3ED] border-[#BF693F]"
+                    isSelected
+                    ? "bg-accent-light border-accent"
                     : "bg-white border-gray-200"}`}>
                     <View className="flex-row items-center">
                         <Text className="text-xl mr-5">{language.flag}</Text>
-                        <Text className={`text-xl ${isSelected ? "text-[#7A3F2A]" : "text-[#1F1A17]"}`}>{language.name}</Text>
+                        <Text className={`text-xl ${isSelected ? "text-primary-dark" : "text-foreground"}`}>{language.name}</Text>
                     </View>
-                    {isSelected && (<View className="w-9 h-9 rounded-full bg-[#BF693F] items-center justify-center">
+                    {isSelected && (<View className="w-9 h-9 rounded-full bg-accent items-center justify-center">
                         <Text weight="bold" className="text-white text-xl">✓</Text>
                     </View>)}
 
@@ -87,7 +87,7 @@ export default function LanguageSelections() {
       </ScrollView>
 
       <View className="mt-6">
-        <Text weight="bold" className="text-[#B8A99F] tracking-widest mb-3">
+        <Text weight="bold" className="text-foreground-tertiary tracking-widest mb-3">
             YOUR NATIVE LANGUAGE
         </Text>
 
