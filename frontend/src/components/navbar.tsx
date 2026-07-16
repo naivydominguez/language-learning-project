@@ -7,7 +7,7 @@ import { ChevronLeft, Plus, MessageCircle, Settings, TrendingUp } from "lucide-r
 import Toast from "react-native-toast-message";
 import { Motion } from "@/constants/theme";
 import { useQuery } from "@tanstack/react-query";
-import Logo from "./Logo";
+import Logo from "./logo";
 const DRAWER_WIDTH = 220;
 
 type Props = {

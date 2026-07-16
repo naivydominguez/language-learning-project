@@ -34,9 +34,9 @@ import Toast from "react-native-toast-message";
 
 SplashScreen.preventAutoHideAsync();
 import React from "react";
-import Navbar from "../../components/Navbar";
 import { View } from "react-native";
 import HamburgerButton from "../../components/HamburgerBtn";
+import Navbar from "@/components/navbar";
 export default function RootLayout() {
   const queryClient = new QueryClient();
   const [navOpen, setNavOpen] = React.useState(false);
