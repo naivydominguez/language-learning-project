@@ -39,7 +39,7 @@ export default function ChatInputBar({ onSend, isWaiting = false, showLanguagePi
             textAlignVertical="top"
           />
         </View>
-        <View>
+        <View className="border-t border-foreground/10 pt-1">
           <ChatboxActions onSend={handleSend} canSend={canSend} showLanguagePicker={showLanguagePicker} />
         </View>
       </View>

@@ -53,10 +53,11 @@ export default function LanguagePicker() {
     <View>
       <Pressable
         onPress={() => setLanguagePickerOpen(true)}
-        className="h-10 px-3 rounded-full flex-row items-center justify-center gap-1 mb-1 bg-primary-light"
+        className="px-5 py-3 rounded-xl flex-row items-center gap-2.5 mb-1 bg-background-light border border-foreground/10"
       >
-        <Text className="text-sm text-foreground">{selectedLanguage?.name}</Text>
-        <ChevronDown size={14} color="#8C6E60" strokeWidth={2} />
+        <Text className="text-xl">{selectedLanguage?.flag}</Text>
+        <Text className="text-md font-semi text-foreground">{selectedLanguage?.name}</Text>
+        <ChevronDown size={18} color="#BFAD9F" strokeWidth={2} />
       </Pressable>
       <Modal
         visible={languagePickerOpen}
