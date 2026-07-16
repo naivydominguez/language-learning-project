@@ -10,9 +10,10 @@ import Toast from "react-native-toast-message";
 import React from "react";
 
 export default function HomePage() {
-  const [navOpen, setNavOpen] = React.useState(false);
   const [convStart, setConvoStart] = React.useState("");
   const router = useRouter();
+  const [navOpen, setNavOpen] = React.useState(false);
+  
   const convStarters = [
     "Hey! I just watched a really interesting video — have you seen anything good lately?",
     "What are your plans for the weekend? I'm trying to decide what to do.",

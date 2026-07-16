@@ -33,10 +33,14 @@ import "../global.css";
 import Toast from "react-native-toast-message";
 
 SplashScreen.preventAutoHideAsync();
-
+import React from "react";
+import Navbar from "../components/Navbar";
+import { View } from "react-native";
+import HamburgerButton from "../components/HamburgerBtn";
 export default function RootLayout() {
   const queryClient = new QueryClient();
-
+  const [navOpen, setNavOpen] = React.useState(false);
+  
   const [fontsLoaded] = useFonts({
     // Sans serif
     "DMSans-Thin": DMSans_100Thin,
@@ -72,6 +76,11 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaView className="flex-1">
+         {/* <View style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
+                <HamburgerButton onPress={() => setNavOpen(!navOpen)} />
+              </View>
+        
+              <Navbar visible={navOpen} onClose={() => setNavOpen(false)} /> */}
         <Stack screenOptions={{ headerShown: false }} />
         <Toast />
       </SafeAreaView>

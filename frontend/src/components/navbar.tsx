@@ -35,7 +35,7 @@ export default function Navbar({ visible, onClose }: Props) {
   const overlayOpacity = useRef(new Animated.Value(0)).current;
 
   const recentConversationsData = useQuery({
-    queryKey: ["recentConversations" , visible],
+    queryKey: ["recentConversations", visible],
     queryFn: async () => {
       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/me`, {
         headers: {
@@ -47,7 +47,7 @@ export default function Navbar({ visible, onClose }: Props) {
           type: "error",
           text1: "Couldn't load recent conversations",
           text2: "Please try again later.",
-        })
+        });
       }
       const data = await response.json();
       console.log(data);
