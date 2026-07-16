@@ -15,7 +15,6 @@ type Message = {
   messageContent: string;
 };
 const accessToken = ""; // Replace with supabase auth token
-
 export default function ChatScreen() {
   const router = useRouter();
   const { start, initialMessage, title, conversationId } =
@@ -25,9 +24,12 @@ export default function ChatScreen() {
       title?: string;
       conversationId?: string;
     }>();
+    const nativeLang= "Spanish"; // Replace with user's native language
+
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [isWaiting, setIsWaiting] = React.useState(false);
   const hasSentInitial = React.useRef(false);
+  const convLang= "english" // temp
  const [selectedWord, setSelectedWord] = React.useState<string | null>(null);
   const sendMessageToAI = async (
     context: string,
@@ -64,7 +66,6 @@ export default function ChatScreen() {
     }
   };
 
-
   const translateResponse = async (word: string, language: string) => {
     try {
       const parmas = new URLSearchParams({ word, language });
@@ -85,6 +86,7 @@ export default function ChatScreen() {
       });
     }
   };
+  
 
   const getbackendMessages = async (
     conversationId: string,
@@ -143,13 +145,18 @@ export default function ChatScreen() {
         conversationId,
         accessToken,
       );
-      const translatedMessage = await translateResponse(aiMessage.content, "spanish");
+
+      const tranResponse =
+        nativeLang === "Spanish" && convLang === "english"
+          ? (await translateResponse(aiMessage.content, "spanish")) ?? aiMessage.content
+          : aiMessage.content;
+
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now().toString() + aiMessage.content,
           sender: "ai",
-          messageContent: aiMessage.content,
+          messageContent: tranResponse,
         },
       ]);
     } catch (error) {
