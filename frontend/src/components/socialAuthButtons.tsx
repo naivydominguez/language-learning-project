@@ -26,11 +26,6 @@ export default function SocialAuthButtons() {
             style={{width:"100%", height:60 }}
             onPress={handleApplePress}/>
 
-            <Pressable onPress={signInWithGoogle} className="mt-4 h-[60px] items-center justify-center rounded-[16px] border border-[#DDD8D5]">
-                <Text className="text-[18px] text-[#201810]">
-                    Continue with Google 
-                </Text>
-            </Pressable>
         </View>
     
 

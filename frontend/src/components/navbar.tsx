@@ -16,7 +16,7 @@ type Props = {
 const accessToken = ""; // Replace with your actual access token
 
 const NAV_ITEMS = [
-  { label: "Chat", path: "/homePage", icon: MessageCircle },
+  { label: "Chat", path: "/", icon: MessageCircle },
   { label: "Settings", path: "/settings", icon: Settings },
   { label: "Progress", path: "/progress", icon: TrendingUp },
 ] as const;
@@ -118,7 +118,7 @@ export default function Navbar({ visible, onClose }: Props) {
               </Pressable>
             </View>
             <Pressable
-              onPress={() => navigate("/homePage")}
+              onPress={() => navigate("/")}
               className="flex-row items-center justify-center gap-1.5 mt-3 px-2.5 py-2 rounded-lg border border-primary/25 bg-primary/10"
             >
               <Plus size={13} color="#B5613A" strokeWidth={2.5} />

@@ -23,7 +23,7 @@ export default function OnboardingIndex() {
           level — not through memorizing grammar rules.
         </Text>
 
-        <View className="gap-y-4">
+        <View>
           <InfoCard
             Icon={BookOpen}
             title="Comprehensible input"

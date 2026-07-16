@@ -1,13 +1,26 @@
-import { View, Text,Pressable, TextInput } from "react-native";
+import { View, Pressable } from "react-native";
+import { Text } from "@/components/Text";
 import { router } from "expo-router";
-import { useState } from "react";
-import SocialAuthButtons from "@/components/socialAuthButtons";
+import { use, useState } from "react";
+import {signInWithGoogle} from "@/lib/socialAuth";
+import { EarOff } from "lucide-react-native";
+import GoogleButton from "@/components/GoogleButton";
 
 
 
 export default function SignIn() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+
+    const handleGoogleSignIn = async () =>{
+        try{
+            const session = await signInWithGoogle();
+            //console.log("Sign-in user:",session?.user.email);
+            if(session){router.replace('/home')}
+
+        } catch(error){
+            console.error("Google sign-in error", error);
+        }
+    };
+
   return (
     
     <View className="flex-1 bg-[#F8F3EF] px-6 pt-10">
@@ -26,53 +39,10 @@ export default function SignIn() {
 
         <Text className="mt-2 text-[16px] text-[#8C6E60]"> Sign in to continue your practice</Text>
 
-        
-        <View className="mt-8">
-            <Text className="mb-2 text-[16px] text-[#8C6E60]">Email</Text>
 
-            <TextInput
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="you@example.com"
-                  placeholderTextColor="#918A84"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  className="h-[64px] rounded-[18px] bg-[#EAE1DA] px-5 text-[18px] text-[#201810]"
-                />
-        </View>
-        
-        <View className="mt-5">
-            <View className="mb-2 flex-row items-center justify-between">
-                <Text className="text-[16px] text-[#8C6E60]">Password</Text>
+        <GoogleButton onPress={handleGoogleSignIn}/>
 
-                <Pressable>
-                    <Text className="text-[16px] text-[#8C6E60]">Forgot?</Text>
-                </Pressable>
-            </View>
-
-            <TextInput
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="••••••••"
-                  placeholderTextColor="#918A84"   
-                  secureTextEntry      
-                  className="h-[64px] rounded-[18px] bg-[#EAE1DA] px-5 text-[18px] text-[#201810]"
-                />
-
-            <Pressable className="mt-8 h-[60px] items-center justify-center rounded-[16px] bg-[#BD6138]"
-            onPress={()=> {console.log(email,password)}}>
-                <Text className="text-[20px] font-semibold text-white"> Sign In</Text>
-            </Pressable>
-        </View>
-
-        <View className="my-7 flex-row items-center">
-            <View className="h-px flex-1 bg-[#DED8D4]"/>
-            <Text className="mx-4 text-[16px] text-[#B49A8B]"> or </Text>
-
-            <View className="h-px flex-1 bg-[#DED8D4]"/>
-        </View>
-
-        <SocialAuthButtons/>
+    
 
 
 
@@ -90,11 +60,6 @@ export default function SignIn() {
       </View>
 
       
-
-
-
-
-
 
     </View>
   );
