@@ -33,7 +33,7 @@ async def post_messages(messages: Messages, current_user = Depends(get_current_u
 
 
 @router.get('/{conversation_id}')
-async def get_messages(conversation_id: str):
+async def get_messages(conversation_id: str, current_user = Depends(get_current_user)):
     try:
         response = supabase.table('messages').select('*').eq('conversation_id', conversation_id).execute()
     except Exception as e:
@@ -41,5 +41,39 @@ async def get_messages(conversation_id: str):
 
     if not response.data:
         raise HTTPException(status_code=404, detail="Messages not found")
+    
+    try:
+        conversation_response = (
+            supabase.table("conversations").select("language_id").eq("id", conversation_id).execute()
+        )
+        language_id = conversation_response.data[0]["language_id"]
+        
+        if not conversation_response.data:
+            raise HTTPException(status_code=500, detail=f"Failed to load known words: {e}")
+        
+        language_response = (
+            supabase.table("languages").select("name").eq("id", language_id).execute()
+        )
+        
+        target_language = language_response.data[0]["name"]
+        known_words_response = (
+            supabase.table("known_words_view").select("word").eq("language", target_language).eq("user_id", current_user.id).execute()
+        )
+        
+        known_words = {row["word"].lower() for row in known_words_response.data}
+        result = []
+        for message in response.data:
+            if message["sender"] == "assistant":
+                unknown_words = [
+                    word for word in message["content"].split()
+                    if word.lower() not in known_words
+                ]
+            else:
+                unknown_words = []
+            result.append({"message": message, "unknown_words": unknown_words})
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500,detail=f"Failed to load known words: {e}")
 
-    return response.data
+    return result
