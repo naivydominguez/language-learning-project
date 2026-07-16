@@ -77,7 +77,7 @@ async def create_conversation(
         )
         conversation_id = conversation_response.data[0]["id"]
         conversation_created_at = conversation_response.data[0]["created_at"]
-
+        
         # Insert starter prompt (if applicable). First user message should be sent again by the client in send_message.
         if request.starting_prompt:
             supabase.table("messages").insert(
@@ -87,7 +87,23 @@ async def create_conversation(
                     "content": request.starting_prompt,
                 }
             ).execute()
-
+            
+            
+            known_words_ids_response =  supabase.table("user_words").select("word_id").eq("user_id", user_id).execute()
+                
+            known_words_ids = [row["word_id"] for row in known_words_ids_response.data]
+            
+            known_words = set()
+            if known_words_ids:
+                known_words_response = (
+                    supabase.table("known_words_view")
+                    .select("word")
+                    .eq("language", request.target_lang)
+                    .in_("id", known_words_ids)
+                    .execute()
+                )
+                known_words = {row["word"].lower() for row in known_words_response.data}
+            unknown_words = 
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Failed to create conversation: {e}"
