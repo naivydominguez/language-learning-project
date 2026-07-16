@@ -5,6 +5,7 @@ import React from "react";
 import { Modal, Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ChevronDown } from "lucide-react-native";
+import { supabase } from "@/lib/supabase";
 
 const LANGUAGES = [
   { name: "Japanese", flag: "🇯🇵" },
@@ -19,8 +20,6 @@ const LANGUAGES = [
   { name: "Russian", flag: "🇷🇺" },
 ];
 
-const accessToken = ""; // Replace with your actual access token
-
 export default function LanguagePicker() {
   const [language, setLanguage] = React.useState(LANGUAGES[0].name);
   const insets = useSafeAreaInsets();
@@ -30,6 +29,9 @@ export default function LanguagePicker() {
   useQuery({
     queryKey: ["userLanguage"],
     queryFn: async () => {
+      const supabaseSession = await supabase.auth.getSession();
+      const accessToken = supabaseSession.data.session?.access_token;
+
       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/user_languages/me`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,

@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Pressable, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
+import { supabase } from "@/lib/supabase";
 
 const AXIS_TEXT_STYLES = {
   color: "#bfad9f", // foreground-tertiary
@@ -21,11 +22,12 @@ export type UserStatisticsResponse = {
 };
 
 export default function ProgressRoute() {
-  const accessToken = "temp, TODO replace with actual token"; // TODO
-
   const statsData = useQuery({
     queryKey: ["temporalUserStatistics"],
     queryFn: async () => {
+      const supabaseSession = await supabase.auth.getSession();
+      const accessToken = supabaseSession.data.session?.access_token;
+
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_statistics/me`,
         {
@@ -47,6 +49,9 @@ export default function ProgressRoute() {
   const wordsData = useQuery({
     queryKey: ["knownWords10Recent"],
     queryFn: async () => {
+      const supabaseSession = await supabase.auth.getSession();
+      const accessToken = supabaseSession.data.session?.access_token;
+
       const params = new URLSearchParams();
       params.set("limit", "10");
       params.set("sort_by", "recent");
@@ -72,6 +77,9 @@ export default function ProgressRoute() {
   const wordsCountData = useQuery({
     queryKey: ["knownWordsCount"],
     queryFn: async () => {
+      const supabaseSession = await supabase.auth.getSession();
+      const accessToken = supabaseSession.data.session?.access_token;
+
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_known_words/count`,
         {

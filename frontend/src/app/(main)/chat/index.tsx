@@ -8,13 +8,13 @@ import MessageBubble from "./_components/MessageBubble";
 import { FlatList, ScrollView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 import WordPopup from "./_components/WordPopup";
+import { supabase } from "@/lib/supabase";
 
 type Message = {
   id: string;
   sender: "user" | "ai";
   messageContent: string;
 };
-const accessToken = ""; // Replace with supabase auth token
 export default function ChatScreen() {
   const router = useRouter();
   const { start, initialMessage, title, conversationId } =
@@ -88,9 +88,8 @@ export default function ChatScreen() {
   };
   
 
-  const getbackendMessages = async (
+  const getBackendMessages = async (
     conversationId: string,
-    accessToken: string,
   ) => {
     try {
       const response = await fetch(
@@ -139,7 +138,8 @@ export default function ChatScreen() {
       };
       setMessages((prev) => [...prev, newMessage]);
 
-      const accessToken = "temporary-access-token"; // Replace access token from supabase auth
+      const supabaseSession = await supabase.auth.getSession();
+      const accessToken = supabaseSession.data.session?.access_token ?? "";
       const aiMessage = await sendMessageToAI(
         messageText,
         conversationId,
@@ -189,7 +189,7 @@ export default function ChatScreen() {
         handleSendBackend(initialMessage);
       }
     } else if (conversationId) {
-      getbackendMessages(conversationId, accessToken);
+      getBackendMessages(conversationId);
     }
   }, [start, initialMessage, conversationId]);
 

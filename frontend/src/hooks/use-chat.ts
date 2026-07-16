@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from "react";
+import { supabase } from "@/lib/supabase";
 
 /**
  * Streams chat messages
@@ -15,7 +16,8 @@ export function useChat(conversationId: string) {
     setMessage("");
     setIsWaiting(true);
 
-    const accessToken = ""; // Replace with supabase auth token
+    const supabaseSession = await supabase.auth.getSession();
+    const accessToken = supabaseSession.data.session?.access_token;
     const response = await fetch(
       `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${conversationId}/messages`,
       {

@@ -5,6 +5,7 @@ import { BarChart } from "react-native-gifted-charts/dist/BarChart";
 import PointerComponentCreator from "./GraphPointerComponent";
 import GraphLegendItem from "@/app/(main)/progress/_components/GraphLegendItem";
 import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 
 const POINTER_CONFIG = {
   activatePointersOnLongPress: true,
@@ -28,11 +29,12 @@ interface Props {
 const MasteryDistribution = ({ axisTextStyles }: Props) => {
   const [chartWidth, setChartWidth] = useState(0);
 
-  const accessToken = "temp"; // TODO: replace with supabase token
-
   const { data, isLoading, error } = useQuery({
     queryKey: ["masteryDistribution"],
     queryFn: async () => {
+      const supabaseSession = await supabase.auth.getSession();
+      const accessToken = supabaseSession.data.session?.access_token;
+
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_known_words/mastery_level`,
         {

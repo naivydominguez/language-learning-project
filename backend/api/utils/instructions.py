@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException
 import supabase
 
-from backend.api.utils.auth import get_current_user
+from api.utils.auth import get_current_user
 
 
 def create_instructions(current_user = Depends(get_current_user)):

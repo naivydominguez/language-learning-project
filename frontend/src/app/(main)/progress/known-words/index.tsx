@@ -4,6 +4,7 @@ import KnownWordsFilter from "./_components/KnownWordsFilter";
 import KnownWordItem from "./_components/KnownWordItem";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useCallback, useMemo } from "react";
+import { supabase } from "@/lib/supabase";
 
 type KnownWord = {
   word: string;
@@ -20,8 +21,6 @@ export type FilterArgs = {
 };
 
 const knownWords = () => {
-  const accessToken = "temp"; // TODO: replace with supabase token
-
   const [filterArgs, setFilterArgs] = useState<FilterArgs>({
     sortType: "alphabetical",
   });
@@ -34,6 +33,8 @@ const knownWords = () => {
     queryKey: ["knownWords", filterArgs],
     queryFn: async ({ queryKey }) => {
       const [_, filterArgs] = queryKey as [string, FilterArgs];
+      const supabaseSession = await supabase.auth.getSession();
+      const accessToken = supabaseSession.data.session?.access_token;
 
       const params = new URLSearchParams();
       if (filterArgs.searchTerm) {
