@@ -36,7 +36,7 @@ SplashScreen.preventAutoHideAsync();
 import React from "react";
 import { View } from "react-native";
 import HamburgerButton from "../../components/HamburgerBtn";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/Navbar";
 export default function RootLayout() {
   const queryClient = new QueryClient();
   const [navOpen, setNavOpen] = React.useState(false);
