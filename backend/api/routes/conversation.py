@@ -1,5 +1,6 @@
 import os
 import uuid
+import json
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -171,6 +172,25 @@ def send_message(
             status_code=500, detail=f"Failed to get previous message from DB: {e}"
         )
 
+    try:
+        conversation_response = (
+        supabase.table("conversations").select("language_id").eq("id", str(conversation_id)).execute()
+        )
+        language_id = conversation_response.data[0]["language_id"]
+    
+        language_response = (
+            supabase.table("languages").select("name").eq("id", language_id).execute()
+        )
+        target_language = language_response.data[0]["name"]
+    
+        known_words_response = (
+            supabase.table("known_words_view").select("word").eq("language", target_language).eq("user_id", user_id).execute()
+        )
+        known_words = {row["word"].lower() for row in known_words_response.data}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to load known words: {e}")
     # Get streaming response from OpenAI
     try:
         # Streams OpenAI responses in the form of `event: event_name\ndata: event_data\n\n` to the client
@@ -182,11 +202,15 @@ def send_message(
                     data = event.delta
                     yield f"event: delta\ndata: {data}\n\n"
                 elif event.type == "response.completed":
-                    yield "event: completed\ndata: {{}}\n\n"
-
                     ai_response_id = event.response.id
                     ai_message = event.response.output_text
-
+                    unknown_words = [
+                        word for word in ai_message.split()
+                        if word .lower() not in known_words
+                    ]
+                    
+                    yield f"event: completed\ndata: {json.dumps({'unknown_words': unknown_words})}\n\n"
+                    
                     update_db_messages(conversation_id, request, ai_message, ai_response_id)
                 elif event.type == "response.error":
                     yield f"event: error\ndata: {event.error}\n\n"
