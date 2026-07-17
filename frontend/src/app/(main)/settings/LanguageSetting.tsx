@@ -7,63 +7,78 @@ import PageHeader from "./_components/PageHeader";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useAuth } from "@/hooks/use-auth";
 
-const { session } = useAuth(); // Replace with your actual access token
 export default function LanguageSetting() {
-    const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
-    const [nativeLanguage, setNativeLanguage] = useState("English");
+  const { session } = useAuth(); // Replace with your actual access token
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [nativeLanguage, setNativeLanguage] = useState("English");
 
-    const languages = [
-        { name: 'Japanese', flag: '🇯🇵' }, { name: 'Spanish', flag: '🇪🇸' },
-        { name: 'French', flag: '🇫🇷' },   { name: 'Korean', flag: '🇰🇷' },
-        { name: 'Mandarin', flag: '🇨🇳' }, { name: 'German', flag: '🇩🇪' },
-        { name: 'Portuguese', flag: '🇧🇷' }, { name: 'Italian', flag: '🇮🇹' },
-        { name: 'Arabic', flag: '🇸🇦' },   { name: 'Russian', flag: '🇷🇺' },
-    ];
+  const languages = [
+    { name: "Japanese", flag: "🇯🇵" },
+    { name: "Spanish", flag: "🇪🇸" },
+    { name: "French", flag: "🇫🇷" },
+    { name: "Korean", flag: "🇰🇷" },
+    { name: "Mandarin", flag: "🇨🇳" },
+    { name: "German", flag: "🇩🇪" },
+    { name: "Portuguese", flag: "🇧🇷" },
+    { name: "Italian", flag: "🇮🇹" },
+    { name: "Arabic", flag: "🇸🇦" },
+    { name: "Russian", flag: "🇷🇺" },
+  ];
 
-    const native_languages = [
-        'English', 'Spanish', 'French', 'German', 'Mandarin',
-        'Japanese', 'Korean', 'Portuguese', 'Arabic', 'Russian',
-    ];
+  const native_languages = [
+    "English",
+    "Spanish",
+    "French",
+    "German",
+    "Mandarin",
+    "Japanese",
+    "Korean",
+    "Portuguese",
+    "Arabic",
+    "Russian",
+  ];
 
-    
+  const toggleLang = (languageName: string) => {
+    if (selectedLanguages.includes(languageName)) {
+      setSelectedLanguages(
+        selectedLanguages.filter((name) => name !== languageName),
+      );
+    } else {
+      setSelectedLanguages([...selectedLanguages, languageName]);
+    }
+  };
 
-    const toggleLang = (languageName : string) => {
-        if(selectedLanguages.includes(languageName)){
-            setSelectedLanguages(selectedLanguages.filter((name)=> name !== languageName));
-        }
-        else{
-            setSelectedLanguages([...selectedLanguages,languageName]);
-        }
-    };
-
-    const canContinue = selectedLanguages.length > 0 && nativeLanguage !== "";
-    const handleSaveChanges = async () => {
-      try {
-        const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/users/me`, {
+  const canContinue = selectedLanguages.length > 0 && nativeLanguage !== "";
+  const handleSaveChanges = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/users/me`,
+        {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            authorization: `Bearer ${accessToken}`, // Replace with your actual access token
+            authorization: `Bearer ${session?.access_token}`, // Replace with your actual access token
           },
           body: JSON.stringify({
             target_languages: selectedLanguages.join(", "),
             native_language: nativeLanguage,
           }),
-        });
+        },
+      );
 
-        if (!response.ok) {
-          throw new Error("Failed to save changes");
-        }
-        return true;
-      } catch (error) {
-        Toast.show({
-          type: "error",
-          text1: "Error saving changes",
-          text2: error instanceof Error ? error.message : String(error),
-        });
-        return false;
+      if (!response.ok) {
+        throw new Error("Failed to save changes");
       }
-    };
+      return true;
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error saving changes",
+        text2: error instanceof Error ? error.message : String(error),
+      });
+      return false;
+    }
+  };
 
   return (
     <View className="flex-1 bg-background-light">
@@ -76,7 +91,7 @@ export default function LanguageSetting() {
               Your native language
             </Text>
 
-            <View className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <View className="bg-white border border-gray-200 rounded-xl px-2 overflow-hidden">
               <Picker
                 selectedValue={nativeLanguage}
                 onValueChange={(value) => setNativeLanguage(value)}
@@ -84,7 +99,11 @@ export default function LanguageSetting() {
               >
                 <Picker.Item label="Select a language" value="" />
                 {native_languages.map((language) => (
-                  <Picker.Item key={language} label={language} value={language} />
+                  <Picker.Item
+                    key={language}
+                    label={language}
+                    value={language}
+                  />
                 ))}
               </Picker>
             </View>
@@ -95,9 +114,14 @@ export default function LanguageSetting() {
               Your target language(s)
             </Text>
 
-            <Text className="text-[15px] leading-[26px] text-foreground-secondary">Choose one or more target languages.</Text>
+            <Text className="text-[15px] leading-[26px] text-foreground-secondary">
+              Choose one or more target languages.
+            </Text>
 
-            <ScrollView className="flex-1 mt-3" showsVerticalScrollIndicator={true}>
+            <ScrollView
+              className="flex-1 mt-3"
+              showsVerticalScrollIndicator={true}
+            >
               {languages.map((language) => {
                 const isSelected = selectedLanguages.includes(language.name);
                 return (
@@ -105,12 +129,16 @@ export default function LanguageSetting() {
                     key={language.name}
                     onPress={() => toggleLang(language.name)}
                     className={`flex-row items-center justify-between border rounded-xl px-6 py-5 mb-4 ${
-                      isSelected ? "bg-accent-light border-accent" : "bg-white border-gray-200"
+                      isSelected
+                        ? "bg-accent-light border-accent"
+                        : "bg-white border-gray-200"
                     }`}
                   >
                     <View className="flex-row items-center">
                       <Text className="text-lg mr-5">{language.flag}</Text>
-                      <Text className={`text-base ${isSelected ? "text-primary-dark" : "text-foreground"}`}>
+                      <Text
+                        className={`text-base ${isSelected ? "text-primary-dark" : "text-foreground"}`}
+                      >
                         {language.name}
                       </Text>
                     </View>

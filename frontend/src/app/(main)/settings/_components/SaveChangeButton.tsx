@@ -22,12 +22,12 @@ export default function SaveChangeButton({
 
     setJustSaved(true);
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => setJustSaved(false), 5000);
+    timeoutRef.current = setTimeout(() => setJustSaved(false), 1300);
   };
 
   return (
     <Pressable
-      className={`mt-20 rounded-lg pt-4 pb-4 items-center justify-center ${
+      className={`mt-8 mb-4 rounded-lg pt-4 pb-4 items-center justify-center ${
         justSaved ? "bg-green-500" : "bg-primary-light"
       }`}
       onPress={handlePress}

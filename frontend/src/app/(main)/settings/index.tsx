@@ -3,7 +3,8 @@ import { Text } from "../../../components/Text";
 import { useRouter, usePathname } from "expo-router";
 import { User, Globe, Puzzle, CreditCard, Info, ChevronRight } from "lucide-react-native";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 const NAV_ITEMS = [
   { label: "Personalization", desc: "Bot name, personality", path: "/settings/Personalization", icon: User },
@@ -13,23 +14,24 @@ const NAV_ITEMS = [
   { label: "About", desc: "Methodology & research", path: "/settings/About", icon: Info },
 ] as const;
 
-export default function settingScreen() {
+export default function SettingScreen() {
   const router = useRouter();
   const pathname = usePathname();
- const accessToken = ""
+  const { session } = useAuth();
+  const accessToken = session?.access_token ?? "";
   const navigate = (path: Parameters<typeof router.push>[0]) => {
     router.push(path);
   };
- const [name, SetName] = useState("Learner");
- const [languages, SetLanguages] = useState("English");
+  const [name, setName] = useState("Learner");
+  const [languages, setLanguages] = useState("English");
   const getName= async () => {
     try {
       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/user/me`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       const data = await response.json();
-      SetName(data.name);
-      SetLanguages(data.target_languages);
+      setName(data.name);
+      setLanguages(data.target_languages);
     } catch (error) {
       console.error("Error fetching user name:", error);
       Toast.show({
@@ -41,6 +43,10 @@ export default function settingScreen() {
     }
 
   };
+
+  useEffect(() => {
+    getName();
+  }, [accessToken]);
 
   return (
     <View className="flex-1 bg-background-light pt-5">
