@@ -1,4 +1,4 @@
-import { View, Pressable, Animated } from "react-native";
+import { View, Pressable, Animated, ScrollView } from "react-native";
 import { Text } from "./Text";
 import { useRouter, usePathname } from "expo-router";
 import { useRef, useEffect } from "react"
@@ -151,7 +151,7 @@ export default function Navbar({ visible, onClose }: Props) {
 
           <Text className="px-5 pt-4 pb-1 text-sm text-foreground/60">Recent</Text>
 
-          <View className="px-5 pl-4">
+          <ScrollView className="px-5 pl-4">
             {recentConversationsData.data?.map((convo) => (
               <Pressable
                 key={convo.id}
@@ -169,7 +169,7 @@ export default function Navbar({ visible, onClose }: Props) {
                 </Text>
               </Pressable>
             ))}
-          </View>
+          </ScrollView>
         </View>
 
       </Animated.View>
