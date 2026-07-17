@@ -99,3 +99,15 @@ async def get_mastery_level(current_user = Depends(get_current_user)):
         raise HTTPException(status_code=404, detail="No words found")
 
     return response.data
+
+@router.get('/count')
+async def get_word_count(current_user = Depends(get_current_user)):
+    try:
+        response = supabase.table('user_words').select('word_id', count='exact').eq('user_id', current_user.id).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    if not response.data:
+        raise HTTPException(status_code=404, detail="No words found")
+
+    return {"count": response.count}

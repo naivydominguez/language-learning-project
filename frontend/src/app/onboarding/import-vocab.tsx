@@ -7,28 +7,28 @@ import { OnboardingColors } from "@/constants/onboardingTheme";
 import { useState } from "react";
 import { Check } from "lucide-react-native";
 
-const options =[
-        {id:"jpdb",title:"JPDB", subtitle:"Japanese vocabulary database"},
-        {id:"anki",title:"Anki", subtitle:"Spaced repetition flashcards"},
-        {id:"quizlet",title:"Quizlet", subtitle:"Online flashcard platform"}
-    ]
+const options = [
+  { id: "jpdb", title: "JPDB", subtitle: "Japanese vocabulary database" },
+  { id: "anki", title: "Anki", subtitle: "Spaced repetition flashcards" },
+  { id: "quizlet", title: "Quizlet", subtitle: "Online flashcard platform" },
+];
 
 export default function LanguageSelections() {
-    const [selectedApps,setSelectedApps]= useState<string[]>([]);
+  const [selectedApps, setSelectedApps] = useState<string[]>([]);
 
-    function toggleApp(id:string){
-        if(selectedApps?.includes(id)){
-            setSelectedApps(selectedApps.filter((app) => app !== id));
-        }
-        else{
-            setSelectedApps([...selectedApps,id]);
-        }
+  function toggleApp(id: string) {
+    if (selectedApps?.includes(id)) {
+      setSelectedApps(selectedApps.filter((app) => app !== id));
+    } else {
+      setSelectedApps([...selectedApps, id]);
     }
-    
+  }
+
+  const canContinue = selectedApps.length > 0;
+
   return (
     <View className="flex-1 justify-between bg-background-light px-6 pt-8 pb-6">
       <View>
-
         <View className="flex-row items-center justify-between">
           <Pressable
             onPress={() => router.push("/onboarding/personalize")}
@@ -45,14 +45,13 @@ export default function LanguageSelections() {
             Step 4 of 4
           </Text>
         </View>
-        
 
         <Text weight="bold" className="text-3xl mb-3">
           Import your vocabulary
         </Text>
 
         <Text className="text-lg text-foreground-secondary">
-          Already using flashcards? Connect your app to skip words you already 
+          Already using flashcards? Connect your app to skip words you already
           know. You can always do this later.
         </Text>
       </View>
@@ -88,18 +87,15 @@ export default function LanguageSelections() {
       <View>
         <OnboardingButton
         title="Continue"
-        onPress={() => router.push("/")}
+        onPress={() => router.push("/account/sign-up")}
       />
 
-      <Pressable onPress={()=> router.push("/")}>
+      <Pressable onPress={()=> router.push("/account/sign-up")}>
       <Text className={"mt-3 text-xl text-foreground-secondary text-center"}>
             Skip for now
-        </Text>
-    </Pressable>
-
+          </Text>
+        </Pressable>
       </View>
-
-      
     </View>
   );
 }

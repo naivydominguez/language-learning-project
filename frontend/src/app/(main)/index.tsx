@@ -1,13 +1,15 @@
 import { View, Pressable } from "react-native";
-import { Text } from "../../components/Text";
+import { Text } from "@/components/Text";
 import { useRouter } from "expo-router";
 import { RotateCcw } from "lucide-react-native";
-import HamburgerButton from "../../components/HamburgerBtn";
+import HamburgerButton from "@/components/HamburgerBtn";
 import Navbar from "@/components/Navbar";
 import Logo from "@/components/Logo";
 import ChatInputBar from "./chat/_components/ChatInputBar";
 import Toast from "react-native-toast-message";
 import React from "react";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function HomePage() {
   const [convStart, setConvoStart] = React.useState("");
@@ -35,12 +37,15 @@ export default function HomePage() {
     const title = messageText.split(" ").slice(0, 4).join(" ");
 
     try {
+      const { session } = useAuth();
+
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/?starterPrompt=${encodeURIComponent(start)}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
           },
           body: JSON.stringify({
             target_lang: "spanish", // Replace with actual target language

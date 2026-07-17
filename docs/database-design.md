@@ -33,7 +33,7 @@ conversations:
 messages:
 - id (uuid, primary key)
 - conversation_id (uuid, foreign key: conversations.id)
-- sender (text, check: 'user' | 'ai')
+- sender (text, check: 'user' | 'assistant')
 - content (text, not null)
 - created_at (timestamp)
 

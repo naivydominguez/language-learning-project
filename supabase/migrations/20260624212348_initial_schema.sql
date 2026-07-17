@@ -27,7 +27,7 @@ create table public.conversations (
 create table public.messages (
   id uuid primary key default gen_random_uuid(),
   conversation_id uuid references public.conversations(id) on delete cascade,
-  sender text check (sender in ('user', 'ai')),
+  sender text check (sender in ('user', 'assistant')),
   content text not null,
   created_at timestamp default now()
 );
