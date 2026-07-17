@@ -15,6 +15,7 @@ import { Motion } from "@/constants/theme";
 import { useQuery } from "@tanstack/react-query";
 import Logo from "./Logo";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/use-auth";
 const DRAWER_WIDTH = 220;
 
 type Props = {
@@ -34,6 +35,7 @@ type RecentConversation = {
 };
 
 export default function Navbar({ visible, onClose }: Props) {
+  const { session } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
@@ -41,15 +43,13 @@ export default function Navbar({ visible, onClose }: Props) {
 
   const recentConversationsData = useQuery({
     queryKey: ["recentConversations", visible],
+    enabled: !!session,
     queryFn: async () => {
-      const supabaseSession = await supabase.auth.getSession();
-      const accessToken = supabaseSession.data.session?.access_token;
-
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/me`,
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${session!.access_token}`,
           },
         },
       );
