@@ -38,20 +38,17 @@ export default function LanguageSetting() {
     const canContinue = selectedLanguages.length > 0 && nativeLanguage !== "";
     const handleSaveChanges = async () => {
       try {
-        const response = await fetch(
-          `${process.env.EXPO_PUBLIC_BACKEND_URL}/user`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              authorization: `Bearer ${accessToken}`, // Replace with your actual access token
-            },
-            body: JSON.stringify({
-              target_languages: selectedLanguages.join(", "),
-              native_lang: nativeLanguage,
-            }),
+        const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/users/me`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${accessToken}`, // Replace with your actual access token
           },
-        );
+          body: JSON.stringify({
+            target_languages: selectedLanguages.join(", "),
+            native_language: nativeLanguage,
+          }),
+        });
 
         if (!response.ok) {
           throw new Error("Failed to save changes");

@@ -22,16 +22,16 @@ const preset = [
     const handleSaveChanges = async () => {
          try {
            const response = await fetch(
-             `${process.env.EXPO_PUBLIC_BACKEND_URL}/user`,
+             `${process.env.EXPO_PUBLIC_BACKEND_URL}/users/me`,
              {
-               method: "POST",
+               method: "PATCH",
                headers: {
                  "Content-Type": "application/json",
                  authorization: `Bearer ${accessToken}`, // Replace with your actual access token
                },
                body: JSON.stringify({
                  name: name,
-                 personality: personality,
+                 personality_prompt: personality,
                }),
              },
            );
