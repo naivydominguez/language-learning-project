@@ -15,6 +15,7 @@ type Message = {
   id: string;
   sender: "user" | "assistant";
   messageContent: string;
+  unknownWords?: string[];
 };
 export default function ChatScreen() {
   const router = useRouter();
@@ -95,7 +96,7 @@ export default function ChatScreen() {
     };
     setMessages((prev) => [...prev, userMessage, assistantMessage]);
 
-    sendMessage(messageText, (chunk) => {
+    const onChunk = (chunk: string) => {
       setMessages((prev) => {
         const lastMessage = prev[prev.length - 1];
         // Update the last assistant message with the new chunk
@@ -105,7 +106,18 @@ export default function ChatScreen() {
         };
         return [...prev.slice(0, -1), updatedLastMessage];
       });
-    });
+    };
+
+    const onFinish = (data: any) => {
+      const unknownWords: string[] = data.unknown_words || [];
+      console.log("Unknown words received from backend:", unknownWords);
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        return [...prev.slice(0, -1), { ...last, unknownWords }];
+      });
+    };
+
+    sendMessage(messageText, onChunk, onFinish);
   };
 
   /**
