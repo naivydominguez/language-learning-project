@@ -8,7 +8,6 @@ import Logo from "@/components/Logo";
 import ChatInputBar from "./chat/_components/ChatInputBar";
 import Toast from "react-native-toast-message";
 import React from "react";
-import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 
 export default function HomePage() {
