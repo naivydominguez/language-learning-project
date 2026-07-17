@@ -8,6 +8,7 @@ from api.utils.instructions import create_instructions
 from api.utils.supabase_client import supabase
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+DEFAULT_REALTIME_MODEL = "gpt-realtime-2.1-mini"
 
 router = APIRouter(tags=["realtime"])
 
@@ -16,9 +17,14 @@ router = APIRouter(tags=["realtime"])
 async def create_realtime_client_secret(current_user = Depends(get_current_user)):
     session_config = {
         "type": "realtime",
-        "model": "gpt-realtime-2.1-mini",
+        "model": os.environ.get("OPENAI_REALTIME_MODEL") or DEFAULT_REALTIME_MODEL,
         "instructions": create_instructions(current_user),
         "reasoning": {"effort": "minimal"},
+        "audio": {
+            "input": {
+                "transcription": {"model": "whisper-1"},
+            },
+        },
     }
 
     try:

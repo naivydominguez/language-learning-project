@@ -8,8 +8,20 @@ type Props = {
   onSend: (message: string) => void;
   isWaiting?: boolean;
   showLanguagePicker?: boolean;
+  showVoiceButton?: boolean;
+  onVoiceUserTranscript?: (text: string) => void;
+  onVoiceAssistantDelta?: (chunk: string) => void;
+  onVoiceTurnDone?: (userText: string, assistantText: string) => void;
 };
-export default function ChatInputBar({ onSend, isWaiting = false, showLanguagePicker = true }: Props) {
+export default function ChatInputBar({
+  onSend,
+  isWaiting = false,
+  showLanguagePicker = true,
+  showVoiceButton = true,
+  onVoiceUserTranscript,
+  onVoiceAssistantDelta,
+  onVoiceTurnDone,
+}: Props) {
   const [message, setMessage] = React.useState("");
     const handleSend = () => {
       const trimmedMessage = message.trim();
@@ -40,7 +52,15 @@ export default function ChatInputBar({ onSend, isWaiting = false, showLanguagePi
           />
         </View>
         <View className="border-t border-foreground/10 pt-1">
-          <ChatboxActions onSend={handleSend} canSend={canSend} showLanguagePicker={showLanguagePicker} />
+          <ChatboxActions
+            onSend={handleSend}
+            canSend={canSend}
+            showLanguagePicker={showLanguagePicker}
+            showVoiceButton={showVoiceButton}
+            onVoiceUserTranscript={onVoiceUserTranscript}
+            onVoiceAssistantDelta={onVoiceAssistantDelta}
+            onVoiceTurnDone={onVoiceTurnDone}
+          />
         </View>
       </View>
       

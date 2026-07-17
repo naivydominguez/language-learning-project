@@ -31,16 +31,66 @@ export default function HomePage() {
     setConvoStart(convStarters[Math.floor(Math.random() * convStarters.length)]);
   }, []);
 
+  const createConversation = async (title: string, start: string) => {
+    const supabaseSession = await supabase.auth.getSession();
+    const accessToken = supabaseSession.data.session?.access_token;
+
+    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        target_lang: "spanish", // Replace with actual target language
+        name: title,
+        starting_prompt: start,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to create conversation");
+    }
+
+    return { convoData: await response.json(), accessToken };
+  };
+
   const handleSend = async (messageText: string) => {
     const start = convStart; // Replace with your generated conversation start
     const title = messageText.split(" ").slice(0, 4).join(" ");
 
     try {
-      const supabaseSession = await supabase.auth.getSession();
-      const accessToken = supabaseSession.data.session?.access_token;
+      const { convoData } = await createConversation(title, start);
 
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/?starterPrompt=${encodeURIComponent(start)}`,
+      router.push({
+        pathname: "/chat",
+        params: {
+          start,
+          initialMessage: messageText,
+          title,
+          conversationId: convoData.id,
+        },
+      });
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error creating conversation",
+        text2: "Please try again later.",
+      });
+    }
+  };
+
+  const handleVoiceTurnDone = async (userText: string, assistantText: string) => {
+    const start = convStart;
+    const title = userText.split(" ").slice(0, 4).join(" ");
+
+    try {
+      const { convoData, accessToken } = await createConversation(title, start);
+
+      // The voice exchange already happened live over the realtime session - persist it
+      // rather than resending it through the text pipeline (which would double-answer).
+      await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${convoData.id}/messages/voice`,
         {
           method: "POST",
           headers: {
@@ -48,23 +98,15 @@ export default function HomePage() {
             Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
-            target_lang: "spanish", // Replace with actual target language
-            name: title,
+            user_transcript: userText,
+            assistant_transcript: assistantText,
           }),
         },
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to create conversation");
-      }
-
-      const convoData = await response.json();
-
       router.push({
         pathname: "/chat",
         params: {
-          start,
-          initialMessage: messageText,
           title,
           conversationId: convoData.id,
         },
@@ -106,7 +148,11 @@ export default function HomePage() {
           </Pressable>
         </View>
         <View className="w-full bg-white rounded-md">
-          <ChatInputBar onSend={handleSend} showLanguagePicker={true} />
+          <ChatInputBar
+            onSend={handleSend}
+            showLanguagePicker={true}
+            onVoiceTurnDone={handleVoiceTurnDone}
+          />
         </View>
       </View>
     </View>

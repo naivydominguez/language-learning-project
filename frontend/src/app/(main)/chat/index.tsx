@@ -83,30 +83,66 @@ export default function ChatScreen() {
     }
   };
 
-  const handleSend = (messageText: string) => {
+  const appendUserAndPlaceholderAssistant = (text: string) => {
     const userMessage: Message = {
-      id: Date.now().toString() + messageText,
+      id: Date.now().toString() + text,
       sender: "user",
-      messageContent: messageText,
+      messageContent: text,
     };
     const assistantMessage: Message = {
-      id: Date.now().toString() + messageText + "assistant",
+      id: Date.now().toString() + text + "assistant",
       sender: "assistant",
       messageContent: "",
     };
     setMessages((prev) => [...prev, userMessage, assistantMessage]);
+  };
 
-    sendMessage(messageText, (chunk) => {
-      setMessages((prev) => {
-        const lastMessage = prev[prev.length - 1];
-        // Update the last assistant message with the new chunk
-        const updatedLastMessage: Message = {
-          ...lastMessage,
-          messageContent: lastMessage.messageContent + chunk,
-        };
-        return [...prev.slice(0, -1), updatedLastMessage];
-      });
+  const appendMessageChunk = (chunk: string) => {
+    setMessages((prev) => {
+      const lastMessage = prev[prev.length - 1];
+      // Update the last assistant message with the new chunk
+      const updatedLastMessage: Message = {
+        ...lastMessage,
+        messageContent: lastMessage.messageContent + chunk,
+      };
+      return [...prev.slice(0, -1), updatedLastMessage];
     });
+  };
+
+  const handleSend = (messageText: string) => {
+    appendUserAndPlaceholderAssistant(messageText);
+    sendMessage(messageText, appendMessageChunk);
+  };
+
+  const handleVoiceUserTranscript = (text: string) => {
+    appendUserAndPlaceholderAssistant(text);
+  };
+
+  const handleVoiceAssistantDelta = (chunk: string) => {
+    appendMessageChunk(chunk);
+  };
+
+  const handleVoiceTurnDone = async (userText: string, assistantText: string) => {
+    try {
+      const supabaseSession = await supabase.auth.getSession();
+      const accessToken = supabaseSession.data.session?.access_token;
+      await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${conversationId}/messages/voice`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            user_transcript: userText,
+            assistant_transcript: assistantText,
+          }),
+        },
+      );
+    } catch (error) {
+      console.error("Error saving voice turn:", error);
+    }
   };
 
   /**
@@ -164,6 +200,9 @@ export default function ChatScreen() {
         onSend={handleSend}
         isWaiting={isWaiting}
         showLanguagePicker={false}
+        onVoiceUserTranscript={handleVoiceUserTranscript}
+        onVoiceAssistantDelta={handleVoiceAssistantDelta}
+        onVoiceTurnDone={handleVoiceTurnDone}
       />
       <WordPopup
         word={selectedWord || ""}

@@ -7,16 +7,34 @@ type chatboxActionsProps = {
   onSend: () => void;
   canSend: boolean;
   showLanguagePicker?: boolean;
+  showVoiceButton?: boolean;
+  onVoiceUserTranscript?: (text: string) => void;
+  onVoiceAssistantDelta?: (chunk: string) => void;
+  onVoiceTurnDone?: (userText: string, assistantText: string) => void;
 };
 
-export default function ChatboxActions({ onSend, canSend, showLanguagePicker }: chatboxActionsProps) {
-  
+export default function ChatboxActions({
+  onSend,
+  canSend,
+  showLanguagePicker,
+  showVoiceButton = true,
+  onVoiceUserTranscript,
+  onVoiceAssistantDelta,
+  onVoiceTurnDone,
+}: chatboxActionsProps) {
+
   return (
     <View className="flex-row items-center w-full">
       {showLanguagePicker && <LanguagePicker />}
       <View className="flex-1" />
       <View className="flex-row items-center gap-2">
-        <VoiceInputComponent />
+        {showVoiceButton && onVoiceTurnDone && (
+          <VoiceInputComponent
+            onUserTranscript={onVoiceUserTranscript}
+            onAssistantDelta={onVoiceAssistantDelta}
+            onAssistantTurnDone={onVoiceTurnDone}
+          />
+        )}
         <SendChatComponent onSend={onSend} canSend={canSend} />
       </View>
     </View>

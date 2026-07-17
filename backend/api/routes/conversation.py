@@ -36,6 +36,11 @@ class SendMessageRequest(BaseModel):
     content: str
 
 
+class VoiceTurnRequest(BaseModel):
+    user_transcript: str
+    assistant_transcript: str
+
+
 class MessageResponse(BaseModel):
     id: UUID
     conversation_id: UUID
@@ -121,20 +126,21 @@ def send_message(
         previous_message_id = previous_message_response.data[0]["openai_response_id"] if previous_message_response.data else None  
 
         if previous_message_id is None:
-            # Then we are sending the first message in the conversation, so we need to include and send the whole conversation context
-            starter_prompt_response = (
+            # No chainable OpenAI response id (first message in the conversation, or the
+            # chain was broken by a voice turn) - reconstruct the full history from the DB
+            # instead of just the starter prompt, so context isn't lost.
+            history_response = (
                 supabase.table("messages")
                 .select("sender, content")
                 .eq("conversation_id", str(conversation_id))
                 .order("created_at", desc=False)
-                .limit(1)
                 .execute()
             )
-            if starter_prompt_response.data:
-                starter_prompt = starter_prompt_response.data[0]["content"]
-                input = [{"role": "assistant", "content": starter_prompt}, {"role": "user", "content": request.content}]
-            else:
-                input = [{"role": "user", "content": request.content}]
+            input = [
+                {"role": "assistant" if m["sender"] == "assistant" else "user", "content": m["content"]}
+                for m in (history_response.data or [])
+            ]
+            input.append({"role": "user", "content": request.content})
 
             responses_args = {
                 "model": model,
@@ -206,6 +212,42 @@ def update_db_messages(
         ).execute()
     except Exception as e:
         print(f"Failed to update messages in DB: {e}")
+
+@router.post("/{conversation_id}/messages/voice", status_code=201)
+def save_voice_turn(
+    conversation_id: UUID,
+    request: VoiceTurnRequest,
+    current_user=Depends(get_current_user),
+):
+    # Realtime API voice sessions are a separate stateful context from the Responses
+    # API used for text - there's no openai_response_id to chain from, so it's left
+    # NULL. The next typed message will fall into the no-previous_response_id branch
+    # of send_message, which reconstructs full history from the DB (including these
+    # rows) rather than losing context.
+    try:
+        response = (
+            supabase.table("messages")
+            .insert(
+                [
+                    {
+                        "conversation_id": str(conversation_id),
+                        "sender": "user",
+                        "content": request.user_transcript,
+                    },
+                    {
+                        "conversation_id": str(conversation_id),
+                        "sender": "assistant",
+                        "content": request.assistant_transcript,
+                    },
+                ]
+            )
+            .execute()
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save voice turn: {e}")
+
+    return response.data
+
 
 @router.get("/me")
 async def get_conversation(current_user=Depends(get_current_user)):
