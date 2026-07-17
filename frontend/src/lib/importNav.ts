@@ -4,12 +4,12 @@ export type ImportType = 'jpdb'|'anki'|'quizlet';
 
 export function goToNextImport(
     selectedApps:ImportType[],
-    currentIndex:number
+    currentIndex:number,
+    onFinished: () => void | Promise<void>
 ){
     const nextIndex = currentIndex + 1;
     if( nextIndex >= selectedApps.length){
-        router.replace("/account/signUp");
-        return;
+        return onFinished();
     }
 
     const nextApp = selectedApps[nextIndex];

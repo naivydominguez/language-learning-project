@@ -6,8 +6,8 @@ import OnboardingButton from "./_components/OnboardingButton";
 import { OnboardingColors } from "@/constants/onboardingTheme";
 import { useState } from "react";
 import { Check } from "lucide-react-native";
-
-type ImportType = 'jpdb'|'anki'|'quizlet';
+import { useOnboarding } from "./context/OnboardingContext";
+import type { ImportType } from "@/lib/importNav";
 
 const options: {
     id: ImportType;
@@ -21,7 +21,8 @@ const options: {
     ];
 
 export default function ImportVocab() {
-    const [selectedApps,setSelectedApps]= useState<ImportType[]>([]);
+    const {onboardingData, updateOnboardingData} = useOnboarding();
+    const [selectedApps,setSelectedApps]= useState<ImportType[]>(onboardingData.selectedImportApps);
 
     function toggleApp(id:ImportType){
         if(selectedApps.includes(id)){
@@ -37,6 +38,8 @@ export default function ImportVocab() {
     function handleContinue(){
         if(!canContinue) return;
 
+        updateOnboardingData({selectedImportApps:selectedApps,});
+
         const firstSelectedApp = selectedApps[0];
 
         router.push({
@@ -46,6 +49,11 @@ export default function ImportVocab() {
                 currentIndex: "0",
             },
         });
+    }
+
+    function handleSkip(){
+        updateOnboardingData({ selectedImportApps:[],})
+        router.push("/account/signUp")
     }
 
     
@@ -114,7 +122,7 @@ export default function ImportVocab() {
         onPress={handleContinue}
       />
 
-      <Pressable onPress={()=> router.push("/account/signUp")}>
+      <Pressable onPress={handleSkip}>
       <Text className={"mt-3 text-xl text-foreground-secondary text-center"}>
             Skip for now
           </Text>

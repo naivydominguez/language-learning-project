@@ -1,31 +1,36 @@
 import { View, Pressable } from "react-native";
 import { Text, TextInput } from "@/components/Text";
 import { ArrowLeft } from "lucide-react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import OnboardingButton from "./_components/OnboardingButton";
 import { OnboardingColors } from "@/constants/onboardingTheme";
 import { useState } from "react";
 import { goToNextImport, ImportType } from "@/lib/importNav";
-import { useLocalSearchParams } from "expo-router";
-
+import { useOnboarding } from "./context/OnboardingContext";
+import { savePendingOnboardingData } from "@/lib/onboardingStorage";
 
 export default function AnkiImport() {
+  const { onboardingData } = useOnboarding();
   const [name, setName] = useState("");
-  
-    const params = useLocalSearchParams<{ 
-      selectedApps?: string;
-      currentIndex?: string; }>();
-  
-  
-    const selectedApps: ImportType[] = params.selectedApps
+
+  const params = useLocalSearchParams<{
+    selectedApps?: string;
+    currentIndex?: string;
+  }>();
+
+  const selectedApps: ImportType[] = params.selectedApps
     ? JSON.parse(params.selectedApps)
     : [];
-  
-    const currentIndex = Number(params.currentIndex ?? "0");
-  
-    function handleContinue(){
-      goToNextImport(selectedApps,currentIndex);
-    }
+
+  const currentIndex = Number(params.currentIndex ?? "0");
+
+  function handleContinue() {
+    goToNextImport(selectedApps, currentIndex, async () => {
+      //To do: save anki import once feature is implemented
+      await savePendingOnboardingData(onboardingData);
+      router.replace("/account/signUp");
+    });
+  }
 
   return (
     <View className="flex-1 justify-between bg-[#F8F3EF] px-6 pt-8 pb-6">
@@ -47,14 +52,12 @@ export default function AnkiImport() {
           </Text>
         </View>
 
-        <Text weight="bold" className="text-3xl mb-3">Anki</Text>
-
-        <Text className="text-lg text-[#8B6F63]">
-          Enter a file
+        <Text weight="bold" className="text-3xl mb-3">
+          Anki
         </Text>
 
         <Text weight="bold" className="mt-5 mb-3 text-lg text-[#8B6A5B]">
-          API Key
+          Enter a .csv or .txt file
         </Text>
 
         <TextInput
@@ -66,12 +69,11 @@ export default function AnkiImport() {
           style={{ outlineWidth: 0 } as any}
           className="rounded-xl border border-[#E2DEDB] bg-white px-5 py-4 text-xl text-[#241A14]"
         />
-
       </View>
 
       <OnboardingButton
         title="Continue"
-        onPress={() => router.push("/account/signUp")}
+        onPress={handleContinue}
       />
     </View>
   );
