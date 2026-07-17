@@ -14,7 +14,6 @@ import Toast from "react-native-toast-message";
 import { Motion } from "@/constants/theme";
 import { useQuery } from "@tanstack/react-query";
 import Logo from "./Logo";
-import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 const DRAWER_WIDTH = 220;
 
@@ -180,8 +179,8 @@ export default function Navbar({ visible, onClose }: Props) {
           </Text>
 
           <View className="px-5 pl-4">
-            {recentConversationsData &&
-              recentConversationsData.data?.map((convo) => (
+            {Array.isArray(recentConversationsData?.data) &&
+              recentConversationsData?.data?.map((convo) => (
                 <Pressable
                   key={convo.id}
                   onPress={() => {
