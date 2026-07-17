@@ -41,9 +41,9 @@ export default function ConnectedApps() {
             {options.map((option) => {
               const isSelected = selectedApps?.includes(option.id);
               return (
-                <Pressable
-                  key={option.id}
-                  onPress={() => toggleApp(option.id)}
+                <View
+                    key={option.id}
+                 
                   className={`h-[120px] mt-3 flex-row items-center rounded-2xl border-2 px-8 ${
                     isSelected ? "border-primary bg-primary-light/10" : "border-gray-200 bg-white"
                   }`}
@@ -55,14 +55,16 @@ export default function ConnectedApps() {
                     <Text className="mt-2 text-sm text-foreground-secondary">{option.subtitle}</Text>
                   </View>
 
-                  <View
-                    className={`h-11 w-11 flex-row items-center justify-center rounded-full border-2 ${
-                      isSelected ? "border-primary bg-primary" : "border-gray-200 bg-white"
-                    }`}
-                  >
-                    {isSelected && <Check size={20} color="white" />}
-                  </View>
-                </Pressable>
+                 
+                  <Pressable className="bg-primary rounded-md p-4 items-center justify-center" onPress={() => toggleApp(option.id)}>
+                    <Text
+                      weight="bold"
+                      className="text-sm text-white text-center"
+                    >
+                      {option.type}
+                    </Text>
+                  </Pressable>
+                </View>
               );
             })}
           </View>

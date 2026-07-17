@@ -12,7 +12,7 @@ export default function PageHeader({ title, onBack }: PageHeaderProps) {
   return (
     <View className="flex-row items-center h-[52px] px-1 bg-background-light border-b border-foreground/[0.1]">
       <Pressable
-        onPress={onBack ?? (() => router.back())}
+        onPress={onBack ?? (() => router.push("/settings"))}
         className="w-10 h-10 items-center justify-center rounded-[10px]"
       >
         <ChevronLeft size={22} color="#201810" strokeWidth={1.75} />
