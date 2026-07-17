@@ -4,8 +4,9 @@ import { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import SaveChangeButton from "./_components/SaveChangeButton";
 import PageHeader from "./_components/PageHeader";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
-
+const accessToken = "YOUR_ACCESS_TOKEN"; // Replace with your actual access token
 export default function LanguageSetting() {
     const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
     const [nativeLanguage, setNativeLanguage] = useState("English");
@@ -35,11 +36,34 @@ export default function LanguageSetting() {
     };
 
     const canContinue = selectedLanguages.length > 0 && nativeLanguage !== "";
-    const handleSaveChanges = () => {
-        // Handle save changes logic here
-        console.log("Selected Languages:", selectedLanguages);
-        console.log("Native Language:", nativeLanguage);
-    }
+    const handleSaveChanges = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.EXPO_PUBLIC_BACKEND_URL}/user`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${accessToken}`, // Replace with your actual access token
+            },
+            body: JSON.stringify({
+              target_lang: selectedLanguages.join(", "),
+              native_lang: nativeLanguage,
+            }),
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to save changes");
+        }
+      } catch (error) {
+        Toast.show({
+          type: "error",
+          text1: "Error saving changes",
+          text2: error instanceof Error ? error.message : String(error),
+        });
+      }
+    };
 
   return (
     <View className="flex-1 bg-background-light">
