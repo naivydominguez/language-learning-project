@@ -5,7 +5,9 @@ import { Check } from "lucide-react-native";
 import SaveChangeButton from "./_components/SaveChangeButton";
 import PageHeader from "./_components/PageHeader";
 import Toast from "react-native-toast-message";
-const accessToken = "YOUR_ACCESS_TOKEN"; // Replace with your actual access token
+import { useAuth } from "@/hooks/use-auth";
+
+const { session } = useAuth(); // Replace with your actual access token
 export default function PersonalizationSetting() {
 const preset = [
   { title: "Friendly exchange partner", description: "like a language exchange partner living in Tokyo." },
@@ -27,7 +29,7 @@ const preset = [
                method: "PATCH",
                headers: {
                  "Content-Type": "application/json",
-                 authorization: `Bearer ${accessToken}`, // Replace with your actual access token
+                 authorization: `Bearer ${session?.access_token}`, // Replace with your actual access token
                },
                body: JSON.stringify({
                  name: name,

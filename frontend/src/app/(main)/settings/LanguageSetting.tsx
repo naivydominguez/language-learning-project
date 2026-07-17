@@ -5,8 +5,9 @@ import { Picker } from "@react-native-picker/picker";
 import SaveChangeButton from "./_components/SaveChangeButton";
 import PageHeader from "./_components/PageHeader";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { useAuth } from "@/hooks/use-auth";
 
-const accessToken = "YOUR_ACCESS_TOKEN"; // Replace with your actual access token
+const { session } = useAuth(); // Replace with your actual access token
 export default function LanguageSetting() {
     const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
     const [nativeLanguage, setNativeLanguage] = useState("English");
