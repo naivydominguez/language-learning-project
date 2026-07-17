@@ -59,13 +59,13 @@ export default function QuizletImport() {
         <Text className="text-lg text-[#8B6F63]">Enter a file</Text>
 
         <Text weight="bold" className="mt-5 mb-3 text-lg text-[#8B6A5B]">
-          API Key
+          Enter a file
         </Text>
 
         <TextInput
           value={name}
           onChangeText={setName}
-          placeholder="Enter your API key"
+          placeholder="Enter a file"
           placeholderTextColor="#9B9692"
           multiline
           style={{ outlineWidth: 0 } as any}

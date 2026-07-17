@@ -3,28 +3,32 @@ import { Text } from "@/components/Text";
 import { router } from "expo-router";
 import { OnboardingColors } from "@/constants/onboardingTheme";
 import { ArrowLeft } from "lucide-react-native";
-
 import { signInWithGoogle, signInWithApple } from "@/lib/socialAuth";
 import GoogleButton from "@/components/GoogleButton";
 import AppleButton from "@/components/AppleButton";
-
 import { getPendingOnboardingData } from "@/lib/onboardingStorage";
 import { useEffect } from "react";
+import { submitOnboardingData } from "@/lib/onboardingApi";
 
 useEffect(() => {
-    async function checkOnboardingData(){
-        const data = await getPendingOnboardingData();
-        console.log("Pending onboarding data: ",data);
-    }
-    checkOnboardingData();
-},[]);
+  async function checkOnboardingData() {
+    const data = await getPendingOnboardingData();
+    console.log("Pending onboarding data: ", data);
+  }
+  checkOnboardingData();
+}, []);
 
 export default function SignUp() {
   const handleGoogleSignIn = async () => {
     try {
+      console.log("Google button was pressed");
       const session = await signInWithGoogle();
-      //console.log("Sign-in user:",session?.user.email);
+      console.log("Sign-in returned: ", session);
+
       if (session) {
+        console.log("about to submit onboarding data");
+        await submitOnboardingData();
+        console.log("onboardig func finished");
         router.replace("/");
       }
     } catch (error) {

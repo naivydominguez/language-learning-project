@@ -7,13 +7,19 @@ import { ArrowLeft } from "lucide-react-native";
 import { signInWithGoogle, signInWithApple } from "@/lib/socialAuth";
 import GoogleButton from "@/components/GoogleButton";
 import AppleButton from "@/components/AppleButton";
+import { submitOnboardingData } from "@/lib/onboardingApi";
 
 export default function SignIn() {
   const handleGoogleSignIn = async () => {
     try {
+      console.log("Google button was pressed");
       const session = await signInWithGoogle();
+      console.log("Sign-in returned: ", session);
 
       if (session) {
+        console.log("about to submit onboarding data");
+        await submitOnboardingData();
+        console.log("onboardig func finished");
         router.replace("/");
       }
     } catch (error) {

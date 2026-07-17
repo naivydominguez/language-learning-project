@@ -63,7 +63,7 @@ export default function AnkiImport() {
         <TextInput
           value={name}
           onChangeText={setName}
-          placeholder="Enter your API key"
+          placeholder="Enter a file"
           placeholderTextColor="#9B9692"
           multiline
           style={{ outlineWidth: 0 } as any}
