@@ -19,7 +19,7 @@ export default function InfoCard({ title, body, Icon }: InfoCardProps) {
       }}
     >
       <View
-        className="w-8 h-8 rounded-lg items-center justify-center mr-4"
+        className="w-8 h-8 rounded-sm bg-white items-center justify-center mr-4"
         style={{
           backgroundColor: OnboardingColors.accentSubtle,
         }}

@@ -4,7 +4,7 @@ import { View } from "react-native";
 
 type Message = {
   id: string;
-  sender: "user" | "ai";
+  sender: "user" | "assistant";
   messageContent: string;
 };
 
