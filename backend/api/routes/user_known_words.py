@@ -52,6 +52,7 @@ async def get_words(
     order: SortOrder = Query(SortOrder.desc),
     search: str = Query(""),
     language: str | None = Query(None),
+    limit: int = Query(10), 
 ):
     try:
         query = (
@@ -68,6 +69,9 @@ async def get_words(
 
         column = SORT_COLUMN_MAP[sort_by]
         query = query.order(column, desc=(order == SortOrder.desc))
+
+        if limit is not None:
+            query = query.limit(limit)
 
         response = query.execute()
 
@@ -91,7 +95,7 @@ async def delete_known_word(word_id: str, current_user = Depends(get_current_use
 @router.get('/mastery_level')
 async def get_mastery_level(current_user = Depends(get_current_user)):
     try:
-        response = supabase.rpc('get_mastery_counts', {'uid': current_user.id}).execute()
+        response = supabase.rpc('get_mastery_counts', {'user_id': current_user.id}).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
