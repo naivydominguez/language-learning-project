@@ -35,9 +35,9 @@ export default function ChatScreen() {
 
   const translateResponse = async (word: string, language: string) => {
     try {
-      const parmas = new URLSearchParams({ word, language });
+      const params = new URLSearchParams({ word, language });
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/translate-language?${parmas}`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/translate?${params}`,
       );
       if (!response.ok) {
         throw new Error("Failed to translate word");
