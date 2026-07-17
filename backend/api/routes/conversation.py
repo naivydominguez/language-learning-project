@@ -12,6 +12,7 @@ from api.utils.auth import get_current_user
 from api.utils.supabase_client import supabase
 from api.utils.user_id import get_user_id
 from api.utils.instructions import create_instructions
+from api.utils.unknown_words import get_unknown_words
 from chatbot.generation import generate_response
 
 UNKNOWN_WORDS_PERCENTAGE = 10
@@ -89,20 +90,8 @@ async def create_conversation(
                     "content": request.starting_prompt,
                 }
             ).execute()
-                                         
-            known_words = set()
-            known_words_response = (
-                supabase.table("known_words_view")
-                .select("word")
-                .eq("language", request.target_lang)
-                .eq("user_id", user_id)
-                .execute()
-            )
-            known_words = {row["word"].lower() for row in known_words_response.data}
-            unknown_words = [
-                word for word in request.starting_prompt.split()
-                if word.lower() not in known_words
-            ]
+                                        
+            unknown_words = get_unknown_words(language_id, user_id, request.starting_prompt)
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Failed to create conversation: {e}"
@@ -178,15 +167,6 @@ def send_message(
         )
         language_id = conversation_response.data[0]["language_id"]
     
-        language_response = (
-            supabase.table("languages").select("name").eq("id", language_id).execute()
-        )
-        target_language = language_response.data[0]["name"]
-    
-        known_words_response = (
-            supabase.table("known_words_view").select("word").eq("language", target_language).eq("user_id", user_id).execute()
-        )
-        known_words = {row["word"].lower() for row in known_words_response.data}
     except HTTPException:
         raise
     except Exception as e:
@@ -204,12 +184,10 @@ def send_message(
                 elif event.type == "response.completed":
                     ai_response_id = event.response.id
                     ai_message = event.response.output_text
-                    unknown_words = [
-                        word for word in ai_message.split()
-                        if word .lower() not in known_words
-                    ]
+                    unknown_words = get_unknown_words(language_id, user_id, ai_message)
                     
                     yield f"event: completed\ndata: {json.dumps({'unknown_words': unknown_words})}\n\n"
+
                     
                     update_db_messages(conversation_id, request, ai_message, ai_response_id)
                 elif event.type == "response.error":

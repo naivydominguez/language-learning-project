@@ -1,10 +1,9 @@
 from datetime import datetime
-
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-
 from api.utils.auth import get_current_user
 from api.utils.supabase_client import supabase
+from api.utils.unknown_words import get_unknown_words
 
 router = APIRouter(prefix="/messages", tags=["messages"])
 
@@ -46,28 +45,16 @@ async def get_messages(conversation_id: str, current_user = Depends(get_current_
         conversation_response = (
             supabase.table("conversations").select("language_id").eq("id", conversation_id).execute()
         )
-        language_id = conversation_response.data[0]["language_id"]
         
         if not conversation_response.data:
-            raise HTTPException(status_code=500, detail=f"Failed to load known words: {e}")
+            raise HTTPException(status_code=404, detail="Conversation not found")
+        language_id = conversation_response.data[0]["language_id"]
         
-        language_response = (
-            supabase.table("languages").select("name").eq("id", language_id).execute()
-        )
-        
-        target_language = language_response.data[0]["name"]
-        known_words_response = (
-            supabase.table("known_words_view").select("word").eq("language", target_language).eq("user_id", current_user.id).execute()
-        )
-        
-        known_words = {row["word"].lower() for row in known_words_response.data}
+       
         result = []
         for message in response.data:
             if message["sender"] == "assistant":
-                unknown_words = [
-                    word for word in message["content"].split()
-                    if word.lower() not in known_words
-                ]
+                unknown_words = get_unknown_words(language_id, current_user.id, message["content"])
             else:
                 unknown_words = []
             result.append({"message": message, "unknown_words": unknown_words})
