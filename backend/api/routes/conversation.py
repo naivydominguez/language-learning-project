@@ -11,7 +11,6 @@ from api.utils.auth import get_current_user
 from api.utils.supabase_client import supabase
 from api.utils.user_id import get_user_id
 from api.utils.instructions import create_instructions
-from chatbot.generation import generate_response
 
 UNKNOWN_WORDS_PERCENTAGE = 10
 
@@ -136,7 +135,7 @@ def send_message(
                 input = [{"role": "assistant", "content": starter_prompt}, {"role": "user", "content": request.content}]
             else:
                 input = [{"role": "user", "content": request.content}]
-            
+
             responses_args = {
                 "model": model,
                 "instructions": create_instructions(current_user),
@@ -193,13 +192,13 @@ def update_db_messages(
         supabase.table("messages").insert(
             [
                 {
-                    "conversation_id": conversation_id,
+                    "conversation_id": str(conversation_id),
                     "sender": "user",
                     "content": request.content,
                 },
                 {
                     "openai_response_id": ai_response_id,
-                    "conversation_id": conversation_id,
+                    "conversation_id": str(conversation_id),
                     "sender": "assistant",
                     "content": ai_message,
                 },
@@ -220,7 +219,4 @@ async def get_conversation(current_user=Depends(get_current_user)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    if not response.data:
-        raise HTTPException(status_code=404, detail="Conversations not found")
-
-    return response.data
+    return response.data or []

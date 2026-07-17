@@ -65,7 +65,7 @@ class Message(Base):
     
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     conversation_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('conversations.id'))
-    sender: Mapped[str] # 'user' or 'ai'
+    sender: Mapped[str] # 'user' or 'assistant'
     content: Mapped[str]
     created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
 
