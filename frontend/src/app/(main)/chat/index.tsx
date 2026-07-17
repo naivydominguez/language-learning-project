@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Pressable } from "react-native";
 import { Text } from "../../../components/Text";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -8,8 +8,9 @@ import MessageBubble from "./_components/MessageBubble";
 import { FlatList, ScrollView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 import WordPopup from "./_components/WordPopup";
-import { supabase } from "@/lib/supabase";
 import { useChat } from "@/hooks/use-chat";
+import { useAuth } from "@/hooks/use-auth";
+import { useRealtimeVoiceContext } from "@/context/RealtimeVoiceContext";
 
 type Message = {
   id: string;
@@ -17,41 +18,22 @@ type Message = {
   messageContent: string;
 };
 export default function ChatScreen() {
+  const { session } = useAuth();
   const router = useRouter();
-  const { start, initialMessage, title, conversationId } =
+  const { starterPrompt, initialMessage, title, conversationId, voice } =
     useLocalSearchParams<{
-      start?: string;
+      starterPrompt?: string;
       initialMessage?: string;
       title?: string;
       conversationId: string;
+      voice: "true" | "false";
     }>();
-  const nativeLang = "Spanish"; // Replace with user's native language
 
-  const { isWaiting, sendMessage } = useChat(conversationId);
+  const { setCallbacks } = useRealtimeVoiceContext();
+  const { isWaiting, sendTextMessage } = useChat(conversationId);
   const [messages, setMessages] = React.useState<Message[]>([]);
   const hasSentInitial = React.useRef(false);
-  const convLang = "english"; // temp
   const [selectedWord, setSelectedWord] = React.useState<string | null>(null);
-
-  const translateResponse = async (word: string, language: string) => {
-    try {
-      const params = new URLSearchParams({ word, language });
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/translate?${params}`,
-      );
-      if (!response.ok) {
-        throw new Error("Failed to translate word");
-      }
-      const data = await response.json();
-      return data.result;
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Error translating word",
-        text2: "Please try again later.",
-      });
-    }
-  };
 
   const getBackendMessages = async (conversationId: string) => {
     try {
@@ -83,23 +65,28 @@ export default function ChatScreen() {
     }
   };
 
-  const appendUserAndPlaceholderAssistant = (text: string) => {
+  const createChatBubbles = (userText: string) => {
     const userMessage: Message = {
-      id: Date.now().toString() + text,
+      id: Date.now().toString() + userText,
       sender: "user",
-      messageContent: text,
+      messageContent: userText,
     };
     const assistantMessage: Message = {
-      id: Date.now().toString() + text + "assistant",
+      id: Date.now().toString() + userText + "assistant",
       sender: "assistant",
       messageContent: "",
     };
     setMessages((prev) => [...prev, userMessage, assistantMessage]);
   };
 
-  const appendMessageChunk = (chunk: string) => {
+  const onChunk = (chunk: string) => {
     setMessages((prev) => {
       const lastMessage = prev[prev.length - 1];
+      if (!lastMessage) {
+        // This should not happen for a functional app
+        console.error("No last message found to update with chunk:", chunk);
+        return prev;
+      }
       // Update the last assistant message with the new chunk
       const updatedLastMessage: Message = {
         ...lastMessage,
@@ -110,29 +97,33 @@ export default function ChatScreen() {
   };
 
   const handleSend = (messageText: string) => {
-    appendUserAndPlaceholderAssistant(messageText);
-    sendMessage(messageText, appendMessageChunk);
+    createChatBubbles(messageText);
+    sendTextMessage(messageText, onChunk);
   };
 
+  /**
+   * Voice handlers
+   */
   const handleVoiceUserTranscript = (text: string) => {
-    appendUserAndPlaceholderAssistant(text);
+    createChatBubbles(text);
   };
 
   const handleVoiceAssistantDelta = (chunk: string) => {
-    appendMessageChunk(chunk);
+    onChunk(chunk);
   };
 
-  const handleVoiceTurnDone = async (userText: string, assistantText: string) => {
+  const handleVoiceTurnDone = async (
+    userText: string,
+    assistantText: string,
+  ) => {
     try {
-      const supabaseSession = await supabase.auth.getSession();
-      const accessToken = supabaseSession.data.session?.access_token;
       await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${conversationId}/messages/voice`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${session?.access_token}`,
           },
           body: JSON.stringify({
             user_transcript: userText,
@@ -148,27 +139,35 @@ export default function ChatScreen() {
   /**
    * If continuing a conversation, retrieve the messages. Otherwise, send the user's first message to the backend
    */
-  React.useEffect(() => {
+  useEffect(() => {
     if (hasSentInitial.current) return;
     hasSentInitial.current = true;
-    if (start || initialMessage) {
-      if (start) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: Date.now().toString() + start,
-            sender: "assistant",
-            messageContent: start,
-          },
-        ]);
+    if (starterPrompt) {
+      setMessages([
+        {
+          id: Date.now().toString() + starterPrompt,
+          sender: "assistant",
+          messageContent: starterPrompt,
+        },
+      ]);
+      try {
+        if (voice === "true") {
+          setCallbacks({
+            onUserTranscript: handleVoiceUserTranscript,
+            onAssistantDelta: handleVoiceAssistantDelta,
+            onAssistantTurnDone: handleVoiceTurnDone,
+          });
+          handleVoiceUserTranscript(initialMessage!);
+        } else {
+          handleSend(initialMessage!);
+        }
+      } catch (error) {
+        console.error("Error sending initial message:", error); // Shouldn't happen
       }
-      if (initialMessage) {
-        handleSend(initialMessage);
-      }
-    } else if (conversationId) {
+    } else {
       getBackendMessages(conversationId);
     }
-  }, [start, initialMessage, conversationId]);
+  }, [starterPrompt, initialMessage, conversationId]);
 
   return (
     <View className="flex-1 bg-background">

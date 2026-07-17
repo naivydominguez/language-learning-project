@@ -1,12 +1,11 @@
-import React from "react";
 import { Pressable, ActivityIndicator } from "react-native";
 import { Mic } from "lucide-react-native";
-import { useRealtimeVoice } from "@/hooks/use-realtime-voice";
+import { useRealtimeVoiceContext } from "@/context/RealtimeVoiceContext";
 
 type VoiceInputComponentProps = {
   onUserTranscript?: (text: string) => void;
   onAssistantDelta?: (chunk: string) => void;
-  onAssistantTurnDone: (userText: string, assistantText: string) => void;
+  onAssistantTurnDone?: (userText: string, assistantText: string) => void;
 };
 
 export default function VoiceInputComponent({
@@ -14,14 +13,14 @@ export default function VoiceInputComponent({
   onAssistantDelta,
   onAssistantTurnDone,
 }: VoiceInputComponentProps) {
-  const { status, start, stop } = useRealtimeVoice();
+  const { status, start, stop } = useRealtimeVoiceContext();
 
   const handlePress = () => {
     if (status === "idle" || status === "error") {
       start({
         onUserTranscript: onUserTranscript ?? (() => {}),
         onAssistantDelta: onAssistantDelta ?? (() => {}),
-        onAssistantTurnDone,
+        onAssistantTurnDone: onAssistantTurnDone ?? (() => {}),
       });
     } else {
       stop();

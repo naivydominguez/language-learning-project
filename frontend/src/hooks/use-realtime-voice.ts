@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createConnection } from "@/lib/realtimeVoice/connection";
 import { fetchClientSecret } from "@/lib/realtimeVoice/fetchClientSecret";
-import type { RealtimeVoiceConnection, RealtimeVoiceStatus } from "@/lib/realtimeVoice/types";
+import type {
+  RealtimeVoiceConnection,
+  RealtimeVoiceStatus,
+} from "@/lib/realtimeVoice/types";
 
-type VoiceTurnCallbacks = {
+export type VoiceTurnCallbacks = {
   onUserTranscript: (text: string) => void;
   onAssistantDelta: (chunk: string) => void;
   onAssistantTurnDone: (userText: string, assistantText: string) => void;
@@ -12,11 +15,20 @@ type VoiceTurnCallbacks = {
 export function useRealtimeVoice() {
   const [status, setStatus] = useState<RealtimeVoiceStatus>("idle");
   const connectionRef = useRef<RealtimeVoiceConnection | null>(null);
+  const callbacksRef = useRef<VoiceTurnCallbacks | null>(null);
   const lastUserTranscriptRef = useRef("");
   const assistantTranscriptRef = useRef("");
 
+  /**
+   * Used to update the handlers for conversation without resetting the connection
+   */
+  const setCallbacks = useCallback((cb: VoiceTurnCallbacks) => {
+    callbacksRef.current = cb;
+  }, []);
+
   const start = useCallback(async (callbacks: VoiceTurnCallbacks) => {
     if (connectionRef.current) return;
+    callbacksRef.current = callbacks;
 
     try {
       setStatus("connecting");
@@ -34,15 +46,18 @@ export function useRealtimeVoice() {
         onUserTranscript: (text) => {
           lastUserTranscriptRef.current = text;
           assistantTranscriptRef.current = "";
-          callbacks.onUserTranscript(text);
+          callbacksRef.current?.onUserTranscript(text);
         },
         onAssistantTranscriptDelta: (delta) => {
           assistantTranscriptRef.current += delta;
-          callbacks.onAssistantDelta(delta);
+          callbacksRef.current?.onAssistantDelta(delta);
         },
         onAssistantTranscriptDone: (fullText) => {
           const finalText = fullText || assistantTranscriptRef.current;
-          callbacks.onAssistantTurnDone(lastUserTranscriptRef.current, finalText);
+          callbacksRef.current?.onAssistantTurnDone(
+            lastUserTranscriptRef.current,
+            finalText,
+          );
         },
       });
     } catch (error) {
@@ -55,6 +70,7 @@ export function useRealtimeVoice() {
   const stop = useCallback(async () => {
     const connection = connectionRef.current;
     connectionRef.current = null;
+    callbacksRef.current = null;
     await connection?.stop();
     setStatus("idle");
   }, []);
@@ -66,5 +82,5 @@ export function useRealtimeVoice() {
     };
   }, []);
 
-  return { status, start, stop };
+  return { status, start, stop, setCallbacks };
 }

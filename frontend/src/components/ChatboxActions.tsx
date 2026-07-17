@@ -22,13 +22,12 @@ export default function ChatboxActions({
   onVoiceAssistantDelta,
   onVoiceTurnDone,
 }: chatboxActionsProps) {
-
   return (
     <View className="flex-row items-center w-full">
       {showLanguagePicker && <LanguagePicker />}
       <View className="flex-1" />
       <View className="flex-row items-center gap-2">
-        {showVoiceButton && onVoiceTurnDone && (
+        {showVoiceButton && (
           <VoiceInputComponent
             onUserTranscript={onVoiceUserTranscript}
             onAssistantDelta={onVoiceAssistantDelta}

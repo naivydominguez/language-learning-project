@@ -29,22 +29,27 @@ export default function HomePage() {
     "A friend just recommended a podcast to me. Do you listen to podcasts? What kind do you like?",
   ];
   React.useEffect(() => {
-    setConvoStart(convStarters[Math.floor(Math.random() * convStarters.length)]);
+    setConvoStart(
+      convStarters[Math.floor(Math.random() * convStarters.length)],
+    );
   }, []);
 
   const createConversation = async (title: string, start: string) => {
-    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.access_token}`,
+    const response = await fetch(
+      `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({
+          target_lang: "spanish", // TODO: Replace with actual target language
+          name: title,
+          starting_prompt: start,
+        }),
       },
-      body: JSON.stringify({
-        target_lang: "spanish", // Replace with actual target language
-        name: title,
-        starting_prompt: start,
-      }),
-    });
+    );
 
     if (!response.ok) {
       throw new Error("Failed to create conversation");
@@ -53,63 +58,25 @@ export default function HomePage() {
     return await response.json();
   };
 
-  const handleSend = async (messageText: string) => {
-    const start = convStart; // Replace with your generated conversation start
+  const handleSend = async (messageText: string, voice: boolean = false) => {
+    const starterPrompt = convStart; // Replace with your generated conversation start
     const title = messageText.split(" ").slice(0, 4).join(" ");
 
     try {
-      const convoData = await createConversation(title, start);
+      const convoData = await createConversation(title, starterPrompt);
 
       router.push({
         pathname: "/chat",
         params: {
-          start,
+          starterPrompt,
+          title,
+          conversationId: convoData.id,
           initialMessage: messageText,
-          title,
-          conversationId: convoData.id,
+          voice: voice ? "true" : "false",
         },
       });
     } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Error creating conversation",
-        text2: "Please try again later.",
-      });
-    }
-  };
-
-  const handleVoiceTurnDone = async (userText: string, assistantText: string) => {
-    const start = convStart;
-    const title = userText.split(" ").slice(0, 4).join(" ");
-
-    try {
-      const convoData = await createConversation(title, start);
-
-      // The voice exchange already happened live over the realtime session - persist it
-      // rather than resending it through the text pipeline (which would double-answer).
-      await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${convoData.id}/messages/voice`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.access_token}`,
-          },
-          body: JSON.stringify({
-            user_transcript: userText,
-            assistant_transcript: assistantText,
-          }),
-        },
-      );
-
-      router.push({
-        pathname: "/chat",
-        params: {
-          title,
-          conversationId: convoData.id,
-        },
-      });
-    } catch (error) {
+      console.error("Error creating conversation:", error);
       Toast.show({
         type: "error",
         text1: "Error creating conversation",
@@ -138,7 +105,11 @@ export default function HomePage() {
           </View>
           <Pressable
             className="flex-row items-center gap-1 p-2"
-            onPress={() => setConvoStart(convStarters[Math.floor(Math.random() * convStarters.length)])}
+            onPress={() =>
+              setConvoStart(
+                convStarters[Math.floor(Math.random() * convStarters.length)],
+              )
+            }
           >
             <RotateCcw size={14} color="#8C6E60" strokeWidth={1.75} />
           </Pressable>
@@ -147,7 +118,7 @@ export default function HomePage() {
           <ChatInputBar
             onSend={handleSend}
             showLanguagePicker={true}
-            onVoiceTurnDone={handleVoiceTurnDone}
+            onVoiceUserTranscript={(transcript) => handleSend(transcript, true)}
           />
         </View>
       </View>
