@@ -79,7 +79,6 @@ export default function ChatScreen() {
         text1: "Error fetching messages",
         text2: "Please try again later.",
       });
-      //console.error("Error fetching messages:", error);
     }
   };
 

@@ -49,6 +49,7 @@ export function useChat(conversationId: string) {
             if (eventType === "delta") {
                 onChunk(eventData);
             } else if (eventType === "completed") {
+                console.log("Stream completed:", eventData);
                 setIsWaiting(false);
             } else if (eventType === "error") {
                 console.error("Error from server:", eventData);
