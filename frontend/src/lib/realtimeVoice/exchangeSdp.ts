@@ -3,10 +3,10 @@ export async function exchangeSdp(offerSdp: string, clientSecret: string): Promi
     method: "POST",
     headers: {
       Authorization: `Bearer ${clientSecret}`,
-      "Content-Type": "application/json",
+      "Content-Type": "application/sdp",
       Accept: "application/sdp",
     },
-    body: JSON.stringify({ sdp: offerSdp }),
+    body: offerSdp,
   });
 
   if (!response.ok) {

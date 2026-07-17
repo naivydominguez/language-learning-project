@@ -8,13 +8,14 @@ import Logo from "@/components/Logo";
 import ChatInputBar from "./chat/_components/ChatInputBar";
 import Toast from "react-native-toast-message";
 import React from "react";
-import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function HomePage() {
+  const { session } = useAuth();
   const [convStart, setConvoStart] = React.useState("");
   const router = useRouter();
   const [navOpen, setNavOpen] = React.useState(false);
-  
+
   const convStarters = [
     "Hey! I just watched a really interesting video — have you seen anything good lately?",
     "What are your plans for the weekend? I'm trying to decide what to do.",
@@ -32,14 +33,11 @@ export default function HomePage() {
   }, []);
 
   const createConversation = async (title: string, start: string) => {
-    const supabaseSession = await supabase.auth.getSession();
-    const accessToken = supabaseSession.data.session?.access_token;
-
     const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${session?.access_token}`,
       },
       body: JSON.stringify({
         target_lang: "spanish", // Replace with actual target language
@@ -52,7 +50,7 @@ export default function HomePage() {
       throw new Error("Failed to create conversation");
     }
 
-    return { convoData: await response.json(), accessToken };
+    return await response.json();
   };
 
   const handleSend = async (messageText: string) => {
@@ -60,7 +58,7 @@ export default function HomePage() {
     const title = messageText.split(" ").slice(0, 4).join(" ");
 
     try {
-      const { convoData } = await createConversation(title, start);
+      const convoData = await createConversation(title, start);
 
       router.push({
         pathname: "/chat",
@@ -85,7 +83,7 @@ export default function HomePage() {
     const title = userText.split(" ").slice(0, 4).join(" ");
 
     try {
-      const { convoData, accessToken } = await createConversation(title, start);
+      const convoData = await createConversation(title, start);
 
       // The voice exchange already happened live over the realtime session - persist it
       // rather than resending it through the text pipeline (which would double-answer).
@@ -95,7 +93,7 @@ export default function HomePage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${session?.access_token}`,
           },
           body: JSON.stringify({
             user_transcript: userText,
@@ -119,8 +117,6 @@ export default function HomePage() {
       });
     }
   };
-
-  
 
   return (
     <View className="flex-1">

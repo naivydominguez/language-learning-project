@@ -5,7 +5,7 @@ import React from "react";
 import { Modal, Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ChevronDown } from "lucide-react-native";
-import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/use-auth";
 
 const LANGUAGES = [
   { name: "Japanese", flag: "🇯🇵" },
@@ -21,6 +21,7 @@ const LANGUAGES = [
 ];
 
 export default function LanguagePicker() {
+  const { session } = useAuth();
   const [language, setLanguage] = React.useState(LANGUAGES[0].name);
   const insets = useSafeAreaInsets();
   const [languagePickerOpen, setLanguagePickerOpen] = React.useState(false);
@@ -28,23 +29,14 @@ export default function LanguagePicker() {
 
   useQuery({
     queryKey: ["userLanguage"],
+    enabled: !!session,
     queryFn: async () => {
-      const supabaseSession = await supabase.auth.getSession();
-      const accessToken = supabaseSession.data.session?.access_token;
-
       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/user_languages/me`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
+        headers: { Authorization: `Bearer ${session!.access_token}` },
       });
-
       if (!response.ok) {
-        Toast.show({
-          type: "error",
-          text1: "Error fetching user language",
-        });
+        Toast.show({ type: "error", text1: "Error fetching user language" });
       }
-
       const data = await response.json();
       setLanguage(data.language);
       return data;
