@@ -8,6 +8,17 @@ import { signInWithGoogle, signInWithApple } from "@/lib/socialAuth";
 import GoogleButton from "@/components/GoogleButton";
 import AppleButton from "@/components/AppleButton";
 
+import { getPendingOnboardingData } from "@/lib/onboardingStorage";
+import { useEffect } from "react";
+
+useEffect(() => {
+    async function checkOnboardingData(){
+        const data = await getPendingOnboardingData();
+        console.log("Pending onboarding data: ",data);
+    }
+    checkOnboardingData();
+},[]);
+
 export default function SignUp() {
   const handleGoogleSignIn = async () => {
     try {

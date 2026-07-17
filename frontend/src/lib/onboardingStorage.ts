@@ -1,28 +1,42 @@
-import *  as SecureStore from "expo-secure-store";
+import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
 import type { OnboardingData } from "@/app/onboarding/types/onboarding";
 
 const STORAGE_KEY = "pending_onboarding_data";
 
 export async function savePendingOnboardingData(
-    OnboardingData:OnboardingData
-){
-    const serializedData = JSON.stringify(OnboardingData);
+  OnboardingData: OnboardingData,
+) {
+    console.log("Saving onboarding data: ", OnboardingData);
+  const serializedData = JSON.stringify(OnboardingData);
 
-    await SecureStore.setItemAsync(
-        STORAGE_KEY,
-        serializedData
-    );
+  if (Platform.OS == "web") {
+    localStorage.setItem(STORAGE_KEY, serializedData);
+    return;
+  }
+
+  await SecureStore.setItemAsync(STORAGE_KEY, serializedData);
 }
 
-export async function getPendingOnboardingData():
-Promise<OnboardingData | null >{
-    const serializedData = await SecureStore.getItemAsync(STORAGE_KEY);
+export async function getPendingOnboardingData(): Promise<OnboardingData | null> {
+  let serializedData: string | null;
 
-    if(!serializedData) {return null;}
+  if (Platform.OS == "web") {
+    serializedData = localStorage.getItem(STORAGE_KEY);
+  } else {
+    serializedData = await SecureStore.getItemAsync(STORAGE_KEY);
+  }
 
-    return JSON.parse(serializedData) as OnboardingData;
+  if (!serializedData) {
+    return null;
+  }
+
+  return JSON.parse(serializedData) as OnboardingData;
 }
 
-export async function clearPendingOnboardingData(){
-    await SecureStore.deleteItemAsync(STORAGE_KEY);
+export async function clearPendingOnboardingData() {
+  if (Platform.OS == "web") {
+    localStorage.removeItem(STORAGE_KEY);
+  }
+  await SecureStore.deleteItemAsync(STORAGE_KEY);
 }
