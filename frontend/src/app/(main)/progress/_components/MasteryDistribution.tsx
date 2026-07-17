@@ -5,6 +5,7 @@ import { BarChart } from "react-native-gifted-charts/dist/BarChart";
 import PointerComponentCreator from "./GraphPointerComponent";
 import GraphLegendItem from "@/app/(main)/progress/_components/GraphLegendItem";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
 
 const POINTER_CONFIG = {
   activatePointersOnLongPress: true,
@@ -27,27 +28,18 @@ interface Props {
 
 const MasteryDistribution = ({ axisTextStyles }: Props) => {
   const [chartWidth, setChartWidth] = useState(0);
-
-  const accessToken = "temp"; // TODO: replace with supabase token
+  const { session } = useAuth();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["masteryDistribution"],
+    enabled: !!session,
     queryFn: async () => {
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_known_words/mastery_level`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
+        { headers: { Authorization: `Bearer ${session!.access_token}` } },
       );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch mastery distribution");
-      }
-
-      const data = await response.json();
-      return data;
+      if (!response.ok) throw new Error("Failed to fetch mastery distribution");
+      return response.json();
     },
   });
 
@@ -71,7 +63,9 @@ const MasteryDistribution = ({ axisTextStyles }: Props) => {
 
   return (
     <View className="w-full h-max flex flex-col bg-white p-4 pr-0 rounded-md border border-background-dark">
-      <Text weight="bold" className="text-xl">Words by mastery</Text>
+      <Text weight="bold" className="text-xl">
+        Words by mastery
+      </Text>
       <View
         className="w-full mt-6"
         onLayout={(e) => setChartWidth(e.nativeEvent.layout.width)}
