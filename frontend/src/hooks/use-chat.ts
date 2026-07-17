@@ -43,8 +43,9 @@ export function useChat(conversationId: string) {
 
         for (const event of events) {
             const fields = event.split("\n");
+            console.log(fields)
             const eventType = fields[0].replace("event: ", "").trim();
-            const eventData = fields[1].replace("data: ", "");
+            const eventData = fields[1]?.replace("data: ", "");
 
             if (eventType === "delta") {
                 onChunk(eventData);
