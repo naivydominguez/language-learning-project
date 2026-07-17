@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Pressable, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
-import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/use-auth";
 
 const AXIS_TEXT_STYLES = {
   color: "#bfad9f", // foreground-tertiary
@@ -22,79 +22,44 @@ export type UserStatisticsResponse = {
 };
 
 export default function ProgressRoute() {
+  const { session } = useAuth();
   const statsData = useQuery({
     queryKey: ["temporalUserStatistics"],
+    enabled: !!session,
     queryFn: async () => {
-      const supabaseSession = await supabase.auth.getSession();
-      const accessToken = supabaseSession.data.session?.access_token;
-
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_statistics/me`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
+        { headers: { Authorization: `Bearer ${session!.access_token}` } },
       );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch user statistics");
-      }
-
-      const data = await response.json();
-      return data as UserStatisticsResponse[];
+      if (!response.ok) throw new Error("Failed to fetch user statistics");
+      return response.json() as Promise<UserStatisticsResponse[]>;
     },
   });
 
   const wordsData = useQuery({
     queryKey: ["knownWords10Recent"],
+    enabled: !!session,
     queryFn: async () => {
-      const supabaseSession = await supabase.auth.getSession();
-      const accessToken = supabaseSession.data.session?.access_token;
-
-      const params = new URLSearchParams();
-      params.set("limit", "10");
-      params.set("sort_by", "recent");
-
+      const params = new URLSearchParams({ limit: "10", sort_by: "recent" });
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_known_words/me?${params.toString()}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
+        { headers: { Authorization: `Bearer ${session!.access_token}` } },
       );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch known words");
-      }
-
-      const data = await response.json();
-      return data;
+      if (!response.ok) throw new Error("Failed to fetch known words");
+      return response.json();
     },
   });
 
   const wordsCountData = useQuery({
     queryKey: ["knownWordsCount"],
+    enabled: !!session,
     queryFn: async () => {
-      const supabaseSession = await supabase.auth.getSession();
-      const accessToken = supabaseSession.data.session?.access_token;
-
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_known_words/count`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
+        { headers: { Authorization: `Bearer ${session!.access_token}` } },
       );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch known words count");
-      }
-
-      const data = await response.json();
-      return data;
+      if (!response.ok) throw new Error("Failed to fetch known words count");
+      return response.json();
     },
   });
 

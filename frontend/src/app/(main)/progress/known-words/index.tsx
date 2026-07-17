@@ -3,8 +3,8 @@ import { FlashList } from "@shopify/flash-list";
 import KnownWordsFilter from "./_components/KnownWordsFilter";
 import KnownWordItem from "./_components/KnownWordItem";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useCallback, useMemo } from "react";
-import { supabase } from "@/lib/supabase";
+import { useState, useCallback } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 type KnownWord = {
   word: string;
@@ -21,6 +21,7 @@ export type FilterArgs = {
 };
 
 const knownWords = () => {
+  const { session } = useAuth();
   const [filterArgs, setFilterArgs] = useState<FilterArgs>({
     sortType: "alphabetical",
   });
@@ -31,31 +32,19 @@ const knownWords = () => {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["knownWords", filterArgs],
+    enabled: !!session,
     queryFn: async ({ queryKey }) => {
       const [_, filterArgs] = queryKey as [string, FilterArgs];
-      const supabaseSession = await supabase.auth.getSession();
-      const accessToken = supabaseSession.data.session?.access_token;
-
       const params = new URLSearchParams();
       if (filterArgs.searchTerm) {
         params.set("search", filterArgs.searchTerm);
       }
-
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_known_words/me?${params.toString()}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
+        { headers: { Authorization: `Bearer ${session!.access_token}` } },
       );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch known words");
-      }
-
-      const data = await response.json();
-      return data;
+      if (!response.ok) throw new Error("Failed to fetch known words");
+      return response.json();
     },
   });
 

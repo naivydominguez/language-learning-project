@@ -9,6 +9,7 @@ import ChatInputBar from "./chat/_components/ChatInputBar";
 import Toast from "react-native-toast-message";
 import React from "react";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function HomePage() {
   const [convStart, setConvoStart] = React.useState("");
@@ -36,8 +37,7 @@ export default function HomePage() {
     const title = messageText.split(" ").slice(0, 4).join(" ");
 
     try {
-      const supabaseSession = await supabase.auth.getSession();
-      const accessToken = supabaseSession.data.session?.access_token;
+      const { session } = useAuth();
 
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/?starterPrompt=${encodeURIComponent(start)}`,
@@ -45,7 +45,7 @@ export default function HomePage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${session?.access_token}`,
           },
           body: JSON.stringify({
             target_lang: "spanish", // Replace with actual target language

@@ -1,10 +1,11 @@
 import { useState, useCallback, useRef } from "react";
-import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/use-auth";
 
 /**
  * Streams chat messages
  */
 export function useChat(conversationId: string) {
+  const { session } = useAuth();
   const [isWaiting, setIsWaiting] = useState(false);
 
   const buffer = useRef("")
@@ -14,8 +15,7 @@ export function useChat(conversationId: string) {
 
     setIsWaiting(true);
 
-    const supabaseSession = await supabase.auth.getSession();
-    const accessToken = supabaseSession.data.session?.access_token;
+    const accessToken = session?.access_token;
     const response = await fetch(
       `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${conversationId}/messages`,
       {
