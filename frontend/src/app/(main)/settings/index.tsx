@@ -2,6 +2,8 @@ import { View, Pressable } from "react-native";
 import { Text } from "../../../components/Text";
 import { useRouter, usePathname } from "expo-router";
 import { User, Globe, Puzzle, CreditCard, Info, ChevronRight } from "lucide-react-native";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { useState } from "react";
 
 const NAV_ITEMS = [
   { label: "Personalization", desc: "Bot name, personality", path: "/settings/Personalization", icon: User },
@@ -14,9 +16,30 @@ const NAV_ITEMS = [
 export default function settingScreen() {
   const router = useRouter();
   const pathname = usePathname();
-
+ const accessToken = ""
   const navigate = (path: Parameters<typeof router.push>[0]) => {
     router.push(path);
+  };
+ const [name, SetName] = useState("Learner");
+ const [languages, SetLanguages] = useState("English");
+  const getName= async () => {
+    try {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/user/me`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const data = await response.json();
+      SetName(data.name);
+      SetLanguages(data.target_languages);
+    } catch (error) {
+      console.error("Error fetching user name:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error fetching user name",
+        text2: error instanceof Error ? error.message : String(error),
+      });
+      return "Learner";
+    }
+
   };
 
   return (
@@ -29,9 +52,9 @@ export default function settingScreen() {
         </View>
         <View className="flex-1">
           <Text weight="medium" className="text-[15px] text-foreground">
-            Learner
+            {name}
           </Text>
-          <Text className="text-xs text-foreground-tertiary mt-px">Free Plan - Language</Text>
+          <Text className="text-xs text-foreground-tertiary mt-px">Free Plan - {languages}</Text>
         </View>
       </View>
 
