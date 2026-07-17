@@ -4,11 +4,11 @@ import { useRouter, usePathname } from "expo-router";
 import { User, Globe, Puzzle, CreditCard, Info, ChevronRight } from "lucide-react-native";
 
 const NAV_ITEMS = [
-  { label: "Personalization", desc: "Bot name, personality", path: "/", icon: User },
-  { label: "Language Setting", desc: "Native & target languages", path: "/settings", icon: Globe },
-  { label: "Connected Apps", desc: "Anki, JPBD, Youtube", path: "/progress", icon: Puzzle },
-  { label: "Billings", desc: "Subscription & payment", path: "/progress", icon: CreditCard },
-  { label: "About", desc: "Methodology & research", path: "/progress", icon: Info },
+  { label: "Personalization", desc: "Bot name, personality", path: "/settings/Personalization", icon: User },
+  { label: "Language Setting", desc: "Native & target languages", path: "/settings/LanguageSetting", icon: Globe },
+  { label: "Connected Apps", desc: "Anki, JPBD, Youtube", path: "/settings/ConnectApp", icon: Puzzle },
+  { label: "Billings", desc: "Subscription & payment", path: "/settings/billings", icon: CreditCard },
+  { label: "About", desc: "Methodology & research", path: "/settings/About", icon: Info },
 ] as const;
 
 export default function settingScreen() {
@@ -20,21 +20,22 @@ export default function settingScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background">
+    <View className="flex-1 bg-background-light pt-5">
       <View
-        className="flex-row items-center gap-3 px-4 py-3.5 border-b border-foreground/[0.06]"
+        className="flex-row items-center gap-3  px-4 py-3.5 border-b border-foreground/[0.06] mb-5"
       >
         <View className="w-[34px] h-[34px] rounded-[9px] bg-accent-light items-center justify-center">
           <User size={16} color="#B5613A" strokeWidth={1.75} />
         </View>
         <View className="flex-1">
           <Text weight="medium" className="text-[15px] text-foreground">
-            Leaner
+            Learner
           </Text>
           <Text className="text-xs text-foreground-tertiary mt-px">Free Plan - Language</Text>
         </View>
       </View>
-      <View className="flex-1 bg-white">
+
+      <View className="bg-white ml-4 mr-4 shadow-sm rounded-lg overflow-hidden">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           return (
@@ -57,6 +58,18 @@ export default function settingScreen() {
           );
         })}
       </View>
+
+      <View className="px-4 py-3.5 border-t border-foreground/[0.06] items-center">
+        <Text className="text-xs text-primary-dark text-center" weight="medium">
+          Sign out
+        </Text>
+      </View>
+      <View className="px-4 py-3.5 border-t border-foreground/[0.06] items-center">
+        <Text className="text-xs text-foreground-tertiary text-center" weight="medium">
+          Immerbot v1.0.0
+        </Text>
+      </View>
     </View>
   );
 }
+    
