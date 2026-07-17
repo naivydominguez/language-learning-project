@@ -56,12 +56,14 @@ export default function LanguageSetting() {
         if (!response.ok) {
           throw new Error("Failed to save changes");
         }
+        return true;
       } catch (error) {
         Toast.show({
           type: "error",
           text1: "Error saving changes",
           text2: error instanceof Error ? error.message : String(error),
         });
+        return false;
       }
     };
 
@@ -114,13 +116,15 @@ export default function LanguageSetting() {
                         {language.name}
                       </Text>
                     </View>
-                    {isSelected && (
-                      <View className="w-9 h-9 rounded-full bg-accent items-center justify-center">
-                        <Text weight="bold" className="text-white text-base">
-                          ✓
-                        </Text>
-                      </View>
-                    )}
+                    <View
+                      className={`w-9 h-9 rounded-full bg-accent items-center justify-center ${
+                        isSelected ? "opacity-100" : "opacity-0"
+                      }`}
+                    >
+                      <Text weight="bold" className="text-white text-base">
+                        ✓
+                      </Text>
+                    </View>
                   </Pressable>
                 );
               })}

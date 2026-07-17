@@ -8,8 +8,8 @@ import { useState } from "react";
 const NAV_ITEMS = [
   { label: "Personalization", desc: "Bot name, personality", path: "/settings/Personalization", icon: User },
   { label: "Language Setting", desc: "Native & target languages", path: "/settings/LanguageSetting", icon: Globe },
-  { label: "Connected Apps", desc: "Anki, JPBD, Youtube", path: "/settings/ConnectApp", icon: Puzzle },
-  { label: "Billings", desc: "Subscription & payment", path: "/settings/billings", icon: CreditCard },
+  { label: "Connected Apps", desc: "Anki, JPDB, Youtube", path: "/settings/ConnectApp", icon: Puzzle },
+  // { label: "Billing", desc: "Subscription & payment", path: "/settings/billings", icon: CreditCard },
   { label: "About", desc: "Methodology & research", path: "/settings/About", icon: Info },
 ] as const;
 
@@ -59,13 +59,16 @@ export default function settingScreen() {
       </View>
 
       <View className="bg-white ml-4 mr-4 shadow-sm rounded-lg overflow-hidden">
-        {NAV_ITEMS.map((item) => {
+        {NAV_ITEMS.map((item, index) => {
           const Icon = item.icon;
+          const isLast = index === NAV_ITEMS.length - 1;
           return (
             <Pressable
               key={item.label}
               onPress={() => navigate(item.path)}
-              className="flex-row items-center gap-3 px-4 py-3.5 border-b border-foreground/[0.06]"
+              className={`flex-row items-center gap-3 px-4 py-3.5 ${
+                isLast ? "" : "border-b border-foreground/[0.06]"
+              }`}
             >
               <View className="w-[34px] h-[34px] rounded-[9px] bg-accent-light items-center justify-center">
                 {Icon && <Icon size={16} color="#B5613A" strokeWidth={1.75} />}

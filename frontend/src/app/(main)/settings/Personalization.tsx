@@ -41,12 +41,14 @@ const preset = [
            if (!response.ok) {
              throw new Error("Failed to save changes");
            }
+           return true;
          } catch (error) {
            Toast.show({
              type: "error",
              text1: "Error saving changes",
              text2: error instanceof Error ? error.message : String(error),
            });
+           return false;
          }
        };
   return (
