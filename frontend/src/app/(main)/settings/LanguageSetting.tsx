@@ -82,7 +82,7 @@ export default function LanguageSetting() {
               <Picker
                 selectedValue={nativeLanguage}
                 onValueChange={(value) => setNativeLanguage(value)}
-                style={{ height: 52, color: "#1F1A17" }}
+                style={{ height: 52, color: "#1F1A17", outlineWidth: 0 } as any}
               >
                 <Picker.Item label="Select a language" value="" />
                 {native_languages.map((language) => (

@@ -1,4 +1,4 @@
-import { Pressable, View } from "react-native";
+import { Pressable, View, ScrollView } from "react-native";
 import { Text, TextInput } from "@/components/Text";
 import { useState } from "react";
 import { Check } from "lucide-react-native";
@@ -55,8 +55,8 @@ const preset = [
     <View className="flex-1 bg-background-light">
       <PageHeader title="Personalization" />
 
-      <View className="flex-1 justify-between px-6 pt-3 pb-3">
-        <View>
+      <View className="flex-1 px-6 pt-3 pb-3">
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View>
             <Text weight="bold" className="mt-14 mb-3 text-sm text-foreground-secondary">
               What should Immerbot call you?{" "}
@@ -116,7 +116,7 @@ const preset = [
               ))}
             </View>
           </View>
-        </View>
+        </ScrollView>
 
         <SaveChangeButton onPress={handleSaveChanges} />
       </View>

@@ -158,15 +158,15 @@ export default function Navbar({ visible, onClose }: Props) {
               <Pressable
                 key={item.label}
                 onPress={() => navigate(item.path)}
-                className={`flex-row items-center gap-2 px-5 pl-4 py-3 ${isActive ? "bg-primary-light" : ""}`}
+                className={`flex-row items-center gap-2 px-5 pl-4 py-3 ${isActive ? "bg-primary/5" : ""}`}
               >
                 {Icon && (
-                  <Icon size={16} color={isActive ? "#FFFFFF" : "#201810"} />
+                  <Icon size={16} color={isActive ? "#B5613A" : "#201810"} />
                 )}
                 <Text
                   weight="medium"
                   className={`text-base ${
-                    isActive ? "text-white" : "text-foreground"
+                    isActive ? "text-primary" : "text-foreground"
                   }`}
                 >
                   {item.label}
