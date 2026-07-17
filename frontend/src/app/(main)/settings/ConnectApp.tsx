@@ -52,11 +52,11 @@ export default function ConnectedApps() {
                     <Text weight="bold" className="text-lg text-primary-dark">
                       {option.title}
                     </Text>
-                    <Text className="mt-2 text-sm text-foreground-secondary">{option.subtitle}</Text>
+                    <Text className="mt-0.5 text-sm text-foreground-secondary">{option.subtitle}</Text>
                   </View>
 
                  
-                  <Pressable className="bg-primary rounded-md p-4 items-center justify-center" onPress={() => toggleApp(option.id)}>
+                  <Pressable className="bg-primary rounded-md p-2 items-center justify-center" onPress={() => toggleApp(option.id)}>
                     <Text
                       weight="bold"
                       className="text-sm text-white text-center"

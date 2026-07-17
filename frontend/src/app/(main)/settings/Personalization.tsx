@@ -1,12 +1,23 @@
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { Text, TextInput } from "@/components/Text";
 import { useState } from "react";
+import { Check } from "lucide-react-native";
 import SaveChangeButton from "./_components/SaveChangeButton";
 import PageHeader from "./_components/PageHeader";
 import Toast from "react-native-toast-message";
 const accessToken = "YOUR_ACCESS_TOKEN"; // Replace with your actual access token
 export default function PersonalizationSetting() {
+const preset = [
+  { title: "Friendly exchange partner", description: "like a language exchange partner living in Tokyo." },
+  {
+    title: "Patient tutor",
+    description: "Patient and methodical, like a tutor who explains things clearly and never rushes.",
+  },
+  { title: "Casual friend", description: "Casual and relaxed, like a native-speaking friend textraling on their phone." },
+  { title: "Cultural guide", description: "Knowledgeable about different cultures, like a cultural ambassador who can provide insights into local customs and traditions." }
+];
   const [name, setName] = useState("");
+
   const [personality, setPersonality] = useState("");
     const handleSaveChanges = async () => {
          try {
@@ -42,14 +53,8 @@ export default function PersonalizationSetting() {
     <View className="flex-1 bg-background-light">
       <PageHeader title="Personalization" />
 
-      <View className="flex-1 justify-between px-6 pt-8 pb-6">
+      <View className="flex-1 justify-between px-6 pt-3 pb-3">
         <View>
-          <Text weight="bold" className="text-lg mb-3">
-            Make it yours
-          </Text>
-
-          <Text className="text-[15px] leading-[26px] text-foreground-secondary">You can change these later in Settings.</Text>
-
           <View>
             <Text weight="bold" className="mt-14 mb-3 text-sm text-foreground-secondary">
               What should Immerbot call you?{" "}
@@ -67,11 +72,14 @@ export default function PersonalizationSetting() {
               style={{ outlineWidth: 0 } as any}
               className="rounded-xl border border-gray-200 bg-background-light px-5 py-4 text-base text-foreground"
             />
+            <Text className="text-foreground-tertiary text-sm">
+              Immerbot will use this name when addressing you in conversations.
+            </Text>
           </View>
 
           <View>
             <Text weight="bold" className="mt-14 mb-3 text-sm text-foreground-secondary">
-              Give Immerbot a personality{" "}
+              Immerbot personality{" "}
               <Text weight="normal" className="text-foreground-tertiary">
                 (optional)
               </Text>
@@ -86,6 +94,25 @@ export default function PersonalizationSetting() {
               style={{ outlineWidth: 0 } as any}
               className="rounded-xl border border-gray-200 bg-background-light px-5 py-8 text-base text-foreground"
             ></TextInput>
+            <Text className="text-foreground-tertiary text-sm">
+              This prompt is applied to every conversation. Keep it concise.
+            </Text>
+
+            <View className="mt-6">
+            <View className="flex-row items-center justify-between mb-3">
+              <Text>Quick presets</Text>
+              </View>
+              {preset.map((item) => (
+                <Pressable
+                  key={item.title}
+                  onPress={() => setPersonality(item.description)}
+                  className={`rounded-md border ${personality === item.description ? "border-primary bg-background-dark" : "border-gray-200 bg-background"} px-5 py-4 text-base  flex-row text-foreground mb-3`}
+                >
+                  {personality === item.description ? <Check size={20} color={"#B5613A"} /> : null}
+                  <Text className={`${personality === item.description ? "text-primary ml-4" : "text-foreground"}`}>{item.title}</Text>
+                </Pressable>
+              ))}
+            </View>
           </View>
         </View>
 

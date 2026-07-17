@@ -47,7 +47,7 @@ export default function LanguageSetting() {
               authorization: `Bearer ${accessToken}`, // Replace with your actual access token
             },
             body: JSON.stringify({
-              target_lang: selectedLanguages.join(", "),
+              target_languages: selectedLanguages.join(", "),
               native_lang: nativeLanguage,
             }),
           },
@@ -69,8 +69,8 @@ export default function LanguageSetting() {
     <View className="flex-1 bg-background-light">
       <PageHeader title="Language Setting" />
 
-      <View className="flex-1 justify-between px-6 pt-8 pb-6">
-        <View>
+      <View className="flex-1 px-6 pt-8 pb-6">
+        <View className="flex-1">
           <View>
             <Text weight="bold" className="text-lg mb-3">
               Your native language
@@ -90,14 +90,14 @@ export default function LanguageSetting() {
             </View>
           </View>
 
-          <View className="mt-14">
+          <View className="mt-14 flex-1">
             <Text weight="bold" className="text-lg mb-3">
               Your target language(s)
             </Text>
 
             <Text className="text-[15px] leading-[26px] text-foreground-secondary">Choose one or more target languages.</Text>
 
-            <ScrollView className="max-h-[300px] mt-3" showsVerticalScrollIndicator={true}>
+            <ScrollView className="flex-1 mt-3" showsVerticalScrollIndicator={true}>
               {languages.map((language) => {
                 const isSelected = selectedLanguages.includes(language.name);
                 return (

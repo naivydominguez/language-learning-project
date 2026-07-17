@@ -59,11 +59,15 @@ export default function settingScreen() {
         })}
       </View>
 
-      <View className="px-4 py-3.5 border-t border-foreground/[0.06] items-center">
-        <Text className="text-xs text-primary-dark text-center" weight="medium">
-          Sign out
-        </Text>
-      </View>
+      <View className="flex-1" />
+
+      <Pressable onPress={() => router.replace("/onboarding")}>
+        <View className="px-4 py-3.5 border-t border-foreground/[0.06] items-center">
+          <Text className="text-xs text-primary-dark text-center" weight="medium">
+            Sign out
+          </Text>
+        </View>
+      </Pressable>
       <View className="px-4 py-3.5 border-t border-foreground/[0.06] items-center">
         <Text className="text-xs text-foreground-tertiary text-center" weight="medium">
           Immerbot v1.0.0
