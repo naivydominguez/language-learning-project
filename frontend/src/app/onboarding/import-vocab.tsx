@@ -7,25 +7,48 @@ import { OnboardingColors } from "@/constants/onboardingTheme";
 import { useState } from "react";
 import { Check } from "lucide-react-native";
 
-const options = [
-  { id: "jpdb", title: "JPDB", subtitle: "Japanese vocabulary database" },
-  { id: "anki", title: "Anki", subtitle: "Spaced repetition flashcards" },
-  { id: "quizlet", title: "Quizlet", subtitle: "Online flashcard platform" },
-];
+type ImportType = 'jpdb'|'anki'|'quizlet';
 
-export default function LanguageSelections() {
-  const [selectedApps, setSelectedApps] = useState<string[]>([]);
+const options: {
+    id: ImportType;
+    title: string;
+    subtitle: string;
+    
+} [] =[
+        {id:"jpdb",title:"JPDB", subtitle:"Japanese vocabulary database"},
+        {id:"anki",title:"Anki", subtitle:"Spaced repetition flashcards"},
+        {id:"quizlet",title:"Quizlet", subtitle:"Online flashcard platform"},
+    ];
 
-  function toggleApp(id: string) {
-    if (selectedApps?.includes(id)) {
-      setSelectedApps(selectedApps.filter((app) => app !== id));
-    } else {
-      setSelectedApps([...selectedApps, id]);
+export default function ImportVocab() {
+    const [selectedApps,setSelectedApps]= useState<ImportType[]>([]);
+
+    function toggleApp(id:ImportType){
+        if(selectedApps.includes(id)){
+            setSelectedApps(selectedApps.filter((app) => app !== id));
+        }
+        else{
+            setSelectedApps([...selectedApps,id]);
+        }
     }
-  }
 
-  const canContinue = selectedApps.length > 0;
+    const canContinue = selectedApps.length > 0
 
+    function handleContinue(){
+        if(!canContinue) return;
+
+        const firstSelectedApp = selectedApps[0];
+
+        router.push({
+            pathname: `/onboarding/${firstSelectedApp}`,
+            params: {
+                selectedApps: JSON.stringify(selectedApps),
+                currentIndex: "0",
+            },
+        });
+    }
+
+    
   return (
     <View className="flex-1 justify-between bg-background-light px-6 pt-8 pb-6">
       <View>
@@ -87,10 +110,11 @@ export default function LanguageSelections() {
       <View>
         <OnboardingButton
         title="Continue"
-        onPress={() => router.push("/")}
+        disabled={!canContinue}
+        onPress={handleContinue}
       />
 
-      <Pressable onPress={()=> router.push("/")}>
+      <Pressable onPress={()=> router.push("/account/signUp")}>
       <Text className={"mt-3 text-xl text-foreground-secondary text-center"}>
             Skip for now
           </Text>
