@@ -164,7 +164,6 @@ def send_message(
             async for event in streaming_response:
                 if event.type == "response.output_text.delta":
                     data = event.delta
-                    print(f"Streaming delta: {data}")
                     yield f"event: delta\ndata: {data}\n\n"
                 elif event.type == "response.completed":
                     yield "event: completed\ndata: {{}}\n\n"
