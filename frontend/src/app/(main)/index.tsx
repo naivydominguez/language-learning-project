@@ -9,6 +9,8 @@ import Toast from "react-native-toast-message";
 import React from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
+import {useUserProfile} from "@/hooks/use-user";
+
 
 export default function HomePage() {
   const [convStart, setConvoStart] = React.useState("");
@@ -29,11 +31,11 @@ export default function HomePage() {
   React.useEffect(() => {
     setConvoStart(convStarters[Math.floor(Math.random() * convStarters.length)]);
   }, []);
+     const { data: profile } = useUserProfile();
 
   const handleSend = async (messageText: string) => {
     const start = convStart; // Replace with your generated conversation start
     const title = messageText.split(" ").slice(0, 4).join(" ");
-
     try {
       const { session } = useAuth();
 
@@ -84,7 +86,7 @@ export default function HomePage() {
       <View className="flex-1 items-center justify-center bg-background-dark  p-6 gap-6">
         <Logo size="lg" />
         <Text weight="bold" className="text-4xl text-black-500">
-          Hello, Learner{" "}
+          Hello, {profile?.name || "Learner"} !
         </Text>
         <View className="flex-row items-center justify-between w-full gap-2 p-2 bg-white rounded-lg mt-4">
           <View className="flex-1">

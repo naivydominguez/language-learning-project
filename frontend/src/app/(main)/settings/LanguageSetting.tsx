@@ -6,9 +6,11 @@ import SaveChangeButton from "./_components/SaveChangeButton";
 import PageHeader from "./_components/PageHeader";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useAuth } from "@/hooks/use-auth";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function LanguageSetting() {
   const { session } = useAuth(); // Replace with your actual access token
+  const queryClient = useQueryClient();
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [nativeLanguage, setNativeLanguage] = useState("English");
 
@@ -69,6 +71,7 @@ export default function LanguageSetting() {
       if (!response.ok) {
         throw new Error("Failed to save changes");
       }
+      queryClient.invalidateQueries({queryKey: ["userProfile"]});
       return true;
     } catch (error) {
       Toast.show({

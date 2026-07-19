@@ -3,12 +3,15 @@ import { Text, TextInput } from "@/components/Text";
 import { useState } from "react";
 import { Check } from "lucide-react-native";
 import SaveChangeButton from "./_components/SaveChangeButton";
+import { useQueryClient } from "@tanstack/react-query";
 import PageHeader from "./_components/PageHeader";
 import Toast from "react-native-toast-message";
 import { useAuth } from "@/hooks/use-auth";
 
 export default function PersonalizationSetting() {
   const { session } = useAuth(); // Replace with your actual access token
+  const queryClient = useQueryClient();
+
   const preset = [
     {
       title: "Friendly exchange partner",
@@ -55,6 +58,7 @@ export default function PersonalizationSetting() {
       if (!response.ok) {
         throw new Error("Failed to save changes");
       }
+      queryClient.invalidateQueries({queryKey: ["userProfile"]});
       return true;
     } catch (error) {
       Toast.show({
