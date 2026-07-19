@@ -33,7 +33,6 @@ export default function SettingScreen() {
       setName(data.name);
       setLanguages(data.target_languages);
     } catch (error) {
-      console.error("Error fetching user name:", error);
       Toast.show({
         type: "error",
         text1: "Error fetching user name",
