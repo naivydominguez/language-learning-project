@@ -79,8 +79,8 @@ export default function HomePage() {
   
 
   return (
-    <View className="flex-1">
-      <MainHeader title="Home" />
+    <View className="flex-1 bg-background-dark">
+      <MainHeader title="Home" border={false} />
       <View className="flex-1 items-center justify-center bg-background-dark  p-6 gap-6">
         <Logo size="lg" />
         <Text weight="bold" className="text-4xl text-black-500">

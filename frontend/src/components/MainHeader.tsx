@@ -5,13 +5,18 @@ import { useNav } from "@/hooks/use-nav";
 
 interface MainHeaderProps {
   title: string;
+  border?: boolean;
 }
 
-export default function MainHeader({ title }: MainHeaderProps) {
+export default function MainHeader({ title, border = true }: MainHeaderProps) {
   const { openNav } = useNav();
 
   return (
-    <View className="flex-row items-center h-[52px] px-1 bg-background-light border-b border-foreground/[0.1]">
+    <View
+      className={`flex-row items-center h-[52px] px-1  ${
+        border ? "border-b border-foreground/[0.1]" : ""
+      }`}
+    >
       <View className="w-10 h-10 items-center justify-center">
         <HamburgerButton onPress={openNav} />
       </View>

@@ -49,7 +49,7 @@ export default function SettingScreen() {
   }, [accessToken]);
 
   return (
-    <View className="flex-1 bg-background-light ">
+    <View className="flex-1 bg-background">
       <MainHeader title="Settings" />
       <View
         className="flex-row items-center gap-3  px-4 py-3.5 border-b border-foreground/[0.06] mb-5"

@@ -67,7 +67,7 @@ export default function ProgressRoute() {
   const router = useRouter();
 
   return (
-    <View>
+    <View className="flex-1 bg-background">
       <MainHeader title="Progress" />
       <ScrollView className="flex flex-col bg-background pt-4 px-6" contentContainerClassName="gap-6 pb-6">
         <Pressable onPress={() => router.push("/")} className="p-2">
