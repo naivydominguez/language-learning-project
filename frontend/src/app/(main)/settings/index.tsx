@@ -5,6 +5,7 @@ import { User, Globe, Puzzle, CreditCard, Info, ChevronRight } from "lucide-reac
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import MainHeader from "@/components/MainHeader";
 
 const NAV_ITEMS = [
   { label: "Personalization", desc: "Bot name, personality", path: "/settings/Personalization", icon: User },
@@ -48,7 +49,8 @@ export default function SettingScreen() {
   }, [accessToken]);
 
   return (
-    <View className="flex-1 bg-background-light pt-5">
+    <View className="flex-1 bg-background-light ">
+      <MainHeader title="Settings" />
       <View
         className="flex-row items-center gap-3  px-4 py-3.5 border-b border-foreground/[0.06] mb-5"
       >

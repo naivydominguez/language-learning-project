@@ -2,8 +2,7 @@ import { View, Pressable } from "react-native";
 import { Text } from "@/components/Text";
 import { useRouter } from "expo-router";
 import { RotateCcw } from "lucide-react-native";
-import HamburgerButton from "@/components/HamburgerBtn";
-import Navbar from "@/components/Navbar";
+import MainHeader from "@/components/MainHeader";
 import Logo from "@/components/Logo";
 import ChatInputBar from "./chat/_components/ChatInputBar";
 import Toast from "react-native-toast-message";
@@ -14,8 +13,7 @@ import { useAuth } from "@/hooks/use-auth";
 export default function HomePage() {
   const [convStart, setConvoStart] = React.useState("");
   const router = useRouter();
-  const [navOpen, setNavOpen] = React.useState(false);
-  
+
   const convStarters = [
     "Hey! I just watched a really interesting video — have you seen anything good lately?",
     "What are your plans for the weekend? I'm trying to decide what to do.",
@@ -82,12 +80,7 @@ export default function HomePage() {
 
   return (
     <View className="flex-1">
-      <View style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
-        <HamburgerButton onPress={() => setNavOpen(!navOpen)} />
-      </View>
-
-      <Navbar visible={navOpen} onClose={() => setNavOpen(false)} />
-
+      <MainHeader title="Home" />
       <View className="flex-1 items-center justify-center bg-background-dark  p-6 gap-6">
         <Logo size="lg" />
         <Text weight="bold" className="text-4xl text-black-500">
