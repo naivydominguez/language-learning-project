@@ -1,4 +1,5 @@
 from api.utils.supabase_client import supabase
+from api.utils.lemmatizer import get_unknown_words_by_lemma
 
 def get_unknown_words(language_id:str, user_id:str, message:str) -> list[str]:
     language_response = (
@@ -16,4 +17,4 @@ def get_unknown_words(language_id:str, user_id:str, message:str) -> list[str]:
     
     known_words = {row["word"].lower() for row in known_words_response.data}
     
-    return [word for word in message.split() if word.lower() not in known_words]
+    return get_unknown_words_by_lemma(message, target_language, known_words)
