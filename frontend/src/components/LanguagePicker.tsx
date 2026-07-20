@@ -36,12 +36,37 @@ export default function LanguagePicker() {
       });
       if (!response.ok) {
         Toast.show({ type: "error", text1: "Error fetching user language" });
+        return [];
       }
-      const data = await response.json();
-      setLanguage(data.language);
+      const data: { language_id: string; language: string }[] = await response.json();
+      if (data.length > 0) {
+        setLanguage(data[0].language);
+      }
       return data;
     },
   });
+
+  const selectLanguage = async (name: string) => {
+    setLanguage(name);
+    setLanguagePickerOpen(false);
+
+    if (!session) return;
+    try {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/user_languages/me`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ language: name }),
+      });
+      if (!response.ok) {
+        Toast.show({ type: "error", text1: "Error saving chat language" });
+      }
+    } catch {
+      Toast.show({ type: "error", text1: "Error saving chat language" });
+    }
+  };
 
   return (
     <View>
@@ -67,10 +92,7 @@ export default function LanguagePicker() {
               return (
                 <Pressable
                   key={lang.name}
-                  onPress={() => {
-                    setLanguage(lang.name);
-                    setLanguagePickerOpen(false);
-                  }}
+                  onPress={() => selectLanguage(lang.name)}
                   className={`flex-row items-center justify-between rounded-xl px-4 py-3 mb-2 border ${
                     isSelected ? "bg-accent-light border-accent" : "bg-white border-gray-200"
                   }`}

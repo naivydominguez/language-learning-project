@@ -39,7 +39,7 @@ class WebRealtimeVoiceConnection implements RealtimeVoiceConnection {
     dataChannel.onopen = () => {
       for (const msg of conversationHistory) {
         if (!msg.content) continue;
-        const contentType = msg.role === "user" ? "input_text" : "text";
+        const contentType = msg.role === "user" ? "input_text" : "output_text";
         dataChannel.send(JSON.stringify({
           type: "conversation.item.create",
           item: {
