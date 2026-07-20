@@ -73,7 +73,7 @@ export default function Personalization() {
           placeholderTextColor="#9B9692"
           multiline
           style={{ outlineWidth: 0 } as any}
-          className="rounded-xl border border-gray-200 bg-white px-5 py-8 text-xl text-foreground"
+          className="rounded-xl border border-gray-200 bg-white px-5 pt-4 pb-8 text-xl text-foreground"
         />
       </View>
 
