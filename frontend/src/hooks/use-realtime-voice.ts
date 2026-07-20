@@ -32,6 +32,9 @@ export function useRealtimeVoice() {
   );
 
   const pendingAssistantDeltasRef = useRef<string[]>([]);
+  // Bumped on every start()/stop() so stale events from a connection that's
+  // still tearing down asynchronously can't leak into a newer session.
+  const sessionIdRef = useRef(0);
 
   /**
    * Swap in new handlers without dropping the connection.
@@ -52,6 +55,7 @@ export function useRealtimeVoice() {
 
   const start = useCallback(async (callbacks: VoiceTurnCallbacks) => {
     if (connectionRef.current) return;
+    const sessionId = ++sessionIdRef.current;
     callbacksRef.current = callbacks;
     pendingAssistantDeltasRef.current = [];
 
@@ -64,26 +68,37 @@ export function useRealtimeVoice() {
           : Promise.resolve([]),
       ]);
 
+      // A stop()/newer start() happened while we were awaiting setup above;
+      // abandon this session instead of standing up a connection for it.
+      if (sessionId !== sessionIdRef.current) return;
+
       const connection = createConnection();
       connectionRef.current = connection;
 
       await connection.start(
         clientSecret,
         {
-          onStatusChange: setStatus,
+          onStatusChange: (s) => {
+            if (sessionId !== sessionIdRef.current) return;
+            setStatus(s);
+          },
           onError: (error) => {
+            if (sessionId !== sessionIdRef.current) return;
             console.error("Realtime voice error:", error);
             setStatus("error");
           },
           onUserTranscriptDone: (text) => {
+            if (sessionId !== sessionIdRef.current) return;
             lastUserTranscriptRef.current = text;
             assistantTranscriptRef.current = "";
             callbacksRef.current?.onUserTranscriptDone?.(text);
           },
           onUserTranscriptDelta: (delta) => {
+            if (sessionId !== sessionIdRef.current) return;
             callbacksRef.current?.onUserTranscriptDelta?.(delta);
           },
           onAssistantTranscriptDelta: (delta) => {
+            if (sessionId !== sessionIdRef.current) return;
             if (!callbacksRef.current?.onAssistantDelta) {
               pendingAssistantDeltasRef.current.push(delta);
               return;
@@ -92,6 +107,7 @@ export function useRealtimeVoice() {
             callbacksRef.current.onAssistantDelta(delta);
           },
           onAssistantTranscriptDone: (fullText) => {
+            if (sessionId !== sessionIdRef.current) return;
             const finalText = fullText || assistantTranscriptRef.current;
             callbacksRef.current?.onAssistantTurnDone?.(
               lastUserTranscriptRef.current,
@@ -102,6 +118,7 @@ export function useRealtimeVoice() {
         conversationHistory,
       );
     } catch (error) {
+      if (sessionId !== sessionIdRef.current) return;
       console.error("Failed to start realtime voice session:", error);
       setStatus("error");
       connectionRef.current = null;
@@ -109,6 +126,10 @@ export function useRealtimeVoice() {
   }, []);
 
   const stop = useCallback(async () => {
+    // Invalidate immediately so any events still arriving from this
+    // connection while it tears down asynchronously get dropped rather
+    // than delivered to whatever callbacks/conversation is active next.
+    sessionIdRef.current++;
     const connection = connectionRef.current;
     connectionRef.current = null;
     callbacksRef.current = null;
@@ -118,6 +139,7 @@ export function useRealtimeVoice() {
 
   useEffect(() => {
     return () => {
+      sessionIdRef.current++;
       connectionRef.current?.stop();
       connectionRef.current = null;
     };
