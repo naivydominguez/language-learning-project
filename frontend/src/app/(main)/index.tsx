@@ -9,12 +9,27 @@ import Toast from "react-native-toast-message";
 import React, { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import {useUserProfile} from "@/hooks/use-user";
+import { useRealtimeVoiceContext } from "@/context/RealtimeVoiceContext";
 
 
 export default function HomePage() {
   const { session } = useAuth();
   const [convStart, setConvoStart] = useState("");
   const router = useRouter();
+  const { setHistoryProvider } = useRealtimeVoiceContext();
+
+  // A voice turn started here belongs to a conversation that doesn't exist
+  // yet, so it must never inherit whatever history a previously visited
+  // chat screen left registered on the shared realtime voice session.
+  // Seed the starter prompt itself as a prior assistant turn so the model
+  // knows what it's being answered — text mode gets this for free because
+  // the backend writes it to the DB before the first real message, but a
+  // voice session never touches the DB until the turn is already over.
+  React.useEffect(() => {
+    setHistoryProvider(async () =>
+      convStart ? [{ role: "assistant", content: convStart }] : [],
+    );
+  }, [convStart, setHistoryProvider]);
 
   const convStarters = [
     "Hey! I just watched a really interesting video — have you seen anything good lately?",

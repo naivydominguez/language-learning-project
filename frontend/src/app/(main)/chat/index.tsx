@@ -44,8 +44,6 @@ export default function ChatScreen() {
     userBubbleId: string;
     assistantBubbleId: string;
   } | null>(null); // null when no turn is active
-  const pendingUserBubbleIdsRef = useRef<string[]>([]);
-  const pendingAssistantDeltasRef = useRef<string[]>([]);
 
   const getBackendMessages = async (convId: string) => {
     try {
@@ -118,39 +116,36 @@ export default function ChatScreen() {
   /**
    * Voice Handlers
    */
+  // Lazily creates this turn's bubble pair the first time any voice event
+  // for it arrives. Whichever fires first — user delta, user transcript
+  // done, or assistant delta — claims the turn, since transcription models
+  // like whisper-1 never emit user deltas and the assistant's response can
+  // start streaming before the user's transcript is even done.
+  const ensureActiveTurn = () => {
+    if (activeTurnRef.current) return activeTurnRef.current;
+    const userBubbleId = uid();
+    const assistantBubbleId = uid();
+    activeTurnRef.current = { userBubbleId, assistantBubbleId };
+    setMessages((prev) => [
+      ...prev,
+      { id: userBubbleId, sender: "user", messageContent: "" },
+      { id: assistantBubbleId, sender: "assistant", messageContent: "" },
+    ]);
+    return activeTurnRef.current;
+  };
+
   const handleVoiceUserTranscriptDelta = (chunk: string) => {
-    if (!activeTurnRef.current) {
-      const userBubbleId = uid();
-      const assistantBubbleId = uid();
-      activeTurnRef.current = { userBubbleId, assistantBubbleId };
-      pendingUserBubbleIdsRef.current.push(userBubbleId);
-
-      const pending = pendingAssistantDeltasRef.current;
-      pendingAssistantDeltasRef.current = [];
-
-      setMessages((prev) => [
-        ...prev,
-        { id: userBubbleId, sender: "user", messageContent: "" },
-        {
-          id: assistantBubbleId,
-          sender: "assistant",
-          messageContent: pending.join(""),
-        },
-      ]);
-    }
+    ensureActiveTurn();
   };
 
   const handleVoiceUserTranscriptDone = (text: string) => {
-    const targetId = pendingUserBubbleIdsRef.current.shift();
-    if (targetId) updateBubble(targetId, () => text);
+    const turn = ensureActiveTurn();
+    updateBubble(turn.userBubbleId, () => text);
   };
 
   const handleVoiceAssistantDelta = (chunk: string) => {
-    if (!activeTurnRef.current) {
-      pendingAssistantDeltasRef.current.push(chunk);
-    } else {
-      updateBubble(activeTurnRef.current.assistantBubbleId, (c) => c + chunk);
-    }
+    const turn = ensureActiveTurn();
+    updateBubble(turn.assistantBubbleId, (c) => c + chunk);
   };
 
   const handleVoiceTurnDone = async (
@@ -158,7 +153,6 @@ export default function ChatScreen() {
     assistantText: string,
   ) => {
     activeTurnRef.current = null;
-    pendingAssistantDeltasRef.current = [];
     try {
       await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${conversationId}/messages/voice`,
@@ -186,8 +180,6 @@ export default function ChatScreen() {
       return () => {
         stop();
         activeTurnRef.current = null;
-        pendingUserBubbleIdsRef.current = [];
-        pendingAssistantDeltasRef.current = [];
       };
     }, [stop]),
   );
@@ -195,8 +187,6 @@ export default function ChatScreen() {
   useEffect(() => {
     if (status === "connecting") {
       activeTurnRef.current = null;
-      pendingUserBubbleIdsRef.current = [];
-      pendingAssistantDeltasRef.current = [];
     }
   }, [status]);
 
@@ -251,7 +241,6 @@ export default function ChatScreen() {
         const userBubbleId = uid();
         const assistantBubbleId = uid();
         activeTurnRef.current = { userBubbleId, assistantBubbleId };
-        pendingUserBubbleIdsRef.current = [];
 
         setMessages([
           { id: uid(), sender: "assistant", messageContent: starterPrompt },
