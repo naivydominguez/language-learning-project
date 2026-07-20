@@ -7,13 +7,15 @@ type chatboxActionsProps = {
   onSend: () => void;
   canSend: boolean;
   showLanguagePicker?: boolean;
+  selectedLanguage?: string;
+  onLanguageChange?: (language: string) => void;
 };
 
-export default function ChatboxActions({ onSend, canSend, showLanguagePicker }: chatboxActionsProps) {
+export default function ChatboxActions({ onSend, canSend, showLanguagePicker, selectedLanguage, onLanguageChange }: chatboxActionsProps) {
   
   return (
     <View className="flex-row items-center w-full">
-      {showLanguagePicker && <LanguagePicker />}
+      {showLanguagePicker && <LanguagePicker selectedLanguage={selectedLanguage} onLanguageChange={onLanguageChange} />}
       <View className="flex-1" />
       <View className="flex-row items-center gap-2">
         <VoiceInputComponent />

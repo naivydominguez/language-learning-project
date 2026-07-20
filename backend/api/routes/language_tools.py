@@ -35,7 +35,8 @@ def translate(text: str, target_lang: str):
 
     return TranslationResponse(
         original_text=text,
-        result=result.result,
+        translated_text=result.result,
+        target_lang=target_lang,
     )
 
 

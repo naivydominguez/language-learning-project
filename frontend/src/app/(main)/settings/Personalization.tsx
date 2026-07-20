@@ -37,6 +37,14 @@ export default function PersonalizationSetting() {
   const [personality, setPersonality] = useState("");
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
   const handleSaveChanges = async () => {
+             const body: Record<string, string> = {};
+        if (name) {
+          body.name = name;
+        }
+        if (personality) {
+          body.personality_prompt = personality;
+        }
+
     try {
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/users/me`,
@@ -46,10 +54,7 @@ export default function PersonalizationSetting() {
             "Content-Type": "application/json",
             authorization: `Bearer ${session?.access_token}`, // Replace with your actual access token
           },
-          body: JSON.stringify({
-            name: name,
-            personality_prompt: personality,
-          }),
+          body: JSON.stringify(body),
         },
       );
 

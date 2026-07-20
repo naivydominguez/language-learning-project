@@ -8,8 +8,10 @@ type Props = {
   onSend: (message: string) => void;
   isWaiting?: boolean;
   showLanguagePicker?: boolean;
+  selectedLanguage?: string;
+  onLanguageChange?: (language: string) => void;
 };
-export default function ChatInputBar({ onSend, isWaiting = false, showLanguagePicker = true }: Props) {
+export default function ChatInputBar({ onSend, isWaiting = false, showLanguagePicker = true , selectedLanguage , onLanguageChange}: Props, ) {
   const [message, setMessage] = React.useState("");
     const handleSend = () => {
       const trimmedMessage = message.trim();
@@ -40,7 +42,7 @@ export default function ChatInputBar({ onSend, isWaiting = false, showLanguagePi
           />
         </View>
         <View className="border-t border-foreground/10 pt-1">
-          <ChatboxActions onSend={handleSend} canSend={canSend} showLanguagePicker={showLanguagePicker} />
+          <ChatboxActions onSend={handleSend} canSend={canSend} showLanguagePicker={showLanguagePicker} selectedLanguage={selectedLanguage} onLanguageChange={onLanguageChange} />
         </View>
       </View>
       

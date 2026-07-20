@@ -14,23 +14,33 @@ import {useUserProfile} from "@/hooks/use-user";
 
 export default function HomePage() {
   const [convStart, setConvoStart] = React.useState("");
+  const [convStarters, setConvStarters] = React.useState<string[]>([]);
+  const  [language, setLanguage] = React.useState("Spanish");
   const router = useRouter();
 
-  const convStarters = [
-    "Hey! I just watched a really interesting video — have you seen anything good lately?",
-    "What are your plans for the weekend? I'm trying to decide what to do.",
-    "I've been thinking about trying a new restaurant. Do you like trying new foods?",
-    "It's been so busy lately! How do you usually relax after a long day?",
-    "I just finished a great book. Do you enjoy reading? What kinds of books do you like?",
-    "The weather today is beautiful. Do you prefer sunny days or rainy ones?",
-    "I'm thinking about learning a new skill. Is there something you've always wanted to learn?",
-    "I saw something funny on the way here today. Do you ever notice interesting things on your commute?",
-    "I can't decide what to cook for dinner tonight. Do you enjoy cooking?",
-    "A friend just recommended a podcast to me. Do you listen to podcasts? What kind do you like?",
-  ];
+  const getConvStarters = async ()=>
+  {
+    try {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversation-starters?target_lang=${language.toLowerCase()}`);
+      const data = await response.json();
+      console.log(data);
+      return data.starters as string[];
+    } catch (error) {
+      Toast .show({
+        type: "error",
+        text1: "Error fetching conversation starters",
+        text2: "Please try again later.",
+      });
+      return [];
+    }
+  }
+
   React.useEffect(() => {
-    setConvoStart(convStarters[Math.floor(Math.random() * convStarters.length)]);
-  }, []);
+    getConvStarters().then((starters) => {
+      setConvStarters(starters);
+      setConvoStart(starters[Math.floor(Math.random() * starters.length)]);
+    });
+  }, [language]);
      const { data: profile } = useUserProfile();
 
   const handleSend = async (messageText: string) => {
@@ -48,7 +58,7 @@ export default function HomePage() {
             Authorization: `Bearer ${session?.access_token}`,
           },
           body: JSON.stringify({
-            target_lang: "spanish", // Replace with actual target language
+            target_lang: language, 
             name: title,
           }),
         },
@@ -101,7 +111,7 @@ export default function HomePage() {
           </Pressable>
         </View>
         <View className="w-full bg-white rounded-md">
-          <ChatInputBar onSend={handleSend} showLanguagePicker={true} />
+          <ChatInputBar onSend={handleSend} showLanguagePicker={true} selectedLanguage={language} onLanguageChange={(lang) => setLanguage(lang)}/>
         </View>
       </View>
     </View>
