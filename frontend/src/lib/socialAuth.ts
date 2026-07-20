@@ -31,12 +31,20 @@ export async function signInWithApple() {
   return data;
 }
 
-const redirectTo =
-  Platform.OS === "web"
-    ? process.env.EXPO_PUBLIC_REDIRECT_URL ?? window.location.origin
-    : makeRedirectUri({ scheme: "frontend" });
+function getRedirectTo() {
+  if (Platform.OS !== "web") {
+    return makeRedirectUri({ scheme: "frontend" });
+  }
+
+  return (
+    process.env.EXPO_PUBLIC_REDIRECT_URL ??
+    (typeof window !== "undefined" ? window.location.origin : undefined)
+  );
+}
 
 export async function signInWithGoogle() {
+  const redirectTo = getRedirectTo();
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
