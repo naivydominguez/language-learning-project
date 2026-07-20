@@ -6,26 +6,59 @@ import OnboardingButton from "./_components/OnboardingButton";
 import { OnboardingColors } from "@/constants/onboardingTheme";
 import { useState } from "react";
 import { Check } from "lucide-react-native";
+import { useOnboarding } from "./context/OnboardingContext";
+import type { ImportType } from "@/lib/importNav";
+import { savePendingOnboardingData } from "@/lib/onboardingStorage";
 
-const options = [
-  { id: "jpdb", title: "JPDB", subtitle: "Japanese vocabulary database" },
-  { id: "anki", title: "Anki", subtitle: "Spaced repetition flashcards" },
-  { id: "quizlet", title: "Quizlet", subtitle: "Online flashcard platform" },
-];
+const options: {
+    id: ImportType;
+    title: string;
+    subtitle: string;
+    
+} [] =[
+        {id:"jpdb",title:"JPDB", subtitle:"Japanese vocabulary database"},
+        {id:"anki",title:"Anki", subtitle:"Spaced repetition flashcards"},
+        {id:"quizlet",title:"Quizlet", subtitle:"Online flashcard platform"},
+    ];
 
-export default function LanguageSelections() {
-  const [selectedApps, setSelectedApps] = useState<string[]>([]);
+export default function ImportVocab() {
+    const {onboardingData, updateOnboardingData} = useOnboarding();
+    const [selectedApps,setSelectedApps]= useState<ImportType[]>(onboardingData.selectedImportApps);
 
-  function toggleApp(id: string) {
-    if (selectedApps?.includes(id)) {
-      setSelectedApps(selectedApps.filter((app) => app !== id));
-    } else {
-      setSelectedApps([...selectedApps, id]);
+    function toggleApp(id:ImportType){
+        if(selectedApps.includes(id)){
+            setSelectedApps(selectedApps.filter((app) => app !== id));
+        }
+        else{
+            setSelectedApps([...selectedApps,id]);
+        }
     }
-  }
 
-  const canContinue = selectedApps.length > 0;
+    const canContinue = selectedApps.length > 0
 
+    function handleContinue(){
+        if(!canContinue) return;
+
+        updateOnboardingData({selectedImportApps:selectedApps,});
+
+        const firstSelectedApp = selectedApps[0];
+
+        router.push({
+            pathname: `/onboarding/${firstSelectedApp}`,
+            params: {
+                selectedApps: JSON.stringify(selectedApps),
+                currentIndex: "0",
+            },
+        });
+    }
+
+    async function handleSkip(){
+        updateOnboardingData({ selectedImportApps:[],})
+        await savePendingOnboardingData(onboardingData);
+        router.push("/account/sign-up")
+    }
+
+    
   return (
     <View className="flex-1 justify-between bg-background-light px-6 pt-8 pb-6">
       <View>
@@ -87,10 +120,11 @@ export default function LanguageSelections() {
       <View>
         <OnboardingButton
         title="Continue"
-        onPress={() => router.push("/account/sign-up")}
+        disabled={!canContinue}
+        onPress={handleContinue}
       />
 
-      <Pressable onPress={()=> router.push("/account/sign-up")}>
+      <Pressable onPress={handleSkip}>
       <Text className={"mt-3 text-xl text-foreground-secondary text-center"}>
             Skip for now
           </Text>

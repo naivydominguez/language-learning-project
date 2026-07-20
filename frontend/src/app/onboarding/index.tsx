@@ -7,17 +7,17 @@ import { BookOpen, MessageCircle, Sparkles } from "lucide-react-native";
 
 export default function OnboardingIndex() {
   return (
-    <View className="flex-1 justify-between p-8 bg-background-light">
+    <View className="flex-1 justify-between p-8 pb-4 bg-background-light">
       <View>
         <Text weight="bold" className="text-primary tracking-widest mb-4">
           THE SCIENCE
         </Text>
 
-        <Text weight="bold" className="text-4xl mb-6">
+        <Text weight="bold" className="text-4xl mb-2">
           Language is acquired, not studied.
         </Text>
 
-        <Text className="text-lg text-foreground-secondary mb-3">
+        <Text className="text-lg text-foreground-secondary mb-3 leading-6 ">
           Research by linguist Stephen Krashen shows that people acquire
           language by understanding input that is slightly beyond their current
           level — not through memorizing grammar rules.
@@ -44,13 +44,13 @@ export default function OnboardingIndex() {
         </View>
       </View>
 
-      <View className="py-2">
+      <View className="mt-4 flex flex-col gap-6">
         <OnboardingButton
           title="Let's get started"
           onPress={() => router.push("/onboarding/language")}
         />
 
-        <Text className={"text-xl text-center"}>
+        <Text className={"text-base text-center"}>
           <Text className="text-[#8C6E60]"> Returning User? </Text>
 
           <Text
