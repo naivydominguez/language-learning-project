@@ -29,7 +29,7 @@ export default function LanguagePicker({ selectedLanguage, onLanguageChange }: L
   const insets = useSafeAreaInsets();
   const [languagePickerOpen, setLanguagePickerOpen] = React.useState(false);
   const { data: userLanguages } = useUserLanguage();
-  const selectedLanguageObj = LANGUAGES.find((lang) => lang.name === selectedLanguage);
+  const selectedLanguageObj = LANGUAGES.find((lang) => lang.name.toLowerCase() === selectedLanguage?.toLowerCase());
   return (
     <View>
       <Pressable

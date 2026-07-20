@@ -58,8 +58,6 @@ export default function PersonalizationSetting() {
         },
       );
 
-      setName("");
-      setPersonality("");
       if (!response.ok) {
         throw new Error("Failed to save changes");
       }

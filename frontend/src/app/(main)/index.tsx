@@ -10,20 +10,27 @@ import React from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 import {useUserProfile} from "@/hooks/use-user";
-
-
+import {useUserLanguage} from "@/hooks/use-user-language";
 export default function HomePage() {
+  const { data: userLanguages } = useUserLanguage();
+
   const [convStart, setConvoStart] = React.useState("");
   const [convStarters, setConvStarters] = React.useState<string[]>([]);
-  const  [language, setLanguage] = React.useState("Spanish");
+  const  [language, setLanguage] = React.useState( "english");
   const router = useRouter();
-
+  React.useEffect(() => {
+    if (userLanguages?.[0])  {
+      setLanguage(userLanguages[0]);
+    }
+    }, [userLanguages]);
   const getConvStarters = async ()=>
   {
     try {
       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/conversation-starters?target_lang=${language.toLowerCase()}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch conversation starters");
+      }
       const data = await response.json();
-      console.log(data);
       return data.starters as string[];
     } catch (error) {
       Toast .show({
