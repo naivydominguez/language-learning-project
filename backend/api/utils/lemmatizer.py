@@ -7,7 +7,12 @@ MODEL_MAP = {
     "german": "de_core_news_sm",
     "italian": "it_core_news_sm",
     "portuguese": "pt_core_news_sm",
-    # add the rest later, jsut these for now
+    "dutch": "nl_core_news_sm",
+    "greek": "el_core_news_sm",
+    "japanese": "ja_core_news_sm",
+    "korean": "ko_core_news_sm",
+    "chinese (simplified)": "zh_core_web_sm",
+    "russian": "ru_core_news_sm",
 }
 
 _nlp_cache = {}
@@ -17,7 +22,11 @@ def get_nlp(language:str):
     return _nlp_cache[language]
 
 def get_unknown_words_by_lemma(text: str, language: str, known_words: set[str]) -> list[str]:
+    if language not in MODEL_MAP:
+        return [word for word in text.split() if word.lower() not in known_words]
+    
     nlp = get_nlp(language)
+    
     known_lemmas = {token.lemma_.lower() for word in known_words for token in nlp(word)}
     
     doc = nlp(text)
