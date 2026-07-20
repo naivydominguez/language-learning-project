@@ -6,15 +6,30 @@ import MainHeader from "@/components/MainHeader";
 import Logo from "@/components/Logo";
 import ChatInputBar from "./chat/_components/ChatInputBar";
 import Toast from "react-native-toast-message";
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserProfile } from "@/hooks/use-user";
+import { useRealtimeVoiceContext } from "@/context/RealtimeVoiceContext";
 
 export default function HomePage() {
-  const [convStart, setConvoStart] = React.useState("");
-  const router = useRouter();
-
   const { session } = useAuth();
+  const [convStart, setConvoStart] = useState("");
+  const router = useRouter();
+  const { setHistoryProvider } = useRealtimeVoiceContext();
+
+  // A voice turn started here belongs to a conversation that doesn't exist
+  // yet, so it must never inherit whatever history a previously visited
+  // chat screen left registered on the shared realtime voice session.
+  // Seed the starter prompt itself as a prior assistant turn so the model
+  // knows what it's being answered — text mode gets this for free because
+  // the backend writes it to the DB before the first real message, but a
+  // voice session never touches the DB until the turn is already over.
+  React.useEffect(() => {
+    setHistoryProvider(async () =>
+      convStart ? [{ role: "assistant", content: convStart }] : [],
+    );
+  }, [convStart, setHistoryProvider]);
+
   const convStarters = [
     "Hey! I just watched a really interesting video — have you seen anything good lately?",
     "What are your plans for the weekend? I'm trying to decide what to do.",
@@ -34,42 +49,48 @@ export default function HomePage() {
   }, []);
   const { data: profile } = useUserProfile();
 
-  const handleSend = async (messageText: string) => {
-    const start = convStart; // Replace with your generated conversation start
+  const createConversation = async (title: string, start: string) => {
+    const response = await fetch(
+      `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({
+          target_lang: "spanish", // TODO: Replace with actual target language
+          name: title,
+          starting_prompt: start,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to create conversation");
+    }
+
+    return await response.json();
+  };
+
+  const handleSend = async (messageText: string, voice: boolean = false) => {
+    const starterPrompt = convStart;
     const title = messageText.split(" ").slice(0, 4).join(" ");
     try {
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/?starterPrompt=${encodeURIComponent(start)}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.access_token}`,
-          },
-          body: JSON.stringify({
-            target_lang: "spanish", // Replace with actual target language
-            name: title,
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to create conversation");
-      }
-
-      const convoData = await response.json();
+      const convoData = await createConversation(title, starterPrompt);
 
       router.push({
         pathname: "/chat",
         params: {
-          start,
-          initialMessage: messageText,
+          starterPrompt,
           title,
           conversationId: convoData.id,
+          initialMessage: messageText,
+          voice: voice ? "true" : "false",
         },
       });
     } catch (error) {
-      console.log("Error creating conversation:", error);
+      console.error("Error creating conversation:", error);
       Toast.show({
         type: "error",
         text1: "Error creating conversation",
@@ -103,7 +124,11 @@ export default function HomePage() {
           </Pressable>
         </View>
         <View className="w-full bg-white rounded-md">
-          <ChatInputBar onSend={handleSend} showLanguagePicker={true} />
+          <ChatInputBar
+            onSend={handleSend}
+            showLanguagePicker={true}
+            onVoiceUserTranscript={(transcript) => handleSend(transcript, true)}
+          />
         </View>
       </View>
     </View>

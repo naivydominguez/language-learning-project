@@ -72,5 +72,5 @@ export function useChat(conversationId: string) {
     [conversationId],
   );
 
-  return { isWaiting, sendMessage };
+  return { isWaiting, sendTextMessage: sendMessage };
 }
