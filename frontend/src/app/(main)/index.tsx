@@ -12,15 +12,16 @@ import { useAuth } from "@/hooks/use-auth";
 import {useUserProfile} from "@/hooks/use-user";
 import {useUserLanguage} from "@/hooks/use-user-language";
 export default function HomePage() {
-  const { data: userLanguages } = useUserLanguage();
+  const { data: userLanguages, isLoading: isLoadingUserLanguages } = useUserLanguage();
 
   const [convStart, setConvoStart] = React.useState("");
   const [convStarters, setConvStarters] = React.useState<string[]>([]);
-  const  [language, setLanguage] = React.useState( "english");
+  const  [preLanguage, setPreLanguage] = React.useState( "english");
+  const language = preLanguage ?? userLanguages?.[0] ?? "english";
   const router = useRouter();
   React.useEffect(() => {
     if (userLanguages?.[0])  {
-      setLanguage(userLanguages[0]);
+      setPreLanguage(userLanguages[0]);
     }
     }, [userLanguages]);
   const getConvStarters = async ()=>
@@ -42,22 +43,27 @@ export default function HomePage() {
     }
   }
 
+  const requesstIfred= React.useRef(0);
   React.useEffect(() => {
+    
+    if (isLoadingUserLanguages) return;
+    const requestId = ++requesstIfred.current;
+    
     getConvStarters().then((starters) => {
+      if (requestId !== requesstIfred.current) return; // Ignore if a newer request has been made
       setConvStarters(starters);
       setConvoStart(starters[Math.floor(Math.random() * starters.length)]);
     });
-  }, [language]);
+  }, [language, isLoadingUserLanguages]);
      const { data: profile } = useUserProfile();
+     const { session } = useAuth();
 
   const handleSend = async (messageText: string) => {
     const start = convStart; // Replace with your generated conversation start
     const title = messageText.split(" ").slice(0, 4).join(" ");
     try {
-      const { session } = useAuth();
-
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/?starterPrompt=${encodeURIComponent(start)}`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/`,
         {
           method: "POST",
           headers: {
@@ -67,6 +73,7 @@ export default function HomePage() {
           body: JSON.stringify({
             target_lang: language, 
             name: title,
+            starting_prompt: start,
           }),
         },
       );
@@ -118,7 +125,7 @@ export default function HomePage() {
           </Pressable>
         </View>
         <View className="w-full bg-white rounded-md">
-          <ChatInputBar onSend={handleSend} showLanguagePicker={true} selectedLanguage={language} onLanguageChange={(lang) => setLanguage(lang)}/>
+          <ChatInputBar onSend={handleSend} showLanguagePicker={true} selectedLanguage={language} onLanguageChange={(lang) => setPreLanguage(lang)}/>
         </View>
       </View>
     </View>

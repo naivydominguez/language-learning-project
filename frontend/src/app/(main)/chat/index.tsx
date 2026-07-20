@@ -11,6 +11,8 @@ import WordPopup from "./_components/WordPopup";
 import { supabase } from "@/lib/supabase";
 import { useChat } from "@/hooks/use-chat";
 import MainHeader from "@/components/MainHeader";
+import { useUserLanguage } from "@/hooks/use-user-language";
+import { useUserProfile } from "@/hooks/use-user";
 
 type Message = {
   id: string;
@@ -26,12 +28,15 @@ export default function ChatScreen() {
       title?: string;
       conversationId: string;
     }>();
-  const nativeLang = "Spanish"; // Replace with user's native language
+  const { data: profile } = useUserProfile();
+  const { data: userLanguages } = useUserLanguage();
+  const nativeLang = profile?.native_language || "English";
+  // The first target language is the user's primary conversation language.
+  const convLang = userLanguages?.[0] || "English";
 
   const { isWaiting, sendMessage } = useChat(conversationId);
   const [messages, setMessages] = React.useState<Message[]>([]);
   const hasSentInitial = React.useRef(false);
-  const convLang = "english"; // temp
   const [selectedWord, setSelectedWord] = React.useState<string | null>(null);
 
   const translateResponse = async (word: string, language: string) => {
@@ -160,7 +165,7 @@ export default function ChatScreen() {
       />
       <WordPopup
         word={selectedWord || ""}
-        language="spanish"
+        language={convLang}
         visible={!!selectedWord}
         OnDismiss={() => setSelectedWord(null)}
       />

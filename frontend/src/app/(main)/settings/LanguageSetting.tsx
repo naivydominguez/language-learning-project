@@ -20,7 +20,7 @@ export default function LanguageSetting() {
 
   useEffect (() => {
     if (userLanguages) {
-      setSelectedLanguages(userLanguages.split(", ").filter(Boolean));
+      setSelectedLanguages(userLanguages);
     }
   }, [userLanguages]);
 
