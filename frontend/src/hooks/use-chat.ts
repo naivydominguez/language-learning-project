@@ -8,67 +8,69 @@ export function useChat(conversationId: string) {
   const { session } = useAuth();
   const [isWaiting, setIsWaiting] = useState(false);
 
-  const buffer = useRef("")
+  const buffer = useRef("");
 
-  const sendMessage = useCallback(async (content: string, onChunk: (chunk: string) => void) => {
-    if (isWaiting) return; // Prevent sending if already waiting for a response
+  const sendMessage = useCallback(
+    async (
+      content: string,
+      onChunk: (chunk: string) => void,
+      onFinish: (data: any) => void,
+    ) => {
+      if (isWaiting) return; // Prevent sending if already waiting for a response
 
-    setIsWaiting(true);
+      setIsWaiting(true);
 
-    const accessToken = session?.access_token;
-    const response = await fetch(
-      `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${conversationId}/messages`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
+      const accessToken = session?.access_token;
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${conversationId}/messages`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ content }),
         },
-        body: JSON.stringify({ content }),
-      },
-    );
+      );
 
-    const reader = response.body?.getReader();
-    const decoder = new TextDecoder();
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
 
-    try {
-      while (true) {
-        const { value, done } = await reader!.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        buffer.current += chunk;
-        
-        const events = buffer.current.split("\n\n")
-        buffer.current = events.pop() || ""
+      try {
+        while (true) {
+          const { value, done } = await reader!.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          buffer.current += chunk;
 
-        for (const event of events) {
+          const events = buffer.current.split("\n\n");
+          buffer.current = events.pop() || "";
+
+          for (const event of events) {
             const fields = event.split("\n");
             const eventType = fields[0].replace("event: ", "").trim();
-            const eventData = fields[1].replace("data: ", "");
+            const eventData = fields[1]?.replace("data: ", "");
 
             if (eventType === "delta") {
-                onChunk(eventData);
+              onChunk(eventData);
             } else if (eventType === "completed") {
-                setIsWaiting(false);
+              const finalPayload = JSON.parse(eventData || "{}");
+              onFinish(finalPayload);
+              setIsWaiting(false);
             } else if (eventType === "error") {
-                console.error("Error from server:", eventData);
+              console.error("Error from server:", eventData);
             }
-
+          }
         }
+      } catch (error) {
+        console.error("Error reading stream:", error);
+      } finally {
+        reader?.releaseLock();
+        setIsWaiting(false);
       }
-    } catch (error) {
-      console.error("Error reading stream:", error);
-    } finally {
-      reader?.releaseLock();
-      setIsWaiting(false);
-    }
-  }, [conversationId]);
+    },
+    [conversationId],
+  );
 
   return { isWaiting, sendMessage };
 }
-
-/**
- * onClick -> chatResponse = useChat()
- * newMessage = chatResponse.message
- * messages.append(newMessage)
- */

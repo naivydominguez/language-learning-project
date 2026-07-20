@@ -7,7 +7,6 @@ import Logo from "@/components/Logo";
 import ChatInputBar from "./chat/_components/ChatInputBar";
 import Toast from "react-native-toast-message";
 import React from "react";
-import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserProfile } from "@/hooks/use-user";
 
@@ -70,7 +69,7 @@ export default function HomePage() {
         },
       });
     } catch (error) {
-      console.log(error);
+      console.log("Error creating conversation:", error);
       Toast.show({
         type: "error",
         text1: "Error creating conversation",
@@ -85,7 +84,7 @@ export default function HomePage() {
       <View className="flex-1 items-center justify-center bg-background-dark  p-6 gap-6">
         <Logo size="lg" />
         <Text weight="bold" className="text-4xl text-black-500">
-          Hello, {profile?.name || "Learner"} !
+          Hello, {profile?.name || "Learner"}!
         </Text>
         <View className="flex-row items-center justify-between w-full gap-2 p-2 bg-white rounded-lg mt-4">
           <View className="flex-1">
