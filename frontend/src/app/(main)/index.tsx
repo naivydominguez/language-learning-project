@@ -6,70 +6,117 @@ import MainHeader from "@/components/MainHeader";
 import Logo from "@/components/Logo";
 import ChatInputBar from "./chat/_components/ChatInputBar";
 import Toast from "react-native-toast-message";
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserProfile } from "@/hooks/use-user";
+import { useUserLanguage } from "@/hooks/use-user-language";
+import { useRealtimeVoiceContext } from "@/context/RealtimeVoiceContext";
 
 export default function HomePage() {
-  const [convStart, setConvoStart] = React.useState("");
-  const router = useRouter();
-
   const { session } = useAuth();
-  const convStarters = [
-    "Hey! I just watched a really interesting video — have you seen anything good lately?",
-    "What are your plans for the weekend? I'm trying to decide what to do.",
-    "I've been thinking about trying a new restaurant. Do you like trying new foods?",
-    "It's been so busy lately! How do you usually relax after a long day?",
-    "I just finished a great book. Do you enjoy reading? What kinds of books do you like?",
-    "The weather today is beautiful. Do you prefer sunny days or rainy ones?",
-    "I'm thinking about learning a new skill. Is there something you've always wanted to learn?",
-    "I saw something funny on the way here today. Do you ever notice interesting things on your commute?",
-    "I can't decide what to cook for dinner tonight. Do you enjoy cooking?",
-    "A friend just recommended a podcast to me. Do you listen to podcasts? What kind do you like?",
-  ];
-  React.useEffect(() => {
-    setConvoStart(
-      convStarters[Math.floor(Math.random() * convStarters.length)],
-    );
-  }, []);
+  const router = useRouter();
+  const { setHistoryProvider } = useRealtimeVoiceContext();
+  const { data: userLanguages, isLoading: isLoadingUserLanguages } = useUserLanguage();
   const { data: profile } = useUserProfile();
 
-  const handleSend = async (messageText: string) => {
-    const start = convStart; // Replace with your generated conversation start
-    const title = messageText.split(" ").slice(0, 4).join(" ");
+  const [convStart, setConvoStart] = useState("");
+  const [convStarters, setConvStarters] = useState<string[]>([]);
+  const [preLanguage, setPreLanguage] = useState("english");
+  const language = preLanguage ?? userLanguages?.[0] ?? "english";
+
+  // A voice turn started here belongs to a conversation that doesn't exist
+  // yet, so it must never inherit whatever history a previously visited
+  // chat screen left registered on the shared realtime voice session.
+  // Seed the starter prompt itself as a prior assistant turn so the model
+  // knows what it's being answered — text mode gets this for free because
+  // the backend writes it to the DB before the first real message, but a
+  // voice session never touches the DB until the turn is already over.
+  React.useEffect(() => {
+    setHistoryProvider(async () =>
+      convStart ? [{ role: "assistant", content: convStart }] : [],
+    );
+  }, [convStart, setHistoryProvider]);
+
+  React.useEffect(() => {
+    if (userLanguages?.[0]) {
+      setPreLanguage(userLanguages[0]);
+    }
+  }, [userLanguages]);
+
+  const getConvStarters = async () => {
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/?starterPrompt=${encodeURIComponent(start)}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.access_token}`,
-          },
-          body: JSON.stringify({
-            target_lang: "spanish", // Replace with actual target language
-            name: title,
-          }),
-        },
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversation-starters?target_lang=${language.toLowerCase()}`,
       );
-
       if (!response.ok) {
-        throw new Error("Failed to create conversation");
+        throw new Error("Failed to fetch conversation starters");
       }
+      const data = await response.json();
+      return data.starters as string[];
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error fetching conversation starters",
+        text2: "Please try again later.",
+      });
+      return [];
+    }
+  };
 
-      const convoData = await response.json();
+  const requestIdRef = React.useRef(0);
+  React.useEffect(() => {
+    if (isLoadingUserLanguages) return;
+    const requestId = ++requestIdRef.current;
+
+    getConvStarters().then((starters) => {
+      if (requestId !== requestIdRef.current) return; // Ignore if a newer request has been made
+      setConvStarters(starters);
+      setConvoStart(starters[Math.floor(Math.random() * starters.length)]);
+    });
+  }, [language, isLoadingUserLanguages]);
+
+  const createConversation = async (title: string, start: string) => {
+    const response = await fetch(
+      `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({
+          target_lang: language,
+          name: title,
+          starting_prompt: start,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to create conversation");
+    }
+
+    return await response.json();
+  };
+
+  const handleSend = async (messageText: string, voice: boolean = false) => {
+    const starterPrompt = convStart;
+    const title = messageText.split(" ").slice(0, 4).join(" ");
+    try {
+      const convoData = await createConversation(title, starterPrompt);
 
       router.push({
         pathname: "/chat",
         params: {
-          start,
-          initialMessage: messageText,
+          starterPrompt,
           title,
           conversationId: convoData.id,
+          initialMessage: messageText,
+          voice: voice ? "true" : "false",
         },
       });
     } catch (error) {
-      console.log("Error creating conversation:", error);
+      console.error("Error creating conversation:", error);
       Toast.show({
         type: "error",
         text1: "Error creating conversation",
@@ -103,7 +150,13 @@ export default function HomePage() {
           </Pressable>
         </View>
         <View className="w-full bg-white rounded-md">
-          <ChatInputBar onSend={handleSend} showLanguagePicker={true} />
+          <ChatInputBar
+            onSend={handleSend}
+            showLanguagePicker={true}
+            selectedLanguage={language}
+            onLanguageChange={(lang) => setPreLanguage(lang)}
+            onVoiceUserTranscript={(transcript) => handleSend(transcript, true)}
+          />
         </View>
       </View>
     </View>

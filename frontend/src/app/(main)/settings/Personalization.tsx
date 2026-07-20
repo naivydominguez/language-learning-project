@@ -7,11 +7,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import PageHeader from "./_components/PageHeader";
 import Toast from "react-native-toast-message";
 import { useAuth } from "@/hooks/use-auth";
+import { useUserProfile } from "@/hooks/use-user";
 
 export default function PersonalizationSetting() {
   const { session } = useAuth(); // Replace with your actual access token
   const queryClient = useQueryClient();
-
+  const { data: profile } = useUserProfile();
   const preset = [
     {
       title: "Friendly exchange partner",
@@ -37,6 +38,14 @@ export default function PersonalizationSetting() {
   const [personality, setPersonality] = useState("");
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
   const handleSaveChanges = async () => {
+             const body: Record<string, string> = {};
+        if (name) {
+          body.name = name;
+        }
+        if (personality) {
+          body.personality_prompt = personality;
+        }
+
     try {
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/users/me`,
@@ -46,15 +55,10 @@ export default function PersonalizationSetting() {
             "Content-Type": "application/json",
             authorization: `Bearer ${session?.access_token}`, // Replace with your actual access token
           },
-          body: JSON.stringify({
-            name: name,
-            personality_prompt: personality,
-          }),
+          body: JSON.stringify(body),
         },
       );
 
-      setName("");
-      setPersonality("");
       if (!response.ok) {
         throw new Error("Failed to save changes");
       }
@@ -89,7 +93,7 @@ export default function PersonalizationSetting() {
             <TextInput
               value={name}
               onChangeText={setName}
-              placeholder="Your name or nickname"
+              placeholder=  {profile?.name || "e.g. Alex"}
               placeholderTextColor="#9B9692"
               multiline
               style={{ outlineWidth: 0 } as any}
@@ -117,7 +121,7 @@ export default function PersonalizationSetting() {
                 setPersonality(text);
                 setSelectedPreset(null);
               }}
-              placeholder="e.g. Friendly and encouraging, like a language exchange partner living in Tokyo."
+              placeholder={profile?.personality_prompt || "e.g. Friendly and patient, like a language exchange partner."}
               placeholderTextColor="#9B9692"
               multiline
               style={{ outlineWidth: 0 } as any}

@@ -32,12 +32,13 @@ import { JetBrainsMono_700Bold } from "@expo-google-fonts/jetbrains-mono/700Bold
 
 import "../global.css";
 import Toast from "react-native-toast-message";
+import { RealtimeVoiceProvider } from "@/context/RealtimeVoiceContext";
 
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const auth = useAuthProvider();
   const queryClient = new QueryClient();
-  
+
   const [fontsLoaded] = useFonts({
     // Sans serif
     "DMSans-Thin": DMSans_100Thin,
@@ -71,13 +72,15 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <SupabaseAuthContext.Provider value={auth}>
-      <QueryClientProvider client={queryClient}>
-        <SafeAreaView className="flex-1">
-          <Stack screenOptions={{ headerShown: false }} />
-          <Toast />
-        </SafeAreaView>
-      </QueryClientProvider>
-    </SupabaseAuthContext.Provider>
+    <RealtimeVoiceProvider>
+      <SupabaseAuthContext.Provider value={auth}>
+        <QueryClientProvider client={queryClient}>
+          <SafeAreaView className="flex-1">
+            <Stack screenOptions={{ headerShown: false }} />
+            <Toast />
+          </SafeAreaView>
+        </QueryClientProvider>
+      </SupabaseAuthContext.Provider>
+    </RealtimeVoiceProvider>
   );
 }

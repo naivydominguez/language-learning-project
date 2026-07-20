@@ -74,9 +74,6 @@ async def get_words(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    if not response.data:
-        raise HTTPException(status_code=404, detail="Words not found")
-
     return response.data
 
 
@@ -95,9 +92,6 @@ async def get_mastery_level(current_user = Depends(get_current_user)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    if not response.data:
-        raise HTTPException(status_code=404, detail="No words found")
-
     return response.data
 
 @router.get('/count')
@@ -107,7 +101,4 @@ async def get_word_count(current_user = Depends(get_current_user)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    if not response.data:
-        raise HTTPException(status_code=404, detail="No words found")
-
-    return {"count": response.count}
+    return {"count": response.count or 0}
