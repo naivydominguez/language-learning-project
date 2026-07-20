@@ -8,8 +8,8 @@ import MessageBubble from "./_components/MessageBubble";
 import { FlatList, ScrollView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 import WordPopup from "./_components/WordPopup";
-import { supabase } from "@/lib/supabase";
 import { useChat } from "@/hooks/use-chat";
+import { useAuth } from "@/hooks/use-auth";
 
 type Message = {
   id: string;
@@ -18,6 +18,7 @@ type Message = {
 };
 export default function ChatScreen() {
   const router = useRouter();
+  const { session } = useAuth();
   const { start, initialMessage, title, conversationId } =
     useLocalSearchParams<{
       start?: string;
@@ -57,6 +58,11 @@ export default function ChatScreen() {
     try {
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/messages/${conversationId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+        },
       );
       if (!response.ok) {
         throw new Error("Failed to fetch backend messages");
@@ -65,12 +71,12 @@ export default function ChatScreen() {
       const loaded: Message[] = data
         .sort(
           (a: any, b: any) =>
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+            new Date(a.message.created_at).getTime() - new Date(b.message.created_at).getTime(),
         )
-        .map((msg: any) => ({
-          id: msg.id,
-          sender: msg.sender,
-          messageContent: msg.content,
+        .map((entry: any) => ({
+          id: entry.message.id,
+          sender: entry.message.sender,
+          messageContent: entry.message.content,
         }));
       setMessages(loaded);
     } catch (error) {
@@ -124,15 +130,13 @@ export default function ChatScreen() {
 
   const handleVoiceTurnDone = async (userText: string, assistantText: string) => {
     try {
-      const supabaseSession = await supabase.auth.getSession();
-      const accessToken = supabaseSession.data.session?.access_token;
       await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${conversationId}/messages/voice`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${session?.access_token}`,
           },
           body: JSON.stringify({
             user_transcript: userText,
