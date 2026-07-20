@@ -1,18 +1,34 @@
 import { View, Pressable, ScrollView } from "react-native";
 import { Text } from "@/components/Text";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import SaveChangeButton from "./_components/SaveChangeButton";
 import PageHeader from "./_components/PageHeader";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useQueryClient } from "@tanstack/react-query";
+import {useUserLanguage} from "@/hooks/use-user-language";
+import { useUserProfile } from "@/hooks/use-user";
 
 export default function LanguageSetting() {
   const { session } = useAuth(); // Replace with your actual access token
   const queryClient = useQueryClient();
+  const { data: userLanguages } = useUserLanguage();
+  const { data: profile } = useUserProfile();
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [nativeLanguage, setNativeLanguage] = useState("English");
+
+  useEffect (() => {
+    if (userLanguages) {
+      setSelectedLanguages(userLanguages);
+    }
+  }, [userLanguages]);
+
+  useEffect(() => {
+    if (profile) {
+      setNativeLanguage(profile.native_language || "English");
+    }
+  }, [profile]);
 
   const languages = [
     { name: "Japanese", flag: "🇯🇵" },
@@ -62,7 +78,6 @@ export default function LanguageSetting() {
             authorization: `Bearer ${session?.access_token}`, // Replace with your actual access token
           },
           body: JSON.stringify({
-            target_languages: selectedLanguages.join(", "),
             native_language: nativeLanguage,
           }),
         },

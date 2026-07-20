@@ -11,6 +11,8 @@ import { useChat } from "@/hooks/use-chat";
 import { useAuth } from "@/hooks/use-auth";
 import { useRealtimeVoiceContext } from "@/context/RealtimeVoiceContext";
 import MainHeader from "@/components/MainHeader";
+import { useUserLanguage } from "@/hooks/use-user-language";
+import { useUserProfile } from "@/hooks/use-user";
 
 type Message = {
   id: string;
@@ -32,6 +34,11 @@ export default function ChatScreen() {
       conversationId: string;
       voice: "true" | "false";
     }>();
+  const { data: profile } = useUserProfile();
+  const { data: userLanguages } = useUserLanguage();
+  const nativeLang = profile?.native_language || "English";
+  // The first target language is the user's primary conversation language.
+  const convLang = userLanguages?.[0] || "English";
 
   const { status, stop, setCallbacks, setHistoryProvider } =
     useRealtimeVoiceContext();
@@ -294,15 +301,6 @@ export default function ChatScreen() {
         </View>
       </ScrollView>
 
-      {selectedWord && (
-        <WordPopup
-          word={selectedWord}
-          language=""
-          visible={!!selectedWord}
-          OnDismiss={() => setSelectedWord(null)}
-        />
-      )}
-
       <ChatInputBar
         onSend={handleSend}
         isWaiting={isWaiting}
@@ -310,6 +308,13 @@ export default function ChatScreen() {
         onVoiceUserTranscript={handleVoiceUserTranscriptDone}
         onVoiceAssistantDelta={handleVoiceAssistantDelta}
         onVoiceTurnDone={handleVoiceTurnDone}
+        showLanguagePicker={false}
+      />
+      <WordPopup
+        word={selectedWord || ""}
+        language={convLang}
+        visible={!!selectedWord}
+        OnDismiss={() => setSelectedWord(null)}
       />
     </View>
   );

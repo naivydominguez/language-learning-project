@@ -13,6 +13,8 @@ type Props = {
   onVoiceUserTranscript?: (text: string) => void;
   onVoiceAssistantDelta?: (chunk: string) => void;
   onVoiceTurnDone?: (userText: string, assistantText: string) => void;
+  selectedLanguage?: string;
+  onLanguageChange?: (language: string) => void;
 };
 export default function ChatInputBar({
   onSend,
@@ -23,6 +25,8 @@ export default function ChatInputBar({
   onVoiceUserTranscript,
   onVoiceAssistantDelta,
   onVoiceTurnDone,
+  selectedLanguage,
+  onLanguageChange,
 }: Props) {
   const [message, setMessage] = React.useState("");
     const handleSend = () => {
@@ -63,6 +67,8 @@ export default function ChatInputBar({
             onVoiceUserTranscript={onVoiceUserTranscript}
             onVoiceAssistantDelta={onVoiceAssistantDelta}
             onVoiceTurnDone={onVoiceTurnDone}
+            selectedLanguage={selectedLanguage}
+            onLanguageChange={onLanguageChange}
           />
         </View>
       </View>
