@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { makeRedirectUri } from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
+import { Platform } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -30,7 +31,10 @@ export async function signInWithApple() {
   return data;
 }
 
-const redirectTo = makeRedirectUri({ scheme: "frontend" });
+const redirectTo =
+  Platform.OS === "web"
+    ? process.env.EXPO_PUBLIC_REDIRECT_URL ?? window.location.origin
+    : makeRedirectUri({ scheme: "frontend" });
 
 export async function signInWithGoogle() {
   const { data, error } = await supabase.auth.signInWithOAuth({
