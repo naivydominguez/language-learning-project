@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { View, Pressable } from "react-native";
+import { View } from "react-native";
 import { Text } from "../../../components/Text";
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import { ChevronLeft } from "lucide-react-native";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import ChatInputBar from "./_components/ChatInputBar";
 import MessageBubble from "./_components/MessageBubble";
 import { ScrollView } from "react-native-gesture-handler";
@@ -11,6 +10,7 @@ import WordPopup from "./_components/WordPopup";
 import { useChat } from "@/hooks/use-chat";
 import { useAuth } from "@/hooks/use-auth";
 import { useRealtimeVoiceContext } from "@/context/RealtimeVoiceContext";
+import MainHeader from "@/components/MainHeader";
 
 type Message = {
   id: string;
@@ -23,7 +23,6 @@ const uid = () => `${Date.now()}-${++_bubbleCounter}`;
 
 export default function ChatScreen() {
   const { session } = useAuth();
-  const router = useRouter();
   const { starterPrompt, initialMessage, title, conversationId, voice } =
     useLocalSearchParams<{
       starterPrompt?: string;
@@ -280,6 +279,7 @@ export default function ChatScreen() {
 
   return (
     <View className="flex-1 bg-background">
+      <MainHeader title={title || "Chat"} />
       <ScrollView className="flex-1 bg-background">
         <View
           className="flex-1 bg-background p-4"
@@ -312,13 +312,6 @@ export default function ChatScreen() {
         onVoiceAssistantDelta={handleVoiceAssistantDelta}
         onVoiceTurnDone={handleVoiceTurnDone}
       />
-
-      <Pressable
-        onPress={() => router.back()}
-        style={{ position: "absolute", top: 10, left: 10 }}
-      >
-        <ChevronLeft size={24} color="#8C6E60" />
-      </Pressable>
     </View>
   );
 }

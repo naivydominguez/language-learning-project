@@ -2,20 +2,19 @@ import { View, Pressable } from "react-native";
 import { Text } from "@/components/Text";
 import { useRouter } from "expo-router";
 import { RotateCcw } from "lucide-react-native";
-import HamburgerButton from "@/components/HamburgerBtn";
-import Navbar from "@/components/Navbar";
+import MainHeader from "@/components/MainHeader";
 import Logo from "@/components/Logo";
 import ChatInputBar from "./chat/_components/ChatInputBar";
 import Toast from "react-native-toast-message";
 import React, { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import {useUserProfile} from "@/hooks/use-user";
+
 
 export default function HomePage() {
   const { session } = useAuth();
   const [convStart, setConvoStart] = useState("");
   const router = useRouter();
-  const [navOpen, setNavOpen] = useState(false);
-
 
   const convStarters = [
     "Hey! I just watched a really interesting video — have you seen anything good lately?",
@@ -34,6 +33,7 @@ export default function HomePage() {
       convStarters[Math.floor(Math.random() * convStarters.length)],
     );
   }, []);
+     const { data: profile } = useUserProfile();
 
   const createConversation = async (title: string, start: string) => {
     const response = await fetch(
@@ -62,7 +62,6 @@ export default function HomePage() {
   const handleSend = async (messageText: string, voice: boolean = false) => {
     const starterPrompt = convStart;
     const title = messageText.split(" ").slice(0, 4).join(" ");
-
     try {
       const convoData = await createConversation(title, starterPrompt);
 
@@ -87,17 +86,12 @@ export default function HomePage() {
   };
 
   return (
-    <View className="flex-1">
-      <View style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
-        <HamburgerButton onPress={() => setNavOpen(!navOpen)} />
-      </View>
-
-      <Navbar visible={navOpen} onClose={() => setNavOpen(false)} />
-
+    <View className="flex-1 bg-background-dark">
+      <MainHeader title="" border={false} />
       <View className="flex-1 items-center justify-center bg-background-dark  p-6 gap-6">
         <Logo size="lg" />
         <Text weight="bold" className="text-4xl text-black-500">
-          Hello, Learner{" "}
+          Hello, {profile?.name || "Learner"} !
         </Text>
         <View className="flex-row items-center justify-between w-full gap-2 p-2 bg-white rounded-lg mt-4">
           <View className="flex-1">
