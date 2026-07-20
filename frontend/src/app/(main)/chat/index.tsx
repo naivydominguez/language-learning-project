@@ -13,6 +13,7 @@ import { useChat } from "@/hooks/use-chat";
 import MainHeader from "@/components/MainHeader";
 import { useUserLanguage } from "@/hooks/use-user-language";
 import { useUserProfile } from "@/hooks/use-user";
+import { useAuth } from "@/hooks/use-auth";
 
 type Message = {
   id: string;
@@ -30,6 +31,7 @@ export default function ChatScreen() {
     }>();
   const { data: profile } = useUserProfile();
   const { data: userLanguages } = useUserLanguage();
+  const { session } = useAuth();
   const nativeLang = profile?.native_language || "English";
   // The first target language is the user's primary conversation language.
   const convLang = userLanguages?.[0] || "English";
@@ -63,6 +65,7 @@ export default function ChatScreen() {
     try {
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/messages/${conversationId}`,
+        { headers: { Authorization: `Bearer ${session?.access_token}` } },
       );
       if (!response.ok) {
         throw new Error("Failed to fetch backend messages");
@@ -71,12 +74,12 @@ export default function ChatScreen() {
       const loaded: Message[] = data
         .sort(
           (a: any, b: any) =>
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+            new Date(a.message.created_at).getTime() - new Date(b.message.created_at).getTime(),
         )
-        .map((msg: any) => ({
-          id: msg.id,
-          sender: msg.sender,
-          messageContent: msg.content,
+        .map((entry: any) => ({
+          id: entry.message.id,
+          sender: entry.message.sender,
+          messageContent: entry.message.content,
         }));
       setMessages(loaded);
     } catch (error) {
