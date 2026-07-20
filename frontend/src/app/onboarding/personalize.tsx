@@ -5,10 +5,21 @@ import { router } from "expo-router";
 import OnboardingButton from "./_components/OnboardingButton";
 import { OnboardingColors } from "@/constants/onboardingTheme";
 import { useState } from "react";
+import { useOnboarding } from "./context/OnboardingContext";
 
 export default function Personalization() {
-  const [name, setName] = useState("");
-  const [personality, setPersonality] = useState("");
+
+  const {onboardingData,updateOnboardingData} = useOnboarding();
+  const [name, setName] = useState(onboardingData.preferredName);
+  const [personality, setPersonality] = useState(onboardingData.immerbotPersonality);
+
+  function handleContinue(){
+    updateOnboardingData({
+        preferredName:name.trim(),
+        immerbotPersonality:personality.trim(),
+    });
+    router.push("/onboarding/import-vocab");
+  }
 
   return (
     <View className="flex-1 justify-between bg-background-light px-6 pt-8 pb-6">
@@ -46,7 +57,6 @@ export default function Personalization() {
           onChangeText={setName}
           placeholder="Your name or nickname"
           placeholderTextColor="#9B9692"
-          multiline
           style={{ outlineWidth: 0 } as any}
           className="rounded-xl border border-gray-200 bg-white px-5 py-4 text-xl text-foreground"
         />
@@ -63,13 +73,13 @@ export default function Personalization() {
           placeholderTextColor="#9B9692"
           multiline
           style={{ outlineWidth: 0 } as any}
-          className="rounded-xl border border-gray-200 bg-white px-5 py-8 text-xl text-foreground"
-        ></TextInput>
+          className="rounded-xl border border-gray-200 bg-white px-5 pt-4 pb-8 text-xl text-foreground"
+        />
       </View>
 
       <OnboardingButton
         title="Continue"
-        onPress={() => router.push("/onboarding/import-vocab")}
+        onPress={handleContinue}
       />
     </View>
   );

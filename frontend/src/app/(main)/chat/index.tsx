@@ -11,6 +11,7 @@ import WordPopup from "./_components/WordPopup";
 import { supabase } from "@/lib/supabase";
 import { useChat } from "@/hooks/use-chat";
 import { useAuth } from "@/hooks/use-auth";
+import MainHeader from "@/components/MainHeader";
 
 type Message = {
   id: string;
@@ -154,19 +155,11 @@ export default function ChatScreen() {
 
   return (
     <View className="flex-1 bg-background">
+      <MainHeader title={title || "Chat"} />
       <ScrollView className="flex-1 bg-background">
         <View
           className="flex-row items-center gap-2 mb-4 bg-white border-shadow border-border pl-4 pb-2"
-          style={{ paddingTop: 60 }}
         >
-          <Pressable onPress={() => router.push("/")} className="p-2">
-            <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
-          </Pressable>
-          {title ? (
-            <Text weight="semibold" className="text-lg text-foreground mb-2">
-              {title}
-            </Text>
-          ) : null}
         </View>
         <FlatList
           data={messages}

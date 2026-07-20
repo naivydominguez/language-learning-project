@@ -15,7 +15,8 @@ from api.routes import (
     messages_router,
     known_words_router,
     user_known_words_router,
-    realtime_router
+    realtime_router,
+    onboarding_data_router
 )
 
 app = FastAPI()
@@ -40,3 +41,4 @@ app.include_router(messages_router)
 app.include_router(known_words_router)
 app.include_router(user_known_words_router)
 app.include_router(realtime_router)
+app.include_router(onboarding_data_router)

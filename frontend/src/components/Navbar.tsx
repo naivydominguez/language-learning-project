@@ -1,7 +1,7 @@
 import { View, Pressable, Animated, ScrollView } from "react-native";
 import { Text } from "./Text";
 import { useRouter, usePathname } from "expo-router";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 
 import {
   ChevronLeft,
@@ -14,6 +14,7 @@ import Toast from "react-native-toast-message";
 import { Motion } from "@/constants/theme";
 import { useQuery } from "@tanstack/react-query";
 import Logo from "./Logo";
+import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 const DRAWER_WIDTH = 220;
 
@@ -37,6 +38,11 @@ export default function Navbar({ visible, onClose }: Props) {
   const { session } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [activePath, setActivePath] = useState(pathname);
+
+  useEffect(() => {
+    setActivePath(pathname);
+  }, [pathname]);
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
 
@@ -84,6 +90,7 @@ export default function Navbar({ visible, onClose }: Props) {
   }, [visible]);
 
   const navigate = (path: Parameters<typeof router.push>[0]) => {
+    setActivePath(path as string);
     onClose();
     router.push(path);
   };
@@ -151,7 +158,7 @@ export default function Navbar({ visible, onClose }: Props) {
           </View>
 
           {NAV_ITEMS.map((item) => {
-            const isActive = pathname === item.path;
+            const isActive = activePath === item.path;
             const Icon = item.icon;
             return (
               <Pressable
@@ -164,9 +171,10 @@ export default function Navbar({ visible, onClose }: Props) {
                 )}
                 <Text
                   weight="medium"
-                  className={`text-base ${
-                    isActive ? "text-primary" : "text-foreground"
-                  }`}
+                  className="text-base"
+                  style={{
+                    color: isActive ? "#B5613A" : "#201810",
+                  }}
                 >
                   {item.label}
                 </Text>

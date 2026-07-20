@@ -8,3 +8,4 @@ from .messages import router as messages_router
 from .known_words import router as known_words_router
 from .user_known_words import router as user_known_words_router
 from .realtime import router as realtime_router
+from .onboarding import router as onboarding_data_router
