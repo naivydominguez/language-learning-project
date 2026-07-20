@@ -1,4 +1,5 @@
 import spacy
+import string
 
 MODEL_MAP = {
     "english": "en_core_web_sm",
@@ -23,7 +24,10 @@ def get_nlp(language:str):
 
 def get_unknown_words_by_lemma(text: str, language: str, known_words: set[str]) -> list[str]:
     if language not in MODEL_MAP:
-        return [word for word in text.split() if word.lower() not in known_words]
+        return [
+            word for word in text.split()
+            if word.strip(string.punctuation).lower() not in known_words
+        ]
     
     nlp = get_nlp(language)
     
