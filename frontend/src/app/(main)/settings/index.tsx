@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "expo-router";
 import { User, Globe, Puzzle, CreditCard, Info, ChevronRight } from "lucide-react-native";
 import MainHeader from "@/components/MainHeader";
 import { useUserProfile } from "@/hooks/use-user";
+import { useUserLanguage } from "@/hooks/use-user-language";
 
 const NAV_ITEMS = [
   { label: "Personalization", desc: "Bot name, personality", path: "/settings/Personalization", icon: User },
@@ -15,6 +16,8 @@ const NAV_ITEMS = [
 export default function SettingScreen() {
   const router = useRouter();
   const { data: profile } = useUserProfile();
+  const { data: userLanguages } = useUserLanguage();
+  
   const navigate = (path: Parameters<typeof router.push>[0]) => {
     router.push(path);
   };
@@ -32,7 +35,7 @@ export default function SettingScreen() {
           <Text weight="medium" className="text-[15px] text-foreground">
             {profile?.name ?? "Learner"}
           </Text>
-          <Text className="text-xs text-foreground-tertiary mt-px">Free Plan - {profile?.target_languages || "English"}</Text>
+          <Text className="text-xs text-foreground-tertiary mt-px">Free Plan - {userLanguages?.join(", ") || "English"}</Text>
         </View>
       </View>
 
