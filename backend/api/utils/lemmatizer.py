@@ -18,14 +18,15 @@ def get_nlp(language:str):
 
 def get_unknown_words_by_lemma(text: str, language: str, known_words: set[str]) -> list[str]:
     nlp = get_nlp(language)
+    known_lemmas = {token.lemma_.lower() for word in known_words for token in nlp(word)}
+    
     doc = nlp(text)
 
     unknown_words = []
     for token in doc:
         if token.is_punct or token.is_space:
             continue
-        lemma = token.lemma_.lower()
-        if lemma not in known_words:
+        if token.lemma_.lower() not in known_lemmas:
             unknown_words.append(token.text)
 
     return unknown_words
