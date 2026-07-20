@@ -5,7 +5,7 @@ import { View } from "react-native";
 type Message = {
   id: string;
   sender: "user" | "assistant";
-  messageContent: string;
+  content: string;
   unknownWords?: string[];
 };
 
@@ -19,7 +19,7 @@ export default function MessageBubble({
   onWordPress,
 }: MessageBubbleProps) {
   const isUser = message.sender === "user";
-  const words = message.messageContent.split(/(\s+)/);
+  const words = message.content.split(/(\s+)/);
 
   return (
     <View

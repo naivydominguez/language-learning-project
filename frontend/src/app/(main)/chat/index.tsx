@@ -10,11 +10,12 @@ import Toast from "react-native-toast-message";
 import WordPopup from "./_components/WordPopup";
 import { supabase } from "@/lib/supabase";
 import { useChat } from "@/hooks/use-chat";
+import { useAuth } from "@/hooks/use-auth";
 
 type Message = {
   id: string;
   sender: "user" | "assistant";
-  messageContent: string;
+  content: string;
   unknownWords?: string[];
 };
 export default function ChatScreen() {
@@ -28,6 +29,7 @@ export default function ChatScreen() {
     }>();
   const nativeLang = "Spanish"; // Replace with user's native language
 
+  const { session } = useAuth();
   const { isWaiting, sendMessage } = useChat(conversationId);
   const [messages, setMessages] = React.useState<Message[]>([]);
   const hasSentInitial = React.useRef(false);
@@ -58,22 +60,27 @@ export default function ChatScreen() {
     try {
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/messages/${conversationId}`,
+        { headers: { Authorization: `Bearer ${session?.access_token}` } },
       );
       if (!response.ok) {
         throw new Error("Failed to fetch backend messages");
       }
       const data = await response.json();
-      const loaded: Message[] = data
-        .sort(
-          (a: any, b: any) =>
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
-        )
-        .map((msg: any) => ({
-          id: msg.id,
-          sender: msg.sender,
-          messageContent: msg.content,
-        }));
-      setMessages(loaded);
+      const loaded: {
+        message: Message;
+        unknownWords: string[];
+      }[] = data.sort(
+        (a: any, b: any) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+      );
+
+      const messages = loaded.map((item: any) => ({
+        id: item.message.id,
+        sender: item.message.sender,
+        content: item.message.content,
+        unknownWords: item.unknown_words,
+      }));
+      setMessages(messages);
     } catch (error) {
       Toast.show({
         type: "error",
@@ -87,12 +94,12 @@ export default function ChatScreen() {
     const userMessage: Message = {
       id: Date.now().toString() + messageText,
       sender: "user",
-      messageContent: messageText,
+      content: messageText,
     };
     const assistantMessage: Message = {
       id: Date.now().toString() + messageText + "assistant",
       sender: "assistant",
-      messageContent: "",
+      content: "",
     };
     setMessages((prev) => [...prev, userMessage, assistantMessage]);
 
@@ -102,7 +109,7 @@ export default function ChatScreen() {
         // Update the last assistant message with the new chunk
         const updatedLastMessage: Message = {
           ...lastMessage,
-          messageContent: lastMessage.messageContent + chunk,
+          content: lastMessage.content + chunk,
         };
         return [...prev.slice(0, -1), updatedLastMessage];
       });
@@ -133,7 +140,7 @@ export default function ChatScreen() {
           {
             id: Date.now().toString() + start,
             sender: "assistant",
-            messageContent: start,
+            content: start,
           },
         ]);
       }
