@@ -9,13 +9,13 @@ import Toast from "react-native-toast-message";
 import React from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
-import {useUserProfile} from "@/hooks/use-user";
-
+import { useUserProfile } from "@/hooks/use-user";
 
 export default function HomePage() {
   const [convStart, setConvoStart] = React.useState("");
   const router = useRouter();
 
+  const { session } = useAuth();
   const convStarters = [
     "Hey! I just watched a really interesting video — have you seen anything good lately?",
     "What are your plans for the weekend? I'm trying to decide what to do.",
@@ -29,16 +29,16 @@ export default function HomePage() {
     "A friend just recommended a podcast to me. Do you listen to podcasts? What kind do you like?",
   ];
   React.useEffect(() => {
-    setConvoStart(convStarters[Math.floor(Math.random() * convStarters.length)]);
+    setConvoStart(
+      convStarters[Math.floor(Math.random() * convStarters.length)],
+    );
   }, []);
-     const { data: profile } = useUserProfile();
+  const { data: profile } = useUserProfile();
 
   const handleSend = async (messageText: string) => {
     const start = convStart; // Replace with your generated conversation start
     const title = messageText.split(" ").slice(0, 4).join(" ");
     try {
-      const { session } = useAuth();
-
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/?starterPrompt=${encodeURIComponent(start)}`,
         {
@@ -70,6 +70,7 @@ export default function HomePage() {
         },
       });
     } catch (error) {
+      console.log(error);
       Toast.show({
         type: "error",
         text1: "Error creating conversation",
@@ -77,8 +78,6 @@ export default function HomePage() {
       });
     }
   };
-
-  
 
   return (
     <View className="flex-1 bg-background-dark">
@@ -95,7 +94,11 @@ export default function HomePage() {
           </View>
           <Pressable
             className="flex-row items-center gap-1 p-2"
-            onPress={() => setConvoStart(convStarters[Math.floor(Math.random() * convStarters.length)])}
+            onPress={() =>
+              setConvoStart(
+                convStarters[Math.floor(Math.random() * convStarters.length)],
+              )
+            }
           >
             <RotateCcw size={14} color="#8C6E60" strokeWidth={1.75} />
           </Pressable>
