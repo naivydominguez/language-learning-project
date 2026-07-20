@@ -3,13 +3,15 @@ import { Mic } from "lucide-react-native";
 import { useRealtimeVoiceContext } from "@/context/RealtimeVoiceContext";
 
 type VoiceInputComponentProps = {
-  onUserTranscript?: (text: string) => void;
+  onUserTranscriptDone?: (text: string) => void;
   onAssistantDelta?: (chunk: string) => void;
   onAssistantTurnDone?: (userText: string, assistantText: string) => void;
+  onUserTranscriptDelta?: (chunk: string) => void;
 };
 
 export default function VoiceInputComponent({
-  onUserTranscript,
+  onUserTranscriptDelta,
+  onUserTranscriptDone,
   onAssistantDelta,
   onAssistantTurnDone,
 }: VoiceInputComponentProps) {
@@ -18,9 +20,10 @@ export default function VoiceInputComponent({
   const handlePress = () => {
     if (status === "idle" || status === "error") {
       start({
-        onUserTranscript: onUserTranscript ?? (() => {}),
-        onAssistantDelta: onAssistantDelta ?? (() => {}),
-        onAssistantTurnDone: onAssistantTurnDone ?? (() => {}),
+        onUserTranscriptDelta,
+        onUserTranscriptDone,
+        onAssistantDelta,
+        onAssistantTurnDone,
       });
     } else {
       stop();

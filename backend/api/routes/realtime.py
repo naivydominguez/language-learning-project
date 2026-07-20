@@ -24,7 +24,11 @@ async def create_realtime_client_secret(current_user = Depends(get_current_user)
             "input": {
                 "transcription": {"model": "whisper-1"},
             },
+            "output": {
+                "voice": "marin",
+            }
         },
+        "output_modalities": ["audio"]
     }
 
     try:

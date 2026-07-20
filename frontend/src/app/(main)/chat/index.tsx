@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { View, Pressable } from "react-native";
 import { Text } from "../../../components/Text";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import ChatInputBar from "./_components/ChatInputBar";
 import MessageBubble from "./_components/MessageBubble";
-import { FlatList, ScrollView } from "react-native-gesture-handler";
+import { ScrollView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 import WordPopup from "./_components/WordPopup";
 import { useChat } from "@/hooks/use-chat";
@@ -17,6 +17,10 @@ type Message = {
   sender: "user" | "assistant";
   messageContent: string;
 };
+
+let _bubbleCounter = 0;
+const uid = () => `${Date.now()}-${++_bubbleCounter}`;
+
 export default function ChatScreen() {
   const { session } = useAuth();
   const router = useRouter();
@@ -29,20 +33,27 @@ export default function ChatScreen() {
       voice: "true" | "false";
     }>();
 
-  const { setCallbacks } = useRealtimeVoiceContext();
+  const { status, stop, setCallbacks, setHistoryProvider } =
+    useRealtimeVoiceContext();
   const { isWaiting, sendTextMessage } = useChat(conversationId);
   const [messages, setMessages] = React.useState<Message[]>([]);
   const hasSentInitial = React.useRef(false);
   const [selectedWord, setSelectedWord] = React.useState<string | null>(null);
 
-  const getBackendMessages = async (conversationId: string) => {
+  // States for voice
+  const activeTurnRef = useRef<{
+    userBubbleId: string;
+    assistantBubbleId: string;
+  } | null>(null); // null when no turn is active
+  const pendingUserBubbleIdsRef = useRef<string[]>([]);
+  const pendingAssistantDeltasRef = useRef<string[]>([]);
+
+  const getBackendMessages = async (convId: string) => {
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/messages/${conversationId}`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/messages/${convId}`,
       );
-      if (!response.ok) {
-        throw new Error("Failed to fetch backend messages");
-      }
+      if (!response.ok) throw new Error("Failed to fetch messages");
       const data = await response.json();
       const loaded: Message[] = data
         .sort(
@@ -55,67 +66,95 @@ export default function ChatScreen() {
           messageContent: msg.content,
         }));
       setMessages(loaded);
-    } catch (error) {
+    } catch {
       Toast.show({
         type: "error",
         text1: "Error fetching messages",
         text2: "Please try again later.",
       });
-      //console.error("Error fetching messages:", error);
     }
   };
 
-  const createChatBubbles = (userText: string) => {
-    const userMessage: Message = {
-      id: Date.now().toString() + userText,
-      sender: "user",
-      messageContent: userText,
-    };
-    const assistantMessage: Message = {
-      id: Date.now().toString() + userText + "assistant",
-      sender: "assistant",
-      messageContent: "",
-    };
-    setMessages((prev) => [...prev, userMessage, assistantMessage]);
+  const updateBubble = (id: string, update: (prev: string) => string) => {
+    setMessages((prev) => {
+      const idx = prev.findIndex((m) => m.id === id);
+      if (idx === -1) return prev;
+      return [
+        ...prev.slice(0, idx),
+        { ...prev[idx], messageContent: update(prev[idx].messageContent) },
+        ...prev.slice(idx + 1),
+      ];
+    });
   };
 
-  const onChunk = (chunk: string) => {
+  const createChatBubbles = (userText: string) => {
+    setMessages((prev) => [
+      ...prev,
+      { id: uid(), sender: "user", messageContent: userText },
+      { id: uid(), sender: "assistant", messageContent: "" },
+    ]);
+  };
+
+  const appendMessageChunk = (chunk: string) => {
     setMessages((prev) => {
-      const lastMessage = prev[prev.length - 1];
-      if (!lastMessage) {
-        // This should not happen for a functional app
-        console.error("No last message found to update with chunk:", chunk);
-        return prev;
-      }
-      // Update the last assistant message with the new chunk
-      const updatedLastMessage: Message = {
-        ...lastMessage,
-        messageContent: lastMessage.messageContent + chunk,
-      };
-      return [...prev.slice(0, -1), updatedLastMessage];
+      const last = prev[prev.length - 1];
+      if (!last || last.sender !== "assistant") return prev;
+      return [
+        ...prev.slice(0, -1),
+        { ...last, messageContent: last.messageContent + chunk },
+      ];
     });
   };
 
   const handleSend = (messageText: string) => {
     createChatBubbles(messageText);
-    sendTextMessage(messageText, onChunk);
+    sendTextMessage(messageText, appendMessageChunk, () => {});
   };
 
   /**
-   * Voice handlers
+   * Voice Handlers
    */
-  const handleVoiceUserTranscript = (text: string) => {
-    createChatBubbles(text);
+  const handleVoiceUserTranscriptDelta = (chunk: string) => {
+    if (!activeTurnRef.current) {
+      const userBubbleId = uid();
+      const assistantBubbleId = uid();
+      activeTurnRef.current = { userBubbleId, assistantBubbleId };
+      pendingUserBubbleIdsRef.current.push(userBubbleId);
+
+      const pending = pendingAssistantDeltasRef.current;
+      pendingAssistantDeltasRef.current = [];
+
+      setMessages((prev) => [
+        ...prev,
+        { id: userBubbleId, sender: "user", messageContent: "" },
+        {
+          id: assistantBubbleId,
+          sender: "assistant",
+          messageContent: pending.join(""),
+        },
+      ]);
+    }
+  };
+
+  const handleVoiceUserTranscriptDone = (text: string) => {
+    const targetId = pendingUserBubbleIdsRef.current.shift();
+    if (targetId) updateBubble(targetId, () => text);
   };
 
   const handleVoiceAssistantDelta = (chunk: string) => {
-    onChunk(chunk);
+    if (!activeTurnRef.current) {
+      pendingAssistantDeltasRef.current.push(chunk);
+    } else {
+      updateBubble(activeTurnRef.current.assistantBubbleId, (c) => c + chunk);
+    }
   };
 
   const handleVoiceTurnDone = async (
     userText: string,
     assistantText: string,
   ) => {
+    activeTurnRef.current = null;
+    pendingAssistantDeltasRef.current = [];
     try {
       await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${conversationId}/messages/voice`,
@@ -136,35 +175,95 @@ export default function ChatScreen() {
     }
   };
 
-  /**
-   * If continuing a conversation, retrieve the messages. Otherwise, send the user's first message to the backend
-   */
+
+  // Close the voice session and clean up voice state when changing screens
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        stop();
+        activeTurnRef.current = null;
+        pendingUserBubbleIdsRef.current = [];
+        pendingAssistantDeltasRef.current = [];
+      };
+    }, [stop]),
+  );
+
+  useEffect(() => {
+    if (status === "connecting") {
+      activeTurnRef.current = null;
+      pendingUserBubbleIdsRef.current = [];
+      pendingAssistantDeltasRef.current = [];
+    }
+  }, [status]);
+
+  useEffect(() => {
+    setHistoryProvider(async () => {
+      try {
+        const response = await fetch(
+          `${process.env.EXPO_PUBLIC_BACKEND_URL}/messages/${conversationId}`,
+        );
+        if (!response.ok) return [];
+        const data = await response.json();
+        return data
+          .sort(
+            (a: any, b: any) =>
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime(),
+          )
+          .map((msg: any) => ({
+            role: msg.sender as "user" | "assistant",
+            content: msg.content as string,
+          }))
+          .filter((msg: { role: string; content: string }) => msg.content);
+      } catch {
+        return [];
+      }
+    });
+  }, [conversationId, setHistoryProvider]);
+
+  // Seed the initial state and wire up voice/text callbacks.
+  // setMessages is called BEFORE setCallbacks so that any buffered assistant
+  // deltas flushed by setCallbacks land on already-existing bubbles.
   useEffect(() => {
     if (hasSentInitial.current) return;
     hasSentInitial.current = true;
+
+    const callbacks = {
+      onUserTranscriptDelta: handleVoiceUserTranscriptDelta,
+      onUserTranscriptDone: handleVoiceUserTranscriptDone,
+      onAssistantDelta: handleVoiceAssistantDelta,
+      onAssistantTurnDone: handleVoiceTurnDone,
+    };
+
     if (starterPrompt) {
-      setMessages([
-        {
-          id: Date.now().toString() + starterPrompt,
-          sender: "assistant",
-          messageContent: starterPrompt,
-        },
-      ]);
-      try {
-        if (voice === "true") {
-          setCallbacks({
-            onUserTranscript: handleVoiceUserTranscript,
-            onAssistantDelta: handleVoiceAssistantDelta,
-            onAssistantTurnDone: handleVoiceTurnDone,
-          });
-          handleVoiceUserTranscript(initialMessage!);
-        } else {
-          handleSend(initialMessage!);
-        }
-      } catch (error) {
-        console.error("Error sending initial message:", error); // Shouldn't happen
+      if (voice === "true") {
+        // Voice navigation from home page: the user already spoke and the
+        // session is live. Seed the initial turn and take ownership of events.
+        const userBubbleId = uid();
+        const assistantBubbleId = uid();
+        activeTurnRef.current = { userBubbleId, assistantBubbleId };
+        pendingUserBubbleIdsRef.current = [];
+
+        setMessages([
+          { id: uid(), sender: "assistant", messageContent: starterPrompt },
+          {
+            id: userBubbleId,
+            sender: "user",
+            messageContent: initialMessage ?? "",
+          },
+          { id: assistantBubbleId, sender: "assistant", messageContent: "" },
+        ]);
+        // setCallbacks after setMessages — flush lands on the correct bubbles.
+        setCallbacks(callbacks);
+      } else {
+        setMessages([
+          { id: uid(), sender: "assistant", messageContent: starterPrompt },
+        ]);
+        setCallbacks(callbacks);
+        if (initialMessage) handleSend(initialMessage);
       }
     } else {
+      setCallbacks(callbacks);
       getBackendMessages(conversationId);
     }
   }, [starterPrompt, initialMessage, conversationId]);
@@ -173,42 +272,43 @@ export default function ChatScreen() {
     <View className="flex-1 bg-background">
       <ScrollView className="flex-1 bg-background">
         <View
-          className="flex-row items-center gap-2 mb-4 bg-white border-shadow border-border pl-4 pb-2"
-          style={{ paddingTop: 60 }}
+          className="flex-1 bg-background p-4"
+          style={{ paddingBottom: 16 }}
         >
-          <Pressable onPress={() => router.push("/")} className="p-2">
-            <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
-          </Pressable>
-          {title ? (
-            <Text weight="semibold" className="text-lg text-foreground mb-2">
-              {title}
-            </Text>
-          ) : null}
+          {messages.map((message) => (
+            <MessageBubble
+              key={message.id}
+              message={message}
+              onWordPress={setSelectedWord}
+            />
+          ))}
         </View>
-        <FlatList
-          data={messages}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <MessageBubble message={item} onWordPress={setSelectedWord} />
-          )}
-          contentContainerStyle={{ padding: 16, gap: 8 }}
-          className="p-4"
-        />
       </ScrollView>
+
+      {selectedWord && (
+        <WordPopup
+          word={selectedWord}
+          language=""
+          visible={!!selectedWord}
+          OnDismiss={() => setSelectedWord(null)}
+        />
+      )}
+
       <ChatInputBar
         onSend={handleSend}
         isWaiting={isWaiting}
-        showLanguagePicker={false}
-        onVoiceUserTranscript={handleVoiceUserTranscript}
+        onUserTranscriptDelta={handleVoiceUserTranscriptDelta}
+        onVoiceUserTranscript={handleVoiceUserTranscriptDone}
         onVoiceAssistantDelta={handleVoiceAssistantDelta}
         onVoiceTurnDone={handleVoiceTurnDone}
       />
-      <WordPopup
-        word={selectedWord || ""}
-        language="spanish"
-        visible={!!selectedWord}
-        OnDismiss={() => setSelectedWord(null)}
-      />
+
+      <Pressable
+        onPress={() => router.back()}
+        style={{ position: "absolute", top: 10, left: 10 }}
+      >
+        <ChevronLeft size={24} color="#8C6E60" />
+      </Pressable>
     </View>
   );
 }

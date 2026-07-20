@@ -9,8 +9,11 @@ export function handleRealtimeEvent(raw: string, callbacks: RealtimeVoiceCallbac
   }
 
   switch (event.type) {
+    case "conversation.item.input_audio_transcription.delta":
+      callbacks.onUserTranscriptDelta(event.delta ?? "");
+      break;
     case "conversation.item.input_audio_transcription.completed":
-      callbacks.onUserTranscript(event.transcript ?? "");
+      callbacks.onUserTranscriptDone(event.transcript ?? "");
       break;
     case "response.output_audio_transcript.delta":
       callbacks.onAssistantTranscriptDelta(event.delta ?? "");

@@ -1,12 +1,13 @@
 import React, { createContext, useContext } from "react";
 import { useRealtimeVoice, type VoiceTurnCallbacks } from "@/hooks/use-realtime-voice";
-import type { RealtimeVoiceStatus } from "@/lib/realtimeVoice/types";
+import type { RealtimeVoiceStatus, ConversationMessage } from "@/lib/realtimeVoice/types";
 
 type RealtimeVoiceContextValue = {
   status: RealtimeVoiceStatus;
   start: (callbacks: VoiceTurnCallbacks) => Promise<void>;
   stop: () => Promise<void>;
   setCallbacks: (callbacks: VoiceTurnCallbacks) => void;
+  setHistoryProvider: (fn: () => Promise<ConversationMessage[]>) => void;
 };
 
 const RealtimeVoiceContext = createContext<RealtimeVoiceContextValue | null>(null);

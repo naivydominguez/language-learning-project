@@ -1,6 +1,6 @@
 import { exchangeSdp } from "./exchangeSdp";
 import { handleRealtimeEvent } from "./handleRealtimeEvent";
-import type { RealtimeVoiceCallbacks, RealtimeVoiceConnection } from "./types";
+import type { RealtimeVoiceCallbacks, RealtimeVoiceConnection, ConversationMessage } from "./types";
 
 class WebRealtimeVoiceConnection implements RealtimeVoiceConnection {
   private peerConnection: RTCPeerConnection | null = null;
@@ -8,7 +8,7 @@ class WebRealtimeVoiceConnection implements RealtimeVoiceConnection {
   private localStream: MediaStream | null = null;
   private audioEl: HTMLAudioElement | null = null;
 
-  async start(clientSecret: string, callbacks: RealtimeVoiceCallbacks): Promise<void> {
+  async start(clientSecret: string, callbacks: RealtimeVoiceCallbacks, conversationHistory: ConversationMessage[] = []): Promise<void> {
     callbacks.onStatusChange("connecting");
 
     const peerConnection = new RTCPeerConnection();
@@ -36,6 +36,20 @@ class WebRealtimeVoiceConnection implements RealtimeVoiceConnection {
     const dataChannel = peerConnection.createDataChannel("oai-events");
     this.dataChannel = dataChannel;
     dataChannel.onmessage = (event) => handleRealtimeEvent(event.data, callbacks);
+    dataChannel.onopen = () => {
+      for (const msg of conversationHistory) {
+        if (!msg.content) continue;
+        const contentType = msg.role === "user" ? "input_text" : "text";
+        dataChannel.send(JSON.stringify({
+          type: "conversation.item.create",
+          item: {
+            type: "message",
+            role: msg.role,
+            content: [{ type: contentType, text: msg.content }],
+          },
+        }));
+      }
+    };
 
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);

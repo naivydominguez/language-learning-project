@@ -7,14 +7,15 @@ import Navbar from "@/components/Navbar";
 import Logo from "@/components/Logo";
 import ChatInputBar from "./chat/_components/ChatInputBar";
 import Toast from "react-native-toast-message";
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 
 export default function HomePage() {
   const { session } = useAuth();
-  const [convStart, setConvoStart] = React.useState("");
+  const [convStart, setConvoStart] = useState("");
   const router = useRouter();
-  const [navOpen, setNavOpen] = React.useState(false);
+  const [navOpen, setNavOpen] = useState(false);
+
 
   const convStarters = [
     "Hey! I just watched a really interesting video — have you seen anything good lately?",
@@ -59,7 +60,7 @@ export default function HomePage() {
   };
 
   const handleSend = async (messageText: string, voice: boolean = false) => {
-    const starterPrompt = convStart; // Replace with your generated conversation start
+    const starterPrompt = convStart;
     const title = messageText.split(" ").slice(0, 4).join(" ");
 
     try {
