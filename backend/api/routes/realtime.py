@@ -3,9 +3,9 @@ import os
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 
-from backend.api.utils.auth import get_current_user
-from backend.api.utils.instructions import create_instructions
-from backend.api.utils.supabase_client import supabase
+from api.utils.auth import get_current_user
+from api.utils.instructions import create_instructions
+from api.utils.supabase_client import supabase
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 

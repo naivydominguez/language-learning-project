@@ -1,21 +1,21 @@
 import { useState, useCallback, useRef } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 /**
  * Streams chat messages
  */
 export function useChat(conversationId: string) {
-  const [message, setMessage] = useState("");
+  const { session } = useAuth();
   const [isWaiting, setIsWaiting] = useState(false);
 
   const buffer = useRef("")
 
-  const sendMessage = useCallback(async (content: string) => {
+  const sendMessage = useCallback(async (content: string, onChunk: (chunk: string) => void) => {
     if (isWaiting) return; // Prevent sending if already waiting for a response
 
-    setMessage("");
     setIsWaiting(true);
 
-    const accessToken = ""; // Replace with supabase auth token
+    const accessToken = session?.access_token;
     const response = await fetch(
       `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${conversationId}/messages`,
       {
@@ -47,7 +47,7 @@ export function useChat(conversationId: string) {
             const eventData = fields[1].replace("data: ", "");
 
             if (eventType === "delta") {
-                setMessage((prev) => prev + eventData);
+                onChunk(eventData);
             } else if (eventType === "completed") {
                 setIsWaiting(false);
             } else if (eventType === "error") {
@@ -64,7 +64,7 @@ export function useChat(conversationId: string) {
     }
   }, [conversationId]);
 
-  return { message, isWaiting, sendMessage };
+  return { isWaiting, sendMessage };
 }
 
 /**

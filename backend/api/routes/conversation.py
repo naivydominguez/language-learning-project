@@ -1,5 +1,6 @@
 import os
 import uuid
+import json
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -11,7 +12,7 @@ from api.utils.auth import get_current_user
 from api.utils.supabase_client import supabase
 from api.utils.user_id import get_user_id
 from api.utils.instructions import create_instructions
-from chatbot.generation import generate_response
+from api.utils.unknown_words import get_unknown_words
 
 UNKNOWN_WORDS_PERCENTAGE = 10
 
@@ -31,6 +32,7 @@ class ConversationResponse(BaseModel):
     target_lang: str
     created_at: datetime
     name: str | None
+    unknown_words: list[str]
 
 
 class SendMessageRequest(BaseModel):
@@ -77,7 +79,7 @@ async def create_conversation(
         )
         conversation_id = conversation_response.data[0]["id"]
         conversation_created_at = conversation_response.data[0]["created_at"]
-
+        unknown_words = []
         # Insert starter prompt (if applicable). First user message should be sent again by the client in send_message.
         if request.starting_prompt:
             supabase.table("messages").insert(
@@ -87,7 +89,8 @@ async def create_conversation(
                     "content": request.starting_prompt,
                 }
             ).execute()
-
+                                        
+            unknown_words = get_unknown_words(language_id, user_id, request.starting_prompt)
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Failed to create conversation: {e}"
@@ -98,6 +101,7 @@ async def create_conversation(
         target_lang=request.target_lang,
         created_at=conversation_created_at,
         name=request.name,
+        unknown_words=unknown_words,
     )
 
 @router.post("/{conversation_id}/messages", response_model=MessageResponse)
@@ -136,7 +140,7 @@ def send_message(
                 input = [{"role": "assistant", "content": starter_prompt}, {"role": "user", "content": request.content}]
             else:
                 input = [{"role": "user", "content": request.content}]
-            
+
             responses_args = {
                 "model": model,
                 "instructions": create_instructions(current_user),
@@ -156,6 +160,16 @@ def send_message(
             status_code=500, detail=f"Failed to get previous message from DB: {e}"
         )
 
+    try:
+        conversation_response = (
+        supabase.table("conversations").select("language_id").eq("id", str(conversation_id)).execute()
+        )
+        language_id = conversation_response.data[0]["language_id"]
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to load known words: {e}")
     # Get streaming response from OpenAI
     try:
         # Streams OpenAI responses in the form of `event: event_name\ndata: event_data\n\n` to the client
@@ -167,11 +181,13 @@ def send_message(
                     data = event.delta
                     yield f"event: delta\ndata: {data}\n\n"
                 elif event.type == "response.completed":
-                    yield "event: completed\ndata: {{}}\n\n"
-
                     ai_response_id = event.response.id
                     ai_message = event.response.output_text
+                    unknown_words = get_unknown_words(language_id, user_id, ai_message)
+                    
+                    yield f"event: completed\ndata: {json.dumps({'unknown_words': unknown_words})}\n\n"
 
+                    
                     update_db_messages(conversation_id, request, ai_message, ai_response_id)
                 elif event.type == "response.error":
                     yield f"event: error\ndata: {event.error}\n\n"
@@ -193,13 +209,13 @@ def update_db_messages(
         supabase.table("messages").insert(
             [
                 {
-                    "conversation_id": conversation_id,
+                    "conversation_id": str(conversation_id),
                     "sender": "user",
                     "content": request.content,
                 },
                 {
                     "openai_response_id": ai_response_id,
-                    "conversation_id": conversation_id,
+                    "conversation_id": str(conversation_id),
                     "sender": "assistant",
                     "content": ai_message,
                 },
@@ -220,7 +236,4 @@ async def get_conversation(current_user=Depends(get_current_user)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    if not response.data:
-        raise HTTPException(status_code=404, detail="Conversations not found")
-
-    return response.data
+    return response.data or []

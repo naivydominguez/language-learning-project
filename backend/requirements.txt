@@ -13,3 +13,5 @@ requests==2.34.2
 httpx==0.28.1
 psycopg2-binary==2.9.12
 pydantic==2.13.4
+openai==2.45.0
+google-genai==2.11.0

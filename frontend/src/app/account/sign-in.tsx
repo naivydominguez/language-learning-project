@@ -102,7 +102,7 @@ export default function SignIn() {
           Don't have an account?{" "}
         </Text>
 
-        <Pressable onPress={() => router.push("/account/signUp")}>
+        <Pressable onPress={() => router.push("/account/sign-up")}>
           <Text
             weight="semibold"
             className="text-base font-semibold text-primary"

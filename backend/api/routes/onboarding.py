@@ -29,7 +29,9 @@ async def receive_onboarding_data(data:OnboardingData):
             
         }
         user_result = (
-            supabase.table("users").upsert(user_data,on_conflict="user_id",).execute()
+            supabase.table("users")
+            .upsert(user_data,on_conflict="user_id",)
+            .execute()
         )
         
         print("User Id recived: ", data.user_id)
@@ -39,7 +41,10 @@ async def receive_onboarding_data(data:OnboardingData):
         
         for language_name in data.targetLanguages:
             language_result = (
-                supabase.table("languages").select("id","name").ilike("name",language_name).execute()
+                supabase.table("languages")
+                .select("id","name")
+                .ilike("name",language_name)
+                .execute()
             )
             
             print(f"Language lookup for {language_name}:",language_result.data)
@@ -55,7 +60,9 @@ async def receive_onboarding_data(data:OnboardingData):
             })
             
         user_languages_result = (
-            supabase.table("user_languages").upsert(language_links, on_conflict="user_id,language_id",).execute()
+            supabase.table("user_languages")
+            .upsert(language_links, on_conflict="user_id,language_id",)
+            .execute()
         )
         
         
@@ -67,8 +74,6 @@ async def receive_onboarding_data(data:OnboardingData):
             "message": "Onboarding data recived",
             "user": user_result.data, 
             "user_languages": user_languages_result.data,
-            
-            
         }
     
     except HTTPException:

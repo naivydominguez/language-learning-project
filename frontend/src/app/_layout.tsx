@@ -4,6 +4,7 @@ import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { SupabaseAuthContext, useAuthProvider } from "@/hooks/use-auth";
 
 // Sans serif font imports
 import { DMSans_100Thin } from "@expo-google-fonts/dm-sans/100Thin";
@@ -33,8 +34,8 @@ import "../global.css";
 import Toast from "react-native-toast-message";
 
 SplashScreen.preventAutoHideAsync();
-import React from "react";
 export default function RootLayout() {
+  const auth = useAuthProvider();
   const queryClient = new QueryClient();
   
   const [fontsLoaded] = useFonts({
@@ -70,16 +71,13 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <SafeAreaView className="flex-1">
-         {/* <View style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
-                <HamburgerButton onPress={() => setNavOpen(!navOpen)} />
-              </View>
-        
-              <Navbar visible={navOpen} onClose={() => setNavOpen(false)} /> */}
-        <Stack screenOptions={{ headerShown: false }} />
-        <Toast />
-      </SafeAreaView>
-    </QueryClientProvider>
+    <SupabaseAuthContext.Provider value={auth}>
+      <QueryClientProvider client={queryClient}>
+        <SafeAreaView className="flex-1">
+          <Stack screenOptions={{ headerShown: false }} />
+          <Toast />
+        </SafeAreaView>
+      </QueryClientProvider>
+    </SupabaseAuthContext.Provider>
   );
 }
