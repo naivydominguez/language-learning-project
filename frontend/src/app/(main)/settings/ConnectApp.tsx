@@ -1,6 +1,8 @@
 import { View, Pressable } from "react-native";
 import { Text } from "@/components/Text";
 import { useState } from "react";
+import { useRouter, usePathname } from "expo-router";
+
 import PageHeader from "./_components/PageHeader";
 
 const options = [
@@ -9,30 +11,39 @@ const options = [
     title: "JPDB",
     subtitle: "Japanese vocabulary database",
     type: "Connect",
+    path: "/settings/Jpdb",
   },
   {
     id: "anki",
     title: "Anki",
     subtitle: "Spaced repetition flashcards",
     type: "Import",
+    path: "/settings/Anki",
   },
   {
     id: "quizlet",
     title: "Quizlet",
     subtitle: "Online flashcard platform",
     type: "Import",
+    path: "/settings/Quizlet",
   },
-];
+] as const;
 
 export default function ConnectedApps() {
   const [selectedApps, setSelectedApps] = useState<string[]>([]);
-
+  const router = useRouter();
+  const pathname = usePathname();
+   const navigate = (path: Parameters<typeof router.push>[0]) => {
+     router.push(path);
+   };
   function toggleApp(id: string) {
+
     if (selectedApps?.includes(id)) {
       setSelectedApps(selectedApps.filter((app) => app !== id));
     } else {
       setSelectedApps([...selectedApps, id]);
     }
+    navigate(options.find((option) => option.id === id)?.path || "/");
   }
 
   return (

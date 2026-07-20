@@ -4,10 +4,11 @@ import StreakCalendar from "@/app/(main)/progress/_components/StreakCalendar";
 import VocabGraph from "@/app/(main)/progress/_components/VocabGraph";
 import WeeklyMessages from "@/app/(main)/progress/_components/WeeklyMessages";
 import { useQuery } from "@tanstack/react-query";
-import { Pressable, ScrollView } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { useAuth } from "@/hooks/use-auth";
+import MainHeader from "@/components/MainHeader";
 
 const AXIS_TEXT_STYLES = {
   color: "#bfad9f", // foreground-tertiary
@@ -66,28 +67,19 @@ export default function ProgressRoute() {
   const router = useRouter();
 
   return (
-    <ScrollView
-      className="flex flex-col bg-background pt-4 px-6"
-      contentContainerClassName="gap-6 pb-6"
-    >
-      <Pressable onPress={() => router.push("/")} className="p-2">
-        <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
-      </Pressable>
+    <View className="flex-1 bg-background">
+      <MainHeader title="Progress" />
+      <ScrollView className="flex flex-col bg-background pt-4 px-6" contentContainerClassName="gap-6 pb-6">
+        <Pressable onPress={() => router.push("/")} className="p-2">
+          <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
+        </Pressable>
 
-      <StreakCalendar data={statsData.data ?? []} />
-      <VocabGraph
-        data={statsData.data ?? []}
-        axisTextStyles={AXIS_TEXT_STYLES}
-      />
-      <WeeklyMessages
-        data={statsData.data ?? []}
-        axisTextStyles={AXIS_TEXT_STYLES}
-      />
-      <MasteryDistribution axisTextStyles={AXIS_TEXT_STYLES} />
-      <KnownWordsPreview
-        numWords={wordsCountData.data?.count || 0}
-        mostRecentWords={wordsData.data ?? []}
-      />
-    </ScrollView>
+        <StreakCalendar data={statsData.data ?? []} />
+        <VocabGraph data={statsData.data ?? []} axisTextStyles={AXIS_TEXT_STYLES} />
+        <WeeklyMessages data={statsData.data ?? []} axisTextStyles={AXIS_TEXT_STYLES} />
+        <MasteryDistribution axisTextStyles={AXIS_TEXT_STYLES} />
+        <KnownWordsPreview numWords={wordsCountData.data?.count || 0} mostRecentWords={wordsData.data ?? []} />
+      </ScrollView>
+    </View>
   );
 }
