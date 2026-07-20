@@ -27,7 +27,7 @@ export default function JPDBImport() {
 
     await goToNextImport(selectedApps, currentIndex, async () => {
       await savePendingOnboardingData(completeOnboardingData);
-      router.replace("/account/signUp");
+      router.replace("/account/sign-up");
     });
   }
 

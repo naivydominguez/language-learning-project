@@ -28,7 +28,7 @@ export default function QuizletImport() {
     goToNextImport(selectedApps, currentIndex, async () => {
       //To do: save anki import once feature is implemented
       await savePendingOnboardingData(onboardingData);
-      router.replace("/account/signUp");
+      router.replace("/account/sign-up");
     });
   }
 

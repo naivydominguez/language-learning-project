@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Check } from "lucide-react-native";
 import { useOnboarding } from "./context/OnboardingContext";
 import type { ImportType } from "@/lib/importNav";
+import { savePendingOnboardingData } from "@/lib/onboardingStorage";
 
 const options: {
     id: ImportType;
@@ -51,9 +52,10 @@ export default function ImportVocab() {
         });
     }
 
-    function handleSkip(){
+    async function handleSkip(){
         updateOnboardingData({ selectedImportApps:[],})
-        router.push("/account/signUp")
+        await savePendingOnboardingData(onboardingData);
+        router.push("/account/sign-up")
     }
 
     
