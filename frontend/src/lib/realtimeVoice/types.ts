@@ -1,7 +1,10 @@
+export type ConversationMessage = { role: "user" | "assistant"; content: string };
+
 export type RealtimeVoiceStatus = "idle" | "connecting" | "connected" | "error";
 
 export type RealtimeVoiceCallbacks = {
-  onUserTranscript: (text: string) => void;
+  onUserTranscriptDone: (text: string) => void;
+  onUserTranscriptDelta: (delta: string) => void;
   onAssistantTranscriptDelta: (delta: string) => void;
   onAssistantTranscriptDone: (fullText: string) => void;
   onStatusChange: (status: RealtimeVoiceStatus) => void;
@@ -9,6 +12,6 @@ export type RealtimeVoiceCallbacks = {
 };
 
 export interface RealtimeVoiceConnection {
-  start(clientSecret: string, callbacks: RealtimeVoiceCallbacks): Promise<void>;
+  start(clientSecret: string, callbacks: RealtimeVoiceCallbacks, conversationHistory?: ConversationMessage[]): Promise<void>;
   stop(): Promise<void>;
 }

@@ -9,6 +9,7 @@ type Props = {
   isWaiting?: boolean;
   showLanguagePicker?: boolean;
   showVoiceButton?: boolean;
+  onUserTranscriptDelta?: (text: string) => void;
   onVoiceUserTranscript?: (text: string) => void;
   onVoiceAssistantDelta?: (chunk: string) => void;
   onVoiceTurnDone?: (userText: string, assistantText: string) => void;
@@ -18,6 +19,7 @@ export default function ChatInputBar({
   isWaiting = false,
   showLanguagePicker = true,
   showVoiceButton = true,
+  onUserTranscriptDelta,
   onVoiceUserTranscript,
   onVoiceAssistantDelta,
   onVoiceTurnDone,
@@ -57,6 +59,7 @@ export default function ChatInputBar({
             canSend={canSend}
             showLanguagePicker={showLanguagePicker}
             showVoiceButton={showVoiceButton}
+            onUserTranscriptDelta={onUserTranscriptDelta}
             onVoiceUserTranscript={onVoiceUserTranscript}
             onVoiceAssistantDelta={onVoiceAssistantDelta}
             onVoiceTurnDone={onVoiceTurnDone}

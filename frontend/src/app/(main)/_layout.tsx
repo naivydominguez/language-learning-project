@@ -3,6 +3,7 @@ import HamburgerButton from "../../components/HamburgerBtn";
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Stack } from "expo-router";
+import { RealtimeVoiceProvider } from "@/context/RealtimeVoiceContext";
 export default function RootLayout() {
   const [navOpen, setNavOpen] = useState(false);
 

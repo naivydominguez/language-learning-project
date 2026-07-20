@@ -11,6 +11,7 @@ type chatboxActionsProps = {
   onVoiceUserTranscript?: (text: string) => void;
   onVoiceAssistantDelta?: (chunk: string) => void;
   onVoiceTurnDone?: (userText: string, assistantText: string) => void;
+  onUserTranscriptDelta?: (text: string) => void;
 };
 
 export default function ChatboxActions({
@@ -21,18 +22,19 @@ export default function ChatboxActions({
   onVoiceUserTranscript,
   onVoiceAssistantDelta,
   onVoiceTurnDone,
+  onUserTranscriptDelta,
 }: chatboxActionsProps) {
-
   return (
     <View className="flex-row items-center w-full">
       {showLanguagePicker && <LanguagePicker />}
       <View className="flex-1" />
       <View className="flex-row items-center gap-2">
-        {showVoiceButton && onVoiceTurnDone && (
+        {showVoiceButton && (
           <VoiceInputComponent
-            onUserTranscript={onVoiceUserTranscript}
+            onUserTranscriptDone={onVoiceUserTranscript}
             onAssistantDelta={onVoiceAssistantDelta}
             onAssistantTurnDone={onVoiceTurnDone}
+            onUserTranscriptDelta={onUserTranscriptDelta}
           />
         )}
         <SendChatComponent onSend={onSend} canSend={canSend} />

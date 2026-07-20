@@ -1,28 +1,28 @@
 import { exchangeSdp } from "./exchangeSdp";
 import { handleRealtimeEvent } from "./handleRealtimeEvent";
-import type { RealtimeVoiceCallbacks, RealtimeVoiceConnection } from "./types";
+import type { RealtimeVoiceCallbacks, RealtimeVoiceConnection, ConversationMessage } from "./types";
 
 class WebRealtimeVoiceConnection implements RealtimeVoiceConnection {
-  private pc: RTCPeerConnection | null = null;
+  private peerConnection: RTCPeerConnection | null = null;
   private dataChannel: RTCDataChannel | null = null;
   private localStream: MediaStream | null = null;
   private audioEl: HTMLAudioElement | null = null;
 
-  async start(clientSecret: string, callbacks: RealtimeVoiceCallbacks): Promise<void> {
+  async start(clientSecret: string, callbacks: RealtimeVoiceCallbacks, conversationHistory: ConversationMessage[] = []): Promise<void> {
     callbacks.onStatusChange("connecting");
 
-    const pc = new RTCPeerConnection();
-    this.pc = pc;
+    const peerConnection = new RTCPeerConnection();
+    this.peerConnection = peerConnection;
 
-    pc.onconnectionstatechange = () => {
-      if (pc.connectionState === "connected") {
+    peerConnection.onconnectionstatechange = () => {
+      if (peerConnection.connectionState === "connected") {
         callbacks.onStatusChange("connected");
-      } else if (pc.connectionState === "failed" || pc.connectionState === "closed") {
+      } else if (peerConnection.connectionState === "failed" || peerConnection.connectionState === "closed") {
         callbacks.onStatusChange("error");
       }
     };
 
-    pc.ontrack = (event) => {
+    peerConnection.ontrack = (event) => {
       const audioEl = document.createElement("audio");
       audioEl.autoplay = true;
       audioEl.srcObject = event.streams[0];
@@ -31,21 +31,35 @@ class WebRealtimeVoiceConnection implements RealtimeVoiceConnection {
 
     const localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
     this.localStream = localStream;
-    localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
+    localStream.getTracks().forEach((track) => peerConnection.addTrack(track, localStream));
 
-    const dataChannel = pc.createDataChannel("oai-events");
+    const dataChannel = peerConnection.createDataChannel("oai-events");
     this.dataChannel = dataChannel;
     dataChannel.onmessage = (event) => handleRealtimeEvent(event.data, callbacks);
+    dataChannel.onopen = () => {
+      for (const msg of conversationHistory) {
+        if (!msg.content) continue;
+        const contentType = msg.role === "user" ? "input_text" : "text";
+        dataChannel.send(JSON.stringify({
+          type: "conversation.item.create",
+          item: {
+            type: "message",
+            role: msg.role,
+            content: [{ type: contentType, text: msg.content }],
+          },
+        }));
+      }
+    };
 
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
 
     if (!offer.sdp) {
       throw new Error("Failed to create WebRTC offer SDP");
     }
 
     const answerSdp = await exchangeSdp(offer.sdp, clientSecret);
-    await pc.setRemoteDescription({ type: "answer", sdp: answerSdp });
+    await peerConnection.setRemoteDescription({ type: "answer", sdp: answerSdp });
   }
 
   async stop(): Promise<void> {
@@ -60,11 +74,17 @@ class WebRealtimeVoiceConnection implements RealtimeVoiceConnection {
       this.audioEl = null;
     }
 
-    this.pc?.close();
-    this.pc = null;
+    this.peerConnection?.close();
+    this.peerConnection = null;
   }
 }
 
+/**
+ * Returns a WebRealtimeVoiceConnection instance. 
+ * start() starts recording audio and establishes a WebRTC connection with OpenAI to start voice mode.
+ * stop() stops recording and closes the connection.
+ * Used for web only. 
+ */
 export function createConnection(): RealtimeVoiceConnection {
   return new WebRealtimeVoiceConnection();
 }
