@@ -1,4 +1,4 @@
-import { View, Pressable, Animated } from "react-native";
+import { View, Pressable, Animated, ScrollView } from "react-native";
 import { Text } from "./Text";
 import { useRouter, usePathname } from "expo-router";
 import { useRef, useEffect } from "react";
@@ -157,15 +157,15 @@ export default function Navbar({ visible, onClose }: Props) {
               <Pressable
                 key={item.label}
                 onPress={() => navigate(item.path)}
-                className={`flex-row items-center gap-2 px-5 pl-4 py-3 ${isActive ? "bg-primary-light" : ""}`}
+                className={`flex-row items-center gap-2 px-5 pl-4 py-3 ${isActive ? "bg-primary/5" : ""}`}
               >
                 {Icon && (
-                  <Icon size={16} color={isActive ? "#FFFFFF" : "#201810"} />
+                  <Icon size={16} color={isActive ? "#B5613A" : "#201810"} />
                 )}
                 <Text
                   weight="medium"
                   className={`text-base ${
-                    isActive ? "text-white" : "text-foreground"
+                    isActive ? "text-primary" : "text-foreground"
                   }`}
                 >
                   {item.label}
@@ -178,26 +178,25 @@ export default function Navbar({ visible, onClose }: Props) {
             Recent
           </Text>
 
-          <View className="px-5 pl-4">
-            {Array.isArray(recentConversationsData?.data) &&
-              recentConversationsData?.data?.map((convo) => (
-                <Pressable
-                  key={convo.id}
-                  onPress={() => {
-                    onClose();
-                    router.push({
-                      pathname: "/chat",
-                      params: { conversationId: convo.id, title: convo.name },
-                    });
-                  }}
-                  className="py-2"
-                >
-                  <Text className="text-base text-foreground/60">
-                    {convo.name}
-                  </Text>
-                </Pressable>
-              ))}
-          </View>
+          <ScrollView className="px-5 pl-4">
+            {recentConversationsData.data?.map((convo) => (
+              <Pressable
+                key={convo.id}
+                onPress={() => {
+                  onClose();
+                  router.push({
+                    pathname: "/chat",
+                    params: { conversationId: convo.id, title: convo.name },
+                  });
+                }}
+                className="py-2"
+              >
+                <Text className="text-base text-foreground/60">
+                  {convo.name}
+                </Text>
+              </Pressable>
+            ))}
+          </ScrollView>
         </View>
       </Animated.View>
     </View>
