@@ -1,21 +1,15 @@
-colorama==0.4.6
-numpy==2.5.0
-pandas==3.0.3
-SQLAlchemy==2.0.51
-sympy==1.14.0
-torch==2.12.1
-transformers==5.12.1
 fastapi==0.139.0
 uvicorn[standard]==0.49.0
 python-dotenv==1.2.2
+SQLAlchemy==2.0.51
 supabase==2.31.0
 requests==2.34.2
 httpx==0.28.1
 psycopg2-binary==2.9.12
 pydantic==2.13.4
 openai==2.45.0
-tiktoken==0.13.0
 google-genai==2.11.0
+tiktoken==0.13.0
 spacy==3.8.13
 en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 es-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/es_core_news_sm-3.8.0/es_core_news_sm-3.8.0-py3-none-any.whl
@@ -29,3 +23,4 @@ ja-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/ja
 ko-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/ko_core_news_sm-3.8.0/ko_core_news_sm-3.8.0-py3-none-any.whl
 #zh-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/zh_core_web_sm-3.8.0/zh_core_web_sm-3.8.0-py3-none-any.whl
 ru-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/ru_core_news_sm-3.8.0/ru_core_news_sm-3.8.0-py3-none-any.whl
+
