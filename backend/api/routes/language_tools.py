@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from api.utils.gemini_client import client, GEMINI_MODEL
 from api.utils.openai_client import client as openai_client
+from fastapi.responses import Response
 from google.genai import types
 
 
@@ -100,3 +101,15 @@ async def get_conversation_starters(target_lang: str, count: int = 10):
 
     result = response.choices[0].message.parsed
     return StarterPromptResponse(starters=result.starters)
+
+@router.get("/speech")
+async def get_speech(text: str,voice: str= 'alloy'):
+    try:
+        response= await openai_client.audio.speech.create(
+            model=os.environ.get("OPENAI_TTS_MODEL"),
+            voice=voice,
+            input=text
+            )
+    except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to generate speech: {e}")
+    return Response(content=response.content, media_type="audio/mpeg")

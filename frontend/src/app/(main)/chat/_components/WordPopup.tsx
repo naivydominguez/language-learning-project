@@ -2,8 +2,8 @@ import { View,  Pressable, Modal } from "react-native";
 import { Text } from "../../../../components/Text";
 import { useUserProfile } from "@/hooks/use-user";
 import React, { useState } from "react";
-import { X } from "lucide-react-native";
-
+import { X, Volume2 } from "lucide-react-native";
+import {useAudioPlayer} from "expo-audio"
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 type WordPopupProps = {
   word: string;
@@ -15,6 +15,21 @@ type WordPopupProps = {
 export default function WordPopup({ word, language, visible, OnDismiss }: WordPopupProps) {
   const { data: profile } = useUserProfile();
   const  [translateWord, setTranslateWord] = useState("");
+  const player= useAudioPlayer();
+  const voice =  () => {
+    const url = 
+      `${process.env.EXPO_PUBLIC_BACKEND_URL}/speech?text=${encodeURIComponent(word)}&voice=alloy`;
+      try {
+      player.replace(url);
+    player.play();
+      }catch(error) {
+      Toast.show({
+        type: "error",
+        text1: "Error generating speech",
+        text2: "Please try again later."
+      });
+    }
+  };
 
   const translate = async () => {
     const response = await fetch(
@@ -44,7 +59,12 @@ export default function WordPopup({ word, language, visible, OnDismiss }: WordPo
         <Pressable onPress={() => {}} className="bg-white rounded-t-2xl px-5 pt-5 pb-7">
           <View className="flex-row items-start justify-between mb-3">
             <View>
+              <View className="flex-1 flex-row">
               <Text className="font-serif text-xl font-bold text-foreground mb-0.5">{word}</Text>
+              <Pressable onPress={() => (voice())} className="ml-2 mt-1">
+              <Volume2 size={20} color="#BFAD9F" className="ml-2 mt-1"/>
+              </Pressable>
+              </View>
               <Text className="text-[11px] text-foreground-tertiary">{language}</Text>
             </View>
             <Pressable
