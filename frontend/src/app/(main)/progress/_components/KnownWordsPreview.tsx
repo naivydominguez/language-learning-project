@@ -38,8 +38,8 @@ const KnownWordsPreview = ({ numWords, mostRecentWords }: Props) => {
         </Pressable>
       </View>
       <View className="flex flex-row flex-wrap items-center gap-2 mt-4">
-        {mostRecentWords.map(({ word, translation }, index) => (
-          <KnownWordsPill key={word} word={word} translation={translation} />
+        {mostRecentWords.map(({ word }, index) => (
+          <KnownWordsPill key={word} word={word} />
         ))}
         <Text className="text-sm text-foreground-secondary/80">
           +{numNotDisplayedWords} more

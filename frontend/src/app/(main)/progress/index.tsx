@@ -46,8 +46,18 @@ export default function ProgressRoute() {
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/user_known_words/me?${params.toString()}`,
         { headers: { Authorization: `Bearer ${session!.access_token}` } },
       );
-      if (!response.ok) throw new Error("Failed to fetch known words");
-      return response.json();
+      if (!response.ok){
+        const errorText = await response.text();
+        console.error(
+            "Known words request failed:",response.status, errorText,
+        );
+
+        throw new Error("Failed to fetch known words");
+
+      } 
+      const data = await response.json();
+      console.log("Known words preview data:",data);
+      return data;
     },
   });
 
