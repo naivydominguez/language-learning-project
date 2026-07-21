@@ -4,7 +4,6 @@ import string
 MODEL_MAP = {
     "english": "en_core_web_sm",
     "spanish": "es_core_news_sm",
-    "japanese": "ja_core_news_sm",
 }
 
 _nlp_cache = {}
