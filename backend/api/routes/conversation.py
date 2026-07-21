@@ -118,6 +118,20 @@ def send_message(
 ):
     input = request.content
 
+    # Get conversation's target language
+    try:
+        conversation_response = (
+            supabase.table("conversations").select("language_id").eq("id", str(conversation_id)).execute()
+        )
+        language_id = conversation_response.data[0]["language_id"]
+
+        language_response = (
+            supabase.table("languages").select("name").eq("id", language_id).execute()
+        )
+        target_language = language_response.data[0]["name"]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to load conversation language: {e}")
+
     # Get previous message id from DB
     try:
         previous_message_response = (
@@ -149,14 +163,14 @@ def send_message(
 
             responses_args = {
                 "model": model,
-                "instructions": create_instructions(current_user),
+                "instructions": create_instructions(target_language, current_user),
                 "input": input,
                 "stream": True,
             }
         else:
             responses_args = {
                 "model": model,
-                "instructions": create_instructions(current_user),
+                "instructions": create_instructions(target_language, current_user),
                 "input": input,
                 "stream": True,
                 "previous_response_id": previous_message_id
@@ -166,16 +180,6 @@ def send_message(
             status_code=500, detail=f"Failed to get previous message from DB: {e}"
         )
 
-    try:
-        conversation_response = (
-        supabase.table("conversations").select("language_id").eq("id", str(conversation_id)).execute()
-        )
-        language_id = conversation_response.data[0]["language_id"]
-    
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to load known words: {e}")
     # Get streaming response from OpenAI
     try:
         # Streams OpenAI responses in the form of `event: event_name\ndata: event_data\n\n` to the client
