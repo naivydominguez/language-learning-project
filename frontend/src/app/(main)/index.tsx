@@ -1,4 +1,4 @@
-import { View, Pressable } from "react-native";
+import { View, Pressable, ActivityIndicator } from "react-native";
 import { Text } from "@/components/Text";
 import { useRouter } from "expo-router";
 import { RotateCcw } from "lucide-react-native";
@@ -11,10 +11,23 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUserProfile } from "@/hooks/use-user";
 import { useUserLanguage } from "@/hooks/use-user-language";
 import { useRealtimeVoiceContext } from "@/context/RealtimeVoiceContext";
+import { getPendingOnboardingData } from "@/lib/onboardingStorage";
 
 export default function HomePage() {
-  const { session } = useAuth();
+  const { session, isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
+
+  React.useEffect(() => {
+    if (isAuthLoading || session) return;
+
+    getPendingOnboardingData().then((pendingData) => {
+      if (!pendingData) {
+        router.replace("/onboarding");
+      } else {
+        router.replace("/account/sign-up");
+      }
+    });
+  }, [isAuthLoading, session]);
   const { setHistoryProvider } = useRealtimeVoiceContext();
   const { data: userLanguages, isLoading: isLoadingUserLanguages } =
     useUserLanguage();
@@ -130,6 +143,14 @@ export default function HomePage() {
       });
     }
   };
+
+  if (isAuthLoading || !session) {
+    return (
+      <View className="flex-1 items-center justify-center bg-background-dark">
+        <ActivityIndicator size="small" color="#8C6E60" />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-background-dark">

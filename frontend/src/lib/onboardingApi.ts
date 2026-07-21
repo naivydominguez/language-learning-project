@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { getPendingOnboardingData } from "./onboardingStorage";
+import { getPendingOnboardingData, clearPendingOnboardingData } from "./onboardingStorage";
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -42,4 +42,6 @@ export async function submitOnboardingData() {
   },);
 
   console.log("Backend status:", response.status);
+
+  await clearPendingOnboardingData();
 }

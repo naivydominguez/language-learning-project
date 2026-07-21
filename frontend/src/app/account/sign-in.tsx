@@ -8,6 +8,7 @@ import { signInWithGoogle, signInWithApple } from "@/lib/socialAuth";
 import GoogleButton from "@/components/GoogleButton";
 import AppleButton from "@/components/AppleButton";
 import { submitOnboardingData } from "@/lib/onboardingApi";
+import { getPendingOnboardingData } from "@/lib/onboardingStorage";
 
 export default function SignIn() {
   const handleGoogleSignIn = async () => {
@@ -17,9 +18,12 @@ export default function SignIn() {
       console.log("Sign-in returned: ", session);
 
       if (session) {
-        console.log("about to submit onboarding data");
-        await submitOnboardingData();
-        console.log("onboardig func finished");
+        const pendingData = await getPendingOnboardingData();
+        if (pendingData) {
+          console.log("about to submit onboarding data");
+          await submitOnboardingData();
+          console.log("onboardig func finished");
+        }
         router.replace("/");
       }
     } catch (error) {
@@ -31,6 +35,10 @@ export default function SignIn() {
     try {
       const session = await signInWithApple();
       if (session) {
+        const pendingData = await getPendingOnboardingData();
+        if (pendingData) {
+          await submitOnboardingData();
+        }
         router.replace("/");
       }
     } catch (error) {
