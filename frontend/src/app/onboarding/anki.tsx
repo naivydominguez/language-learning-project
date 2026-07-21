@@ -6,16 +6,23 @@ import OnboardingButton from "./_components/OnboardingButton";
 import { OnboardingColors } from "@/constants/onboardingTheme";
 import { useState } from "react";
 import { goToNextImport, ImportType } from "@/lib/importNav";
-import { useOnboarding } from "./context/OnboardingContext";
+import { useOptionalOnboarding } from "./context/OnboardingContext";
 import { savePendingOnboardingData } from "@/lib/onboardingStorage";
 
-export default function AnkiImport() {
-  const { onboardingData } = useOnboarding();
+type settingPageProps = {
+  embedded?: boolean;
+  onDone?: () => void;
+};
+
+export default function AnkiImport({ embedded = false, onDone }: settingPageProps = {}) {
+  const onboarding = useOptionalOnboarding();
   const [name, setName] = useState("");
 
   const params = useLocalSearchParams<{
     selectedApps?: string;
     currentIndex?: string;
+    path?: string;
+    backButton?: string;
   }>();
 
   const selectedApps: ImportType[] = params.selectedApps
@@ -23,38 +30,58 @@ export default function AnkiImport() {
     : [];
 
   const currentIndex = Number(params.currentIndex ?? "0");
+  const backButton = params.backButton === "true";
+  const backPath: Parameters<typeof router.push>[0] =
+    (params.path as Parameters<typeof router.push>[0]) || "/onboarding/import-vocab";
 
   function handleContinue() {
+    if (embedded) {
+      onDone?.();
+      return;
+    }
     goToNextImport(selectedApps, currentIndex, async () => {
-      //To do: save anki import once feature is implemented
-      await savePendingOnboardingData(onboardingData);
-      router.replace("/account/sign-up");
+      if (onboarding) {
+        await savePendingOnboardingData(onboarding.onboardingData);
+      }
+      backButton ? router.push(backPath) : router.replace("/account/sign-up");
     });
   }
 
   return (
-    <View className="flex-1 justify-between bg-[#F8F3EF] px-6 pt-8 pb-6">
+    <View
+      className={
+        embedded
+          ? "flex-1 justify-between px-6 pt-4 pb-6"
+          : "flex-1 justify-between bg-[#F8F3EF] px-6 pt-8 pb-6"
+      }
+    >
       <View>
-        <View className="flex-row items-center justify-between">
-          <Pressable
-            onPress={() => router.push("/onboarding/import-vocab")}
-            className="-ml-1 -mt-1 p-2"
-          >
-            <ArrowLeft
-              size={20}
-              color={OnboardingColors.secondary}
-              strokeWidth={1.75}
-            />
-          </Pressable>
+        {!embedded && (
+          <View className="flex-row items-center justify-between">
+            {!backButton && (
+              <Pressable
+                onPress={() => router.push("/onboarding/import-vocab")}
+                className="-ml-1 -mt-1 p-2"
+              >
+                <ArrowLeft
+                  size={20}
+                  color={OnboardingColors.secondary}
+                  strokeWidth={1.75}
+                />
+              </Pressable>
+            )}
 
-          <Text style={{ fontSize: 12, color: OnboardingColors.tertiary }}>
-            Extra
+            <Text style={{ fontSize: 12, color: OnboardingColors.tertiary }}>
+              Extra
+            </Text>
+          </View>
+        )}
+
+        {!embedded && (
+          <Text weight="bold" className="text-3xl mb-3">
+            Anki
           </Text>
-        </View>
-
-        <Text weight="bold" className="text-3xl mb-3">
-          Anki
-        </Text>
+        )}
 
         <Text weight="bold" className="mt-5 mb-3 text-lg text-[#8B6A5B]">
           Enter a .csv or .txt file
@@ -72,7 +99,7 @@ export default function AnkiImport() {
       </View>
 
       <OnboardingButton
-        title="Continue"
+        title={embedded ? "Import" : backButton ? "Done" : "Continue"}
         onPress={handleContinue}
       />
     </View>
