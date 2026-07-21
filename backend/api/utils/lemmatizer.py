@@ -4,16 +4,7 @@ import string
 MODEL_MAP = {
     "english": "en_core_web_sm",
     "spanish": "es_core_news_sm",
-    "french": "fr_core_news_sm",
-    "german": "de_core_news_sm",
-    "italian": "it_core_news_sm",
-    "portuguese": "pt_core_news_sm",
-    "dutch": "nl_core_news_sm",
-    "greek": "el_core_news_sm",
     "japanese": "ja_core_news_sm",
-    "korean": "ko_core_news_sm",
-    "chinese (simplified)": "zh_core_web_sm",
-    "russian": "ru_core_news_sm",
 }
 
 _nlp_cache = {}
