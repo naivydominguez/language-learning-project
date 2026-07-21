@@ -11,10 +11,23 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUserProfile } from "@/hooks/use-user";
 import { useUserLanguage } from "@/hooks/use-user-language";
 import { useRealtimeVoiceContext } from "@/context/RealtimeVoiceContext";
+import { getPendingOnboardingData } from "@/lib/onboardingStorage";
 
 export default function HomePage() {
-  const { session } = useAuth();
+  const { session, isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
+
+  React.useEffect(() => {
+    if (isAuthLoading || session) return;
+
+    getPendingOnboardingData().then((pendingData) => {
+      if (!pendingData) {
+        router.replace("/onboarding");
+      } else {
+        router.replace("/account/sign-up");
+      }
+    });
+  }, [isAuthLoading, session]);
   const { setHistoryProvider } = useRealtimeVoiceContext();
   const { data: userLanguages, isLoading: isLoadingUserLanguages } = useUserLanguage();
   const { data: profile } = useUserProfile();

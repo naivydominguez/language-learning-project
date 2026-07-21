@@ -26,9 +26,12 @@ export default function SignUp() {
       console.log("Sign-in returned: ", session);
 
       if (session) {
-        console.log("about to submit onboarding data");
-        await submitOnboardingData();
-        console.log("onboardig func finished");
+        const pendingData = await getPendingOnboardingData();
+        if (pendingData) {
+          console.log("about to submit onboarding data");
+          await submitOnboardingData();
+          console.log("onboardig func finished");
+        }
         router.replace("/");
       }
     } catch (error) {
@@ -40,6 +43,10 @@ export default function SignUp() {
     try {
       const session = await signInWithApple();
       if (session) {
+        const pendingData = await getPendingOnboardingData();
+        if (pendingData) {
+          await submitOnboardingData();
+        }
         router.replace("/");
       }
     } catch (error) {
