@@ -27,8 +27,9 @@ export default function WordPopup({
   const { data: profile } = useUserProfile();
   const [translateWord, setTranslateWord] = useState("");
   const player = useAudioPlayer();
+  const instuction = `Enunicate clearly and use authentic ${language} pronunciation.`;
   const voice = () => {
-    const url = `${process.env.EXPO_PUBLIC_BACKEND_URL}/speech?text=${encodeURIComponent(word)}&voice=alloy`;
+    const url = `${process.env.EXPO_PUBLIC_BACKEND_URL}/speech?text=${encodeURIComponent(word)}&voice=alloy&instructions=${encodeURIComponent(instuction)}`;
     try {
       player.replace(url);
       player.play();

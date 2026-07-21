@@ -133,13 +133,18 @@ async def get_conversation_starters(target_lang: str, count: int = 10):
     return StarterPromptResponse(starters=starters[:count])
 
 @router.get("/speech")
-async def get_speech(text: str,voice: str= 'alloy'):
+async def get_speech(text: str,voice: str= 'alloy', instructions: str | None = None):
     try:
-        response= await openai_client.audio.speech.create(
-            model=os.environ.get("OPENAI_TTS_MODEL"),
-            voice=voice,
-            input=text
-            )
+        parmas = {
+            "model": os.environ.get("OPENAI_TTS_MODEL"),
+            "voice": voice,
+            "input": text,
+        }
+        if instructions:
+            parmas["instructions"]=instructions
+
+        response= await openai_client.audio.speech.create(**parmas)
+            
     except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to generate speech: {e}")
     return Response(content=response.content, media_type="audio/mpeg")
