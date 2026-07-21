@@ -117,6 +117,19 @@ def send_message(
     user_id: str = Depends(get_user_id),
     current_user = Depends(get_current_user)
 ):
+    # Get conversation's target language
+    try:
+        conversation_response = (
+            supabase.table("conversations").select("language_id").eq("id", str(conversation_id)).execute()
+        )
+        language_id = conversation_response.data[0]["language_id"]
+
+        language_response = (
+            supabase.table("languages").select("name").eq("id", language_id).execute()
+        )
+        target_language = language_response.data[0]["name"] if language_response.data else None
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to load conversation language: {e}")
     try:
         history_response = (
             supabase.table("messages")
@@ -134,21 +147,10 @@ def send_message(
         raise HTTPException(
             status_code=500, detail=f"Failed to get previous messages from DB: {e}"
         )
-
-    try:
-        conversation_response = (
-        supabase.table("conversations").select("language_id").eq("id", str(conversation_id)).execute()
-        )
-        language_id = conversation_response.data[0]["language_id"]
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to load conversation language: {e}")
     # Get streaming response from OpenAI
     try:
         messages = [
-            {"role": "system", "content": create_instructions(current_user)},
+            {"role": "system", "content": create_instructions(target_language, current_user)},
             *conversation_history,
         ]
         # Streams OpenAI responses in the form of `event: event_name\ndata: event_data\n\n` to the client
