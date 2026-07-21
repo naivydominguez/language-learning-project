@@ -1,4 +1,5 @@
 import os
+from urllib import response
 import uuid
 import json
 from fastapi import APIRouter, Depends, HTTPException
@@ -13,6 +14,7 @@ from api.utils.supabase_client import supabase
 from api.utils.user_id import get_user_id
 from api.utils.instructions import create_instructions
 from api.utils.unknown_words import get_unknown_words
+from api.utils.token_bias import get_srs_logit_bias
 
 UNKNOWN_WORDS_PERCENTAGE = 10
 
@@ -63,7 +65,7 @@ async def create_conversation(
         language_response = (
             supabase.table("languages")
             .select("id")
-            .eq("name", request.target_lang)
+            .ilike("name", request.target_lang)
             .execute()
         )
         if not language_response.data:
@@ -116,87 +118,62 @@ def send_message(
     user_id: str = Depends(get_user_id),
     current_user = Depends(get_current_user)
 ):
-    input = request.content
-
-    # Get previous message id from DB
-    try:
-        previous_message_response = (
-            supabase.table("messages")
-            .select("openai_response_id")
-            .eq("conversation_id", str(conversation_id))
-            .order("created_at", desc=True)
-            .limit(1)
-            .execute()
-        )
-        previous_message_id = previous_message_response.data[0]["openai_response_id"] if previous_message_response.data else None  
-
-        if previous_message_id is None:
-            # No chainable OpenAI response id (first message in the conversation, or the
-            # chain was broken by a voice turn) - reconstruct the full history from the DB
-            # instead of just the starter prompt, so context isn't lost.
-            history_response = (
-                supabase.table("messages")
-                .select("sender, content")
-                .eq("conversation_id", str(conversation_id))
-                .order("created_at", desc=False)
-                .execute()
-            )
-            input = [
-                {"role": "assistant" if m["sender"] == "assistant" else "user", "content": m["content"]}
-                for m in (history_response.data or [])
-            ]
-            input.append({"role": "user", "content": request.content})
-
-            responses_args = {
-                "model": model,
-                "instructions": create_instructions(current_user),
-                "input": input,
-                "stream": True,
-            }
-        else:
-            responses_args = {
-                "model": model,
-                "instructions": create_instructions(current_user),
-                "input": input,
-                "stream": True,
-                "previous_response_id": previous_message_id
-            }
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get previous message from DB: {e}"
-        )
-
+    # Get conversation's target language
     try:
         conversation_response = (
-        supabase.table("conversations").select("language_id").eq("id", str(conversation_id)).execute()
+            supabase.table("conversations").select("language_id").eq("id", str(conversation_id)).execute()
         )
         language_id = conversation_response.data[0]["language_id"]
-    
-    except HTTPException:
-        raise
+
+        language_response = (
+            supabase.table("languages").select("name").eq("id", language_id).execute()
+        )
+        target_language = language_response.data[0]["name"] if language_response.data else None
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to load known words: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to load conversation language: {e}")
+    try:
+        history_response = (
+            supabase.table("messages")
+            .select("sender, content")
+            .eq("conversation_id", str(conversation_id))
+            .order("created_at", desc=False)
+            .execute()
+        )
+        conversation_history = [
+            {"role": "assistant" if message["sender"] == "assistant" else "user", "content": message["content"]}
+            for message in (history_response.data or [])
+        ]
+        conversation_history.append({"role": "user", "content": request.content})
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get previous messages from DB: {e}"
+        )
     # Get streaming response from OpenAI
     try:
+        messages = [
+            {"role": "system", "content": create_instructions(target_language, current_user)},
+            *conversation_history,
+        ]
         # Streams OpenAI responses in the form of `event: event_name\ndata: event_data\n\n` to the client
         async def chat_stream():
-            streaming_response = await client.responses.create(**responses_args)
+            ai_message = ""
+            logit_bias = get_srs_logit_bias(user_id, str(language_id), model) if language_id else {}
+            streaming_response = await client.chat.completions.create(
+                model=model, messages=messages, stream=True, logit_bias=logit_bias
+            )
 
-            async for event in streaming_response:
-                if event.type == "response.output_text.delta":
-                    data = event.delta
-                    yield f"event: delta\ndata: {data}\n\n"
-                elif event.type == "response.completed":
-                    ai_response_id = event.response.id
-                    ai_message = event.response.output_text
+            async for chunk in streaming_response:
+                delta = chunk.choices[0].delta.content
+                if delta:
+                    ai_message += delta
+                    yield f"event: delta\ndata: {delta}\n\n"
+
+                if chunk.choices[0].finish_reason is not None:
                     unknown_words = get_unknown_words(language_id, user_id, ai_message)
-                    
+
                     yield f"event: completed\ndata: {json.dumps({'unknown_words': unknown_words})}\n\n"
 
-                    
-                    update_db_messages(conversation_id, request, ai_message, ai_response_id)
-                elif event.type == "response.error":
-                    yield f"event: error\ndata: {event.error}\n\n"
+                    update_db_messages(conversation_id, request, ai_message)
 
         return StreamingResponse(chat_stream(), media_type="text/event-stream")
     except Exception as e:
@@ -208,7 +185,6 @@ def update_db_messages(
     conversation_id: UUID,
     request: SendMessageRequest,
     ai_message: str,
-    ai_response_id: str,
 ):
     try:
         # Insert user message and AI response into the database
@@ -220,7 +196,6 @@ def update_db_messages(
                     "content": request.content,
                 },
                 {
-                    "openai_response_id": ai_response_id,
                     "conversation_id": str(conversation_id),
                     "sender": "assistant",
                     "content": ai_message,
@@ -236,11 +211,11 @@ def save_voice_turn(
     request: VoiceTurnRequest,
     current_user=Depends(get_current_user),
 ):
-    # Realtime API voice sessions are a separate stateful context from the Responses
-    # API used for text - there's no openai_response_id to chain from, so it's left
-    # NULL. The next typed message will fall into the no-previous_response_id branch
-    # of send_message, which reconstructs full history from the DB (including these
-    # rows) rather than losing context.
+    # Realtime API voice sessions are a separate stateful context from the Chat
+    # Completions API used for text. These rows carry no special marker - Chat
+    # Completions is stateless, so send_message always reconstructs the full
+    # conversation history from the DB (including these rows) for the next
+    # typed message.
     try:
         response = (
             supabase.table("messages")
@@ -279,3 +254,31 @@ async def get_conversation(current_user=Depends(get_current_user)):
         raise HTTPException(status_code=500, detail=str(e))
 
     return response.data or []
+
+@router.get("/{conversation_id}/language")
+async def get_conversation_language(conversation_id: UUID, current_user=Depends(get_current_user)):
+    try:
+        conversation_response = (
+            supabase.table("conversations")
+            .select("language_id")
+            .eq("id", str(conversation_id))
+            .execute()
+        )
+        if not conversation_response.data:
+            raise HTTPException(status_code=404, detail="Conversation not found")
+        language_id = conversation_response.data[0]["language_id"]
+
+        language_response = (
+            supabase.table("languages")
+            .select("name")
+            .eq("id", language_id)
+            .execute()
+        )
+        if not language_response.data:
+            raise HTTPException(status_code=404, detail="Language not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    return language_response.data[0]

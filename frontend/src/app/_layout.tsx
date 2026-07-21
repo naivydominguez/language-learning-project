@@ -6,30 +6,6 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { SupabaseAuthContext, useAuthProvider } from "@/hooks/use-auth";
 
-// Sans serif font imports
-import { DMSans_100Thin } from "@expo-google-fonts/dm-sans/100Thin";
-import { DMSans_200ExtraLight } from "@expo-google-fonts/dm-sans/200ExtraLight";
-import { DMSans_300Light } from "@expo-google-fonts/dm-sans/300Light";
-import { DMSans_400Regular } from "@expo-google-fonts/dm-sans/400Regular";
-import { DMSans_500Medium } from "@expo-google-fonts/dm-sans/500Medium";
-import { DMSans_600SemiBold } from "@expo-google-fonts/dm-sans/600SemiBold";
-import { DMSans_700Bold } from "@expo-google-fonts/dm-sans/700Bold";
-
-// Serif font imports
-import { Lora_400Regular } from "@expo-google-fonts/lora/400Regular";
-import { Lora_500Medium } from "@expo-google-fonts/lora/500Medium";
-import { Lora_600SemiBold } from "@expo-google-fonts/lora/600SemiBold";
-import { Lora_700Bold } from "@expo-google-fonts/lora/700Bold";
-
-// Monospace font imports
-import { JetBrainsMono_100Thin } from "@expo-google-fonts/jetbrains-mono/100Thin";
-import { JetBrainsMono_200ExtraLight } from "@expo-google-fonts/jetbrains-mono/200ExtraLight";
-import { JetBrainsMono_300Light } from "@expo-google-fonts/jetbrains-mono/300Light";
-import { JetBrainsMono_400Regular } from "@expo-google-fonts/jetbrains-mono/400Regular";
-import { JetBrainsMono_500Medium } from "@expo-google-fonts/jetbrains-mono/500Medium";
-import { JetBrainsMono_600SemiBold } from "@expo-google-fonts/jetbrains-mono/600SemiBold";
-import { JetBrainsMono_700Bold } from "@expo-google-fonts/jetbrains-mono/700Bold";
-
 import "../global.css";
 import Toast from "react-native-toast-message";
 import { RealtimeVoiceProvider } from "@/context/RealtimeVoiceContext";
@@ -41,28 +17,26 @@ export default function RootLayout() {
 
   const [fontsLoaded] = useFonts({
     // Sans serif
-    "DMSans-Thin": DMSans_100Thin,
-    "DMSans-ExtraLight": DMSans_200ExtraLight,
-    "DMSans-Light": DMSans_300Light,
-    "DMSans-Regular": DMSans_400Regular,
-    "DMSans-Medium": DMSans_500Medium,
-    "DMSans-SemiBold": DMSans_600SemiBold,
-    "DMSans-Bold": DMSans_700Bold,
-
+    "DMSans-Thin": require("../../assets/fonts/DMSans_100Thin.ttf"),
+    "DMSans-ExtraLight": require("../../assets/fonts/DMSans_200ExtraLight.ttf"),
+    "DMSans-Light": require("../../assets/fonts/DMSans_300Light.ttf"),
+    "DMSans-Regular": require("../../assets/fonts/DMSans_400Regular.ttf"),
+    "DMSans-Medium": require("../../assets/fonts/DMSans_500Medium.ttf"),
+    "DMSans-SemiBold": require("../../assets/fonts/DMSans_600SemiBold.ttf"),
+    "DMSans-Bold": require("../../assets/fonts/DMSans_700Bold.ttf"),
     // Serif
-    "Lora-Regular": Lora_400Regular,
-    "Lora-Medium": Lora_500Medium,
-    "Lora-SemiBold": Lora_600SemiBold,
-    "Lora-Bold": Lora_700Bold,
-
+    "Lora-Regular": require("../../assets/fonts/Lora_400Regular.ttf"),
+    "Lora-Medium": require("../../assets/fonts/Lora_500Medium.ttf"),
+    "Lora-SemiBold": require("../../assets/fonts/Lora_600SemiBold.ttf"),
+    "Lora-Bold": require("../../assets/fonts/Lora_700Bold.ttf"),
     // Monospace
-    "JetBrainsMono-Thin": JetBrainsMono_100Thin,
-    "JetBrainsMono-ExtraLight": JetBrainsMono_200ExtraLight,
-    "JetBrainsMono-Light": JetBrainsMono_300Light,
-    "JetBrainsMono-Regular": JetBrainsMono_400Regular,
-    "JetBrainsMono-Medium": JetBrainsMono_500Medium,
-    "JetBrainsMono-SemiBold": JetBrainsMono_600SemiBold,
-    "JetBrainsMono-Bold": JetBrainsMono_700Bold,
+    "JetBrainsMono-Thin": require("../../assets/fonts/JetBrainsMono_100Thin.ttf"),
+    "JetBrainsMono-ExtraLight": require("../../assets/fonts/JetBrainsMono_200ExtraLight.ttf"),
+    "JetBrainsMono-Light": require("../../assets/fonts/JetBrainsMono_300Light.ttf"),
+    "JetBrainsMono-Regular": require("../../assets/fonts/JetBrainsMono_400Regular.ttf"),
+    "JetBrainsMono-Medium": require("../../assets/fonts/JetBrainsMono_500Medium.ttf"),
+    "JetBrainsMono-SemiBold": require("../../assets/fonts/JetBrainsMono_600SemiBold.ttf"),
+    "JetBrainsMono-Bold": require("../../assets/fonts/JetBrainsMono_700Bold.ttf"),
   });
 
   useEffect(() => {

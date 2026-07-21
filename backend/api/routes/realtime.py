@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from api.utils.auth import get_current_user
 from api.utils.instructions import create_instructions
-from api.utils.supabase_client import supabase
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 DEFAULT_REALTIME_MODEL = "gpt-realtime-2.1-mini"
@@ -18,7 +17,7 @@ async def create_realtime_client_secret(current_user = Depends(get_current_user)
     session_config = {
         "type": "realtime",
         "model": os.environ.get("OPENAI_REALTIME_MODEL") or DEFAULT_REALTIME_MODEL,
-        "instructions": create_instructions(current_user),
+        "instructions": create_instructions(current_user=current_user),
         "reasoning": {"effort": "minimal"},
         "audio": {
             "input": {
@@ -26,6 +25,7 @@ async def create_realtime_client_secret(current_user = Depends(get_current_user)
             },
             "output": {
                 "voice": "marin",
+                "speed": 0.9,
             }
         },
         "output_modalities": ["audio"]

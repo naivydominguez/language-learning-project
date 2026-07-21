@@ -11,6 +11,8 @@ import { useChat } from "@/hooks/use-chat";
 import { useAuth } from "@/hooks/use-auth";
 import { useRealtimeVoiceContext } from "@/context/RealtimeVoiceContext";
 import MainHeader from "@/components/MainHeader";
+import { useUserLanguage } from "@/hooks/use-user-language";
+import { useUserProfile } from "@/hooks/use-user";
 
 type Message = {
   id: string;
@@ -32,6 +34,11 @@ export default function ChatScreen() {
       conversationId: string;
       voice: "true" | "false";
     }>();
+  const { data: profile } = useUserProfile();
+  const { data: userLanguages } = useUserLanguage();
+  const nativeLang = profile?.native_language || "English";
+  // The first target language is the user's primary conversation language.
+  const [convLang, setConvLang ]=React.useState<string>("");
 
   const { status, stop, setCallbacks, setHistoryProvider } =
     useRealtimeVoiceContext();
@@ -116,6 +123,32 @@ export default function ChatScreen() {
     });
   };
 
+  const getConvoLanguage= async ()=> {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversations/${conversationId}/language`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch conversation language");
+      const data = await response.json();
+      return data.name as string;
+    } catch (error) {
+      Toast .show({
+        type: "error",
+        text1: "Error fetching conversation language",
+        text2: "Please try again later.",
+      });
+      return userLanguages?.[0]|| nativeLang; // Fallback to user's first language or native language
+    }
+  }
+
+  useEffect(() => {
+    getConvoLanguage().then(setConvLang);
+    }, [conversationId]);
   const handleSend = (messageText: string) => {
     createChatBubbles(messageText);
     sendTextMessage(messageText, appendMessageChunk, (data: any) => {
@@ -179,7 +212,11 @@ export default function ChatScreen() {
         },
       );
     } catch (error) {
-      console.error("Error saving voice turn:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error sending voice message",
+        text2: "Please try again later.",
+      });
     }
   };
 
@@ -278,7 +315,7 @@ export default function ChatScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <MainHeader title={title || "Chat"} />
+      <MainHeader title={title || "Chat"} subtitle={convLang} />
       <ScrollView className="flex-1 bg-background">
         <View
           className="flex-1 bg-background p-4"
@@ -294,15 +331,6 @@ export default function ChatScreen() {
         </View>
       </ScrollView>
 
-      {selectedWord && (
-        <WordPopup
-          word={selectedWord}
-          language=""
-          visible={!!selectedWord}
-          OnDismiss={() => setSelectedWord(null)}
-        />
-      )}
-
       <ChatInputBar
         onSend={handleSend}
         isWaiting={isWaiting}
@@ -310,6 +338,13 @@ export default function ChatScreen() {
         onVoiceUserTranscript={handleVoiceUserTranscriptDone}
         onVoiceAssistantDelta={handleVoiceAssistantDelta}
         onVoiceTurnDone={handleVoiceTurnDone}
+        showLanguagePicker={false}
+      />
+      <WordPopup
+        word={selectedWord || ""}
+        language={convLang }
+        visible={!!selectedWord}
+        OnDismiss={() => setSelectedWord(null)}
       />
     </View>
   );

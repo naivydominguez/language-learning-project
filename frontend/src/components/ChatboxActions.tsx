@@ -12,6 +12,8 @@ type chatboxActionsProps = {
   onVoiceAssistantDelta?: (chunk: string) => void;
   onVoiceTurnDone?: (userText: string, assistantText: string) => void;
   onUserTranscriptDelta?: (text: string) => void;
+  selectedLanguage?: string;
+  onLanguageChange?: (language: string) => void;
 };
 
 export default function ChatboxActions({
@@ -23,10 +25,12 @@ export default function ChatboxActions({
   onVoiceAssistantDelta,
   onVoiceTurnDone,
   onUserTranscriptDelta,
+  selectedLanguage,
+  onLanguageChange,
 }: chatboxActionsProps) {
   return (
     <View className="flex-row items-center w-full">
-      {showLanguagePicker && <LanguagePicker />}
+      {showLanguagePicker && <LanguagePicker selectedLanguage={selectedLanguage} onLanguageChange={onLanguageChange} />}
       <View className="flex-1" />
       <View className="flex-row items-center gap-2">
         {showVoiceButton && (

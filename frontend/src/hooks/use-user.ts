@@ -6,6 +6,7 @@ export type UserProfile = {
   name: string;
   target_languages: string;
   native_language: string;
+  personality_prompt: string;
 };
 
 export function useUserProfile() {
