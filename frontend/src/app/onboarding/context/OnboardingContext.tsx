@@ -51,3 +51,9 @@ export function useOnboarding() {
     return context;
 }
 
+// Non-throwing variant for components that may render outside the
+// onboarding flow (e.g. embedded in a settings screen).
+export function useOptionalOnboarding() {
+    return useContext(OnboardingContext);
+}
+

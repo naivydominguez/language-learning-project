@@ -63,7 +63,7 @@ async def create_conversation(
         language_response = (
             supabase.table("languages")
             .select("id")
-            .eq("name", request.target_lang)
+            .ilike("name", request.target_lang)
             .execute()
         )
         if not language_response.data:
