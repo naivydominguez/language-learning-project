@@ -1,4 +1,5 @@
 import os
+from urllib import response
 import uuid
 import json
 from fastapi import APIRouter, Depends, HTTPException
@@ -279,3 +280,31 @@ async def get_conversation(current_user=Depends(get_current_user)):
         raise HTTPException(status_code=500, detail=str(e))
 
     return response.data or []
+
+@router.get("/{conversation_id}/language")
+async def get_conversation_language(conversation_id: UUID, current_user=Depends(get_current_user)):
+    try:
+        conversation_response = (
+            supabase.table("conversations")
+            .select("language_id")
+            .eq("id", str(conversation_id))
+            .execute()
+        )
+        if not conversation_response.data:
+            raise HTTPException(status_code=404, detail="Conversation not found")
+        language_id = conversation_response.data[0]["language_id"]
+
+        language_response = (
+            supabase.table("languages")
+            .select("name")
+            .eq("id", language_id)
+            .execute()
+        )
+        if not language_response.data:
+            raise HTTPException(status_code=404, detail="Language not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    return language_response.data[0]
