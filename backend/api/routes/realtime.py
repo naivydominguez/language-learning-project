@@ -26,6 +26,7 @@ async def create_realtime_client_secret(current_user = Depends(get_current_user)
             },
             "output": {
                 "voice": "marin",
+                "speed": 0.9,
             }
         },
         "output_modalities": ["audio"]
