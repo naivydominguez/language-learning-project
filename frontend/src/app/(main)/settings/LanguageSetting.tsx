@@ -38,7 +38,7 @@ export default function LanguageSetting() {
     { name: "Spanish", flag: "🇪🇸" },
     { name: "French", flag: "🇫🇷" },
     { name: "Korean", flag: "🇰🇷" },
-    { name: "Mandarin", flag: "🇨🇳" },
+    { name: "Chinese", flag: "🇨🇳" },
     { name: "German", flag: "🇩🇪" },
     { name: "Portuguese", flag: "🇧🇷" },
     { name: "Italian", flag: "🇮🇹" },
@@ -47,16 +47,16 @@ export default function LanguageSetting() {
   ];
 
   const native_languages = [
-    "English",
-    "Spanish",
-    "French",
-    "German",
-    "Mandarin",
-    "Japanese",
-    "Korean",
-    "Portuguese",
-    "Arabic",
-    "Russian",
+    { name: "English", value: "english" },
+    { name: "Spanish", value: "spanish" },
+    { name: "French", value: "french" },
+    { name: "German", value: "german" },
+    { name: "Chinese", value: "chinese" },
+    { name: "Japanese", value: "japanese" },
+    { name: "Korean", value: "korean" },
+    { name: "Portuguese", value: "portuguese" },
+    { name: "Arabic", value: "arabic" },
+    { name: "Russian", value: "russian" },
   ];
 
   const toggleLang = (languageName: string) => {
@@ -176,9 +176,9 @@ export default function LanguageSetting() {
                 <Picker.Item label="Select a language" value="" />
                 {native_languages.map((language) => (
                   <Picker.Item
-                    key={language}
-                    label={language}
-                    value={language}
+                    key={language.name}
+                    label={language.name}
+                    value={language.value}
                   />
                 ))}
               </Picker>
