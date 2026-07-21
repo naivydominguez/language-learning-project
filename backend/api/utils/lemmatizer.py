@@ -28,11 +28,15 @@ def get_unknown_words_by_lemma(text: str, language: str, known_words: set[str]) 
             word for word in text.split()
             if word.strip(string.punctuation).lower() not in known_words
         ]
-    
+
     nlp = get_nlp(language)
-    
-    known_lemmas = {token.lemma_.lower() for word in known_words for token in nlp(word)}
-    
+
+    known_lemmas = set()
+    for word in known_words:
+        known_lemmas.add(word.lower())
+        for token in nlp(word):
+            known_lemmas.add(token.lemma_.lower())
+
     doc = nlp(text)
 
     unknown_words = []
