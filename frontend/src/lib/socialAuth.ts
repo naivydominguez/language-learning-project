@@ -32,8 +32,8 @@ export async function signInWithApple() {
 }
 
 const redirectTo =
-  Platform.OS === "web"
-    ? process.env.EXPO_PUBLIC_REDIRECT_URL ?? window.location.origin
+  Platform.OS === "web" 
+    ? process.env.EXPO_PUBLIC_REDIRECT_URL 
     : makeRedirectUri({ scheme: "frontend" });
 
 export async function signInWithGoogle() {

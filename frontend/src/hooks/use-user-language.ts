@@ -6,7 +6,7 @@ export function useUserLanguage() {
   const { session } = useAuth();
 
   return useQuery({
-    queryKey: ["userLanguage"],
+    queryKey: ["userLanguages"],
     enabled: !!session,
     queryFn: async () => {
       const response = await fetch(

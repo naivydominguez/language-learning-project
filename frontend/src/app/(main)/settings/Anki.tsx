@@ -1,14 +1,13 @@
 import { View } from 'react-native';
-import { Text } from '@/components/Text';
+import { router } from 'expo-router';
 import PageHeader from './_components/PageHeader';
+import AnkiImport from '../../onboarding/anki';
 
 export default function AnkiScreen() {
   return (
     <View className="flex-1 bg-background-light">
       <PageHeader title="Anki" backButton="/settings/ConnectApp" />
-      <View className="p-4 flex items-center justify-center flex-1">
-        <Text className="text-4xl font-bold text-primary-dark mb-4">Coming Soon</Text>
-      </View>
+      <AnkiImport embedded onDone={() => router.push('/settings/ConnectApp')} />
     </View>
   );
 }

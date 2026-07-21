@@ -4,8 +4,10 @@ import { useRef, useState, useEffect } from "react";
 
 export default function SaveChangeButton({
   onPress,
+  disabled
 }: {
   onPress: () => void | boolean | Promise<void | boolean>;
+  disabled?: boolean 
 }) {
   const [justSaved, setJustSaved] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -27,6 +29,7 @@ export default function SaveChangeButton({
 
   return (
     <Pressable
+      disabled={disabled}
       className={`mt-8 mb-4 rounded-lg pt-4 pb-4 items-center justify-center ${
         justSaved ? "bg-green-500" : "bg-primary-light"
       }`}
