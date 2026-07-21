@@ -83,7 +83,6 @@ export default function LanguageSetting() {
           },
           body: JSON.stringify({
             native_language: nativeLanguage,
-            target_languages: selectedLanguages.length,
           }),
         },
       );
@@ -207,6 +206,7 @@ export default function LanguageSetting() {
                     onPress={() => toggleLang(language.name)}
                     className={`flex-row items-center justify-between border rounded-xl px-6 py-5 mb-4 ${
                       isSelected
+
                         ? "bg-accent-light border-accent"
                         : "bg-white border-gray-200"
                     }`}
@@ -235,7 +235,7 @@ export default function LanguageSetting() {
           </View>
         </View>
 
-        <SaveChangeButton onPress={handleSaveChanges} />
+        <SaveChangeButton onPress={handleSaveChanges} disabled={!canContinue} />
       </View>
     </View>
   );

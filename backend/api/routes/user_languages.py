@@ -35,7 +35,7 @@ async def get_user_languages(current_user = Depends(get_current_user)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    return [row['name'] for row in languages_response.data]
+    return [row['name'].capitalize() for row in languages_response.data]
 
 
 @router.post('/me', status_code=201)
@@ -44,7 +44,7 @@ async def set_user_language(request: SetUserLanguageRequest, current_user = Depe
         language_response = (
             supabase.table('languages')
             .select('id')
-            .eq('name', request.language)
+            .ilike('name', request.language)
             .execute()
         )
         if not language_response.data:
@@ -73,7 +73,7 @@ async def remove_user_language(request : SetUserLanguageRequest ,current_user = 
         language_response = (
             supabase.table('languages')
             .select('id')
-            .eq('name', request.language)
+            .ilike('name', request.language)
             .execute()
             )
         if not language_response.data:
