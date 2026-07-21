@@ -6,11 +6,16 @@ import OnboardingButton from "./_components/OnboardingButton";
 import { OnboardingColors } from "@/constants/onboardingTheme";
 import { useState } from "react";
 import { goToNextImport, ImportType } from "@/lib/importNav";
-import { useOnboarding } from "./context/OnboardingContext";
+import { useOptionalOnboarding } from "./context/OnboardingContext";
 import { savePendingOnboardingData } from "@/lib/onboardingStorage";
 
-export default function QuizletImport() {
-  const { onboardingData } = useOnboarding();
+type settingPageProps = {
+  embedded?: boolean;
+  onDone?: () => void;
+};
+
+export default function QuizletImport({ embedded = false, onDone }: settingPageProps = {}) {
+  const onboarding = useOptionalOnboarding();
   const [name, setName] = useState("");
 
   const params = useLocalSearchParams<{
@@ -25,36 +30,51 @@ export default function QuizletImport() {
   const currentIndex = Number(params.currentIndex ?? "0");
 
   function handleContinue() {
+    if (embedded) {
+      onDone?.();
+      return;
+    }
     goToNextImport(selectedApps, currentIndex, async () => {
-      //To do: save anki import once feature is implemented
-      await savePendingOnboardingData(onboardingData);
+      if (onboarding) {
+        await savePendingOnboardingData(onboarding.onboardingData);
+      }
       router.replace("/account/sign-up");
     });
   }
 
   return (
-    <View className="flex-1 justify-between bg-[#F8F3EF] px-6 pt-8 pb-6">
+    <View
+      className={
+        embedded
+          ? "flex-1 justify-between px-6 pt-4 pb-6"
+          : "flex-1 justify-between bg-[#F8F3EF] px-6 pt-8 pb-6"
+      }
+    >
       <View>
-        <View className="flex-row items-center justify-between">
-          <Pressable
-            onPress={() => router.push("/onboarding/import-vocab")}
-            className="-ml-1 -mt-1 p-2"
-          >
-            <ArrowLeft
-              size={20}
-              color={OnboardingColors.secondary}
-              strokeWidth={1.75}
-            />
-          </Pressable>
+        {!embedded && (
+          <View className="flex-row items-center justify-between">
+            <Pressable
+              onPress={() => router.push("/onboarding/import-vocab")}
+              className="-ml-1 -mt-1 p-2"
+            >
+              <ArrowLeft
+                size={20}
+                color={OnboardingColors.secondary}
+                strokeWidth={1.75}
+              />
+            </Pressable>
 
-          <Text style={{ fontSize: 12, color: OnboardingColors.tertiary }}>
-            Extra
+            <Text style={{ fontSize: 12, color: OnboardingColors.tertiary }}>
+              Extra
+            </Text>
+          </View>
+        )}
+
+        {!embedded && (
+          <Text weight="bold" className="text-3xl mb-3">
+            Quizlet
           </Text>
-        </View>
-
-        <Text weight="bold" className="text-3xl mb-3">
-          Quizlet
-        </Text>
+        )}
 
         <Text className="text-lg text-[#8B6F63]">Enter a file</Text>
 
@@ -74,7 +94,7 @@ export default function QuizletImport() {
       </View>
 
       <OnboardingButton
-        title="Continue"
+        title={embedded ? "Import" : "Continue"}
         onPress={handleContinue}
       />
     </View>

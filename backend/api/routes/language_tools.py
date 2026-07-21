@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from api.utils.gemini_client import client, GEMINI_MODEL
 from api.utils.openai_client import client as openai_client
+from fastapi.responses import Response
 from google.genai import types
 
 
@@ -20,21 +21,18 @@ class TranslationResponse(BaseModel):
 
 
 @router.get("/translate", response_model=TranslationResponse)
-def translate(text: str, target_lang: str):
+async def translate(text: str, target_lang: str):
     prompt = f"Translate the following text to {target_lang}. Respond with only the translation, no extra commentary.\n\nText: {text}"
     try:
-        response = client.models.generate_content(
-            model=GEMINI_MODEL,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                response_schema=TranslationResult,
-            ),
+        response = await openai_client.beta.chat.completions.parse(
+            model=os.environ.get("OPENAI_CHAT_MODEL"),
+            messages=[{"role": "user", "content": prompt}],
+            response_format=TranslationResult,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to translate text: {e}")
 
-    result = TranslationResult.model_validate_json(response.text)
+    result = response.choices[0].message.parsed
 
     return TranslationResponse(
         original_text=text,
@@ -133,3 +131,15 @@ async def get_conversation_starters(target_lang: str, count: int = 10):
     # return StarterPromptResponse(starters=result.starters)
     starters = DEMO_CONVERSATION_STARTERS.get(target_lang.lower(), DEMO_CONVERSATION_STARTERS["english"])
     return StarterPromptResponse(starters=starters[:count])
+
+@router.get("/speech")
+async def get_speech(text: str,voice: str= 'alloy'):
+    try:
+        response= await openai_client.audio.speech.create(
+            model=os.environ.get("OPENAI_TTS_MODEL"),
+            voice=voice,
+            input=text
+            )
+    except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to generate speech: {e}")
+    return Response(content=response.content, media_type="audio/mpeg")

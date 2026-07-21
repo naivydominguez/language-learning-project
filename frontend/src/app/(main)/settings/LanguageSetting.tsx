@@ -17,7 +17,10 @@ export default function LanguageSetting() {
   const { data: profile } = useUserProfile();
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [nativeLanguage, setNativeLanguage] = useState("English");
-
+  const originalSet = new Set(userLanguages ?? []);
+  const currentSet = new Set(selectedLanguages);
+  const added= [...currentSet].filter((lang) => !originalSet.has(lang));
+  const removed = [...originalSet].filter((lang) => !currentSet.has(lang));
   useEffect (() => {
     if (userLanguages) {
       setSelectedLanguages(userLanguages);
@@ -68,6 +71,7 @@ export default function LanguageSetting() {
 
   const canContinue = selectedLanguages.length > 0 && nativeLanguage !== "";
   const handleSaveChanges = async () => {
+
     try {
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/users/me`,
@@ -82,11 +86,61 @@ export default function LanguageSetting() {
           }),
         },
       );
+       if (!response.ok) {
+        Toast.show({
+          type: "error",
+          text1: "Error saving changes",
+          text2: "Please try again later.",
+        });
+        return false;
 
-      if (!response.ok) {
-        throw new Error("Failed to save changes");
       }
-      queryClient.invalidateQueries({queryKey: ["userProfile"]});
+            queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+
+      const result = await Promise.allSettled([
+        ...removed.map((language) =>
+          fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/user_languages/me`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${session?.access_token}`, // Replace with your actual access token
+            },
+            body: JSON.stringify({
+              language: language,
+            }),
+          })
+        ),
+        ...added.map((language) =>
+          fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/user_languages/me`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${session?.access_token}`, // Replace with your actual access token
+            },
+            body: JSON.stringify({
+              language: language,
+            }),
+          })
+        ),
+      ]);
+
+      const failedCount = result.filter(
+        (r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value.ok),
+      ).length;
+
+      if (failedCount > 0) {
+        Toast.show({
+          type: "error",
+          text1: "Error saving changes",
+          text2: `${failedCount} request(s) failed. Please try again later.`,
+        });
+        queryClient.invalidateQueries({queryKey: ["userLanguages"]});
+        return false;
+      }
+            queryClient.invalidateQueries({ queryKey: ["userLanguages"] });
+
+
+     
       return true;
     } catch (error) {
       Toast.show({
@@ -97,6 +151,10 @@ export default function LanguageSetting() {
       return false;
     }
   };
+
+
+ 
+
 
   return (
     <View className="flex-1 bg-background-light">
@@ -148,6 +206,7 @@ export default function LanguageSetting() {
                     onPress={() => toggleLang(language.name)}
                     className={`flex-row items-center justify-between border rounded-xl px-6 py-5 mb-4 ${
                       isSelected
+
                         ? "bg-accent-light border-accent"
                         : "bg-white border-gray-200"
                     }`}
@@ -176,7 +235,7 @@ export default function LanguageSetting() {
           </View>
         </View>
 
-        <SaveChangeButton onPress={handleSaveChanges} />
+        <SaveChangeButton onPress={handleSaveChanges} disabled={!canContinue} />
       </View>
     </View>
   );

@@ -44,7 +44,8 @@
       "expo-status-bar",
       "expo-web-browser",
       "expo-apple-authentication",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true,

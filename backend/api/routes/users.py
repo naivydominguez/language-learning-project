@@ -15,6 +15,8 @@ class Settings(BaseModel):
     study_time_goal: Optional[str] = None
     personality_prompt: Optional[str] = None
 
+class Language(BaseModel):
+    language: str
 
 @router.patch('/me')
 async def update_user_settings(settings: Settings, current_user = Depends(get_current_user)):
@@ -61,3 +63,5 @@ async def post_settings(settings: Settings, current_user = Depends(get_current_u
         raise HTTPException(status_code=400, detail="Insert failed")
 
     return response.data
+
+

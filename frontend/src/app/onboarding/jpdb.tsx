@@ -6,24 +6,35 @@ import OnboardingButton from "./_components/OnboardingButton";
 import { OnboardingColors } from "@/constants/onboardingTheme";
 import { useState } from "react";
 import { goToNextImport, ImportType } from "@/lib/importNav";
-import { useOnboarding } from "./context/OnboardingContext";
+import { useOptionalOnboarding } from "./context/OnboardingContext";
 import { savePendingOnboardingData } from "@/lib/onboardingStorage";
 
-export default function JPDBImport() {
-  const { onboardingData, updateOnboardingData } = useOnboarding();
+type settingPageProps = {
+  embedded?: boolean;
+  onDone?: () => void;
+};
 
-  const [apiKey, setApiKey] = useState(onboardingData.jpdbApiKey);
+export default function JPDBImport({ embedded = false, onDone }: settingPageProps = {}) {
+  const onboarding = useOptionalOnboarding();
+
+  const [apiKey, setApiKey] = useState(onboarding?.onboardingData.jpdbApiKey ?? "");
 
   const canContinue = apiKey.trim().length > 0;
 
   async function handleContinue() {
     if (!canContinue) return;
+
+    if (embedded) {
+      onDone?.();
+      return;
+    }
+
     const completeOnboardingData = {
-      ...onboardingData,
+      ...onboarding!.onboardingData,
       jpdbApiKey: apiKey.trim(),
     };
 
-    updateOnboardingData({ jpdbApiKey: apiKey.trim() });
+    onboarding!.updateOnboardingData({ jpdbApiKey: apiKey.trim() });
 
     await goToNextImport(selectedApps, currentIndex, async () => {
       await savePendingOnboardingData(completeOnboardingData);
@@ -43,28 +54,38 @@ export default function JPDBImport() {
   const currentIndex = Number(params.currentIndex ?? "0");
 
   return (
-    <View className="flex-1 justify-between bg-[#F8F3EF] px-6 pt-8 pb-6">
+    <View
+      className={
+        embedded
+          ? "flex-1 justify-between px-6 pt-4 pb-6"
+          : "flex-1 justify-between bg-[#F8F3EF] px-6 pt-8 pb-6"
+      }
+    >
       <View>
-        <View className="flex-row items-center justify-between">
-          <Pressable
-            onPress={() => router.push("/onboarding/import-vocab")}
-            className="-ml-1 -mt-1 p-2"
-          >
-            <ArrowLeft
-              size={20}
-              color={OnboardingColors.secondary}
-              strokeWidth={1.75}
-            />
-          </Pressable>
+        {!embedded && (
+          <View className="flex-row items-center justify-between">
+            <Pressable
+              onPress={() => router.push("/onboarding/import-vocab")}
+              className="-ml-1 -mt-1 p-2"
+            >
+              <ArrowLeft
+                size={20}
+                color={OnboardingColors.secondary}
+                strokeWidth={1.75}
+              />
+            </Pressable>
 
-          <Text style={{ fontSize: 12, color: OnboardingColors.tertiary }}>
-            Extra
+            <Text style={{ fontSize: 12, color: OnboardingColors.tertiary }}>
+              Extra
+            </Text>
+          </View>
+        )}
+
+        {!embedded && (
+          <Text weight="bold" className="text-3xl mb-3">
+            Enter your JPDB API Key
           </Text>
-        </View>
-
-        <Text weight="bold" className="text-3xl mb-3">
-          Enter your JPDB API Key
-        </Text>
+        )}
 
         <Text className="text-lg text-[#8B6F63]">
           You can get this from JPDB in Settings, Account Information API Key.
@@ -89,7 +110,7 @@ export default function JPDBImport() {
       </View>
 
       <OnboardingButton
-        title="Continue"
+        title={embedded ? "Save" : "Continue"}
         disabled={!canContinue}
         onPress={handleContinue}
       />
