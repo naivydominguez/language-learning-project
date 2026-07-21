@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from api.utils.auth import get_current_user
 from api.utils.supabase_client import supabase
+from api.utils.unknown_words import invalidate_known_words_cache
 
 router = APIRouter(prefix="/user_known_words", tags=["user-known-words"])
 
@@ -38,6 +39,8 @@ async def post_known_words(userknownwords: UserKnownWords, current_user = Depend
         response = supabase.table('user_words').insert(data).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+    invalidate_known_words_cache(current_user.id)
 
     if not response.data:
         raise HTTPException(status_code=400, detail="Insert failed")
@@ -83,6 +86,8 @@ async def delete_known_word(word_id: str, current_user = Depends(get_current_use
         supabase.table('user_words').delete().eq('word_id', word_id).eq('user_id', current_user.id).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+    invalidate_known_words_cache(current_user.id)
 
 
 @router.get('/mastery_level')

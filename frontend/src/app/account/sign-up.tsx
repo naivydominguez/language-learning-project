@@ -10,15 +10,15 @@ import { getPendingOnboardingData } from "@/lib/onboardingStorage";
 import { useEffect } from "react";
 import { submitOnboardingData } from "@/lib/onboardingApi";
 
-useEffect(() => {
-  async function checkOnboardingData() {
-    const data = await getPendingOnboardingData();
-    console.log("Pending onboarding data: ", data);
-  }
-  checkOnboardingData();
-}, []);
-
 export default function SignUp() {
+  useEffect(() => {
+    async function checkOnboardingData() {
+      const data = await getPendingOnboardingData();
+      console.log("Pending onboarding data: ", data);
+    }
+    checkOnboardingData();
+  }, []);
+
   const handleGoogleSignIn = async () => {
     try {
       console.log("Google button was pressed");

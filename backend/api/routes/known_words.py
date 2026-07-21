@@ -3,8 +3,9 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from api.utils.auth import get_current_user
 from api.utils.supabase_client import supabase
+from api.utils.unknown_words import invalidate_known_words_cache
+from api.utils.auth import get_current_user
 
 router = APIRouter(prefix="/known_words", tags=["known-words"])
 
@@ -25,6 +26,8 @@ async def post_known_words(knownwords: KnownWords, current_user = Depends(get_cu
         response = supabase.table('words').insert(data).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+    invalidate_known_words_cache(current_user.id)
 
     if not response.data:
         raise HTTPException(status_code=400, detail="Insert failed")
@@ -51,3 +54,5 @@ async def delete_known_word(word_id: str, current_user = Depends(get_current_use
         supabase.table('known_words').delete().eq('id', word_id).eq('user_id', current_user.id).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+    invalidate_known_words_cache(current_user.id)
