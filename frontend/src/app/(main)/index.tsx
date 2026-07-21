@@ -1,4 +1,4 @@
-import { View, Pressable } from "react-native";
+import { View, Pressable, ActivityIndicator } from "react-native";
 import { Text } from "@/components/Text";
 import { useRouter } from "expo-router";
 import { RotateCcw } from "lucide-react-native";
@@ -137,6 +137,14 @@ export default function HomePage() {
       });
     }
   };
+
+  if (isAuthLoading || !session) {
+    return (
+      <View className="flex-1 items-center justify-center bg-background-dark">
+        <ActivityIndicator size="small" color="#8C6E60" />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-background-dark">
