@@ -16,7 +16,8 @@ export default function HomePage() {
   const { session } = useAuth();
   const router = useRouter();
   const { setHistoryProvider } = useRealtimeVoiceContext();
-  const { data: userLanguages, isLoading: isLoadingUserLanguages } = useUserLanguage();
+  const { data: userLanguages, isLoading: isLoadingUserLanguages } =
+    useUserLanguage();
   const { data: profile } = useUserProfile();
 
   const [convStart, setConvoStart] = useState("");
@@ -47,6 +48,11 @@ export default function HomePage() {
     try {
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/conversation-starters?target_lang=${language.toLowerCase()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+        },
       );
       if (!response.ok) {
         throw new Error("Failed to fetch conversation starters");
