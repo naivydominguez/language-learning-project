@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { Text } from "@/components/Text";
 import { LineChart } from "react-native-gifted-charts";
 import PointerComponentCreator from "./GraphPointerComponent";
@@ -11,9 +11,10 @@ interface Props {
     color: string;
     fontSize: number;
   };
+  isLoading?: boolean;
 }
 
-const VocabGraph = ({ data: userData, axisTextStyles }: Props) => {
+const VocabGraph = ({ data: userData, axisTextStyles, isLoading }: Props) => {
   const [chartWidth, setChartWidth] = useState(0);
 
   const data = userData
@@ -50,33 +51,39 @@ const VocabGraph = ({ data: userData, axisTextStyles }: Props) => {
   return (
     <View className="w-full h-max flex flex-col bg-white p-4 rounded-md border border-background-dark">
       <Text weight="bold" className="text-xl">Vocabulary Growth</Text>
-      <View
-        className="w-full mt-6"
-        onLayout={(e) => setChartWidth(e.nativeEvent.layout.width)}
-      >
-        <LineChart
-          data={data}
-          areaChart
-          hideDataPoints
-          color="#b5613a" // primary
-          startFillColor="#d67a4a" // primary-light
-          startOpacity={0.3}
-          endOpacity={0}
-          width={chartWidth - 40} // subtract 40 to account for the space that the y-axis labels take up
-          height={120}
-          yAxisOffset={minValue}
-          maxValue={maxValue - minValue}
-          initialSpacing={0}
-          endSpacing={0}
-          noOfSections={4}
-          yAxisTextStyle={axisTextStyles}
-          xAxisLabelTextStyle={{
-            ...axisTextStyles,
-            transform: [{ translateX: 0 }],
-          }}
-          pointerConfig={pointerConfig}
-        />
-      </View>
+      {isLoading ? (
+        <View className="w-full h-[120px] mt-6 items-center justify-center">
+          <ActivityIndicator size="small" color="#8C6E60" />
+        </View>
+      ) : (
+        <View
+          className="w-full mt-6"
+          onLayout={(e) => setChartWidth(e.nativeEvent.layout.width)}
+        >
+          <LineChart
+            data={data}
+            areaChart
+            hideDataPoints
+            color="#b5613a" // primary
+            startFillColor="#d67a4a" // primary-light
+            startOpacity={0.3}
+            endOpacity={0}
+            width={chartWidth - 40} // subtract 40 to account for the space that the y-axis labels take up
+            height={120}
+            yAxisOffset={minValue}
+            maxValue={maxValue - minValue}
+            initialSpacing={0}
+            endSpacing={0}
+            noOfSections={4}
+            yAxisTextStyle={axisTextStyles}
+            xAxisLabelTextStyle={{
+              ...axisTextStyles,
+              transform: [{ translateX: 0 }],
+            }}
+            pointerConfig={pointerConfig}
+          />
+        </View>
+      )}
     </View>
   );
 };

@@ -1,4 +1,4 @@
-import { View, Pressable } from "react-native";
+import { ActivityIndicator, View, Pressable } from "react-native";
 import { Text } from "../../../../components/Text";
 import { useRouter } from "expo-router";
 import KnownWordsPill from "@/app/(main)/progress/_components/KnownWordsPill";
@@ -7,9 +7,10 @@ import { ChevronRight } from "lucide-react-native";
 interface Props {
   numWords: number;
   mostRecentWords: { word: string; translation: string }[];
+  isLoading?: boolean;
 }
 
-const KnownWordsPreview = ({ numWords, mostRecentWords }: Props) => {
+const KnownWordsPreview = ({ numWords, mostRecentWords, isLoading }: Props) => {
   const router = useRouter();
 
   const navigateToKnownWords = () => {
@@ -30,21 +31,27 @@ const KnownWordsPreview = ({ numWords, mostRecentWords }: Props) => {
             Known Words
           </Text>
           <Text weight="light" className="text-sm text-foreground-secondary">
-            {numKnownWords} words
+            {isLoading ? "—" : `${numKnownWords} words`}
           </Text>
         </View>
         <Pressable className="p-2" onPress={navigateToKnownWords}>
           <ChevronRight size={20} color="#BFAD9F" />
         </Pressable>
       </View>
-      <View className="flex flex-row flex-wrap items-center gap-2 mt-4">
-        {mostRecentWords.map(({ word }, index) => (
-          <KnownWordsPill key={word} word={word} />
-        ))}
-        <Text className="text-sm text-foreground-secondary/80">
-          +{numNotDisplayedWords} more
-        </Text>
-      </View>
+      {isLoading ? (
+        <View className="w-full h-10 mt-4 items-center justify-center">
+          <ActivityIndicator size="small" color="#8C6E60" />
+        </View>
+      ) : (
+        <View className="flex flex-row flex-wrap items-center gap-2 mt-4">
+          {mostRecentWords.map(({ word }, index) => (
+            <KnownWordsPill key={word} word={word} />
+          ))}
+          <Text className="text-sm text-foreground-secondary/80">
+            +{numNotDisplayedWords} more
+          </Text>
+        </View>
+      )}
     </View>
   );
 };

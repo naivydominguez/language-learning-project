@@ -84,7 +84,7 @@ export default function ImportVocab() {
         </Text>
 
         <Text className="text-lg text-foreground-secondary">
-          Already using flashcards? Connect your app to skip words you already
+          Already using flashcards? Connect your app to add words you already
           know. You can always do this later.
         </Text>
       </View>

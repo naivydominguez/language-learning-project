@@ -6,6 +6,7 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 import { Text } from "../../../../components/Text";
+import { useAuth } from "@/hooks/use-auth";
 import { useUserProfile } from "@/hooks/use-user";
 import React, { useState } from "react";
 import { X, Volume2 } from "lucide-react-native";
@@ -24,6 +25,7 @@ export default function WordPopup({
   visible,
   OnDismiss,
 }: WordPopupProps) {
+  const { session } = useAuth();
   const { data: profile } = useUserProfile();
   const [translateWord, setTranslateWord] = useState("");
   const player = useAudioPlayer();
@@ -69,6 +71,39 @@ export default function WordPopup({
       ? withTiming(0, { duration: 250, easing: Easing.out(Easing.cubic) })
       : 400;
   }, [visible, word]);
+
+  // const savedWords = async () => {
+  //   const response = await fetch(
+  //     `${process.env.EXPO_PUBLIC_BACKEND_URL}/known_words`,
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         authorization: `Bearer ${session?.access_token}`,
+  //       },
+  //       body: JSON.stringify({
+  //         word: word,
+  //         translation: translateWord,
+  //         language : language,
+  //         created_at: new Date().toISOString(),
+  //       }),
+  //     },
+  //   );
+  //   if (!response.ok) {
+  //     Toast.show({
+  //       type: "error",
+  //       text1: "Error saving word",
+  //       text2: "Please try again later.",
+  //     });
+  //     return;
+  //   }
+  //   const data = await response.json();
+  //   console.log(data);
+  // };
+
+  
+
+
 
   const contentAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
@@ -123,7 +158,12 @@ export default function WordPopup({
                 Dismiss
               </Text>
             </Pressable>
-            <Pressable className="flex-1 py-2.5 rounded-[10px] bg-primary items-center">
+            <Pressable
+              className="flex-1 py-2.5 rounded-[10px] bg-primary items-center"
+              onPress={ () => {
+                OnDismiss();
+              }}
+            >
               <Text className="text-[13px] font-semi text-white">
                 Save to vocab
               </Text>
