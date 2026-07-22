@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { Text } from "@/components/Text";
 import { WeeklyHeatMap } from "@symbiot.dev/react-native-heatmap";
 import { UserStatisticsResponse } from "@/app/(main)/progress";
@@ -17,9 +17,10 @@ const HEATMAP_COLORS = {
 
 interface Props {
   data: UserStatisticsResponse[];
+  isLoading?: boolean;
 }
 
-const StreakCalendar = ({ data }: Props) => {
+const StreakCalendar = ({ data, isLoading }: Props) => {
   const streakDays = data
     .filter((stat) => stat.streak)
     .map((stat) => new Date(stat.date));
@@ -42,19 +43,27 @@ const StreakCalendar = ({ data }: Props) => {
       <View className="flex flex-col gap-y-1 text-foreground mb-4">
         <View className="flex flex-row items-center gap-2">
           {/* TODO: fire icon */}
-          <Text weight="bold" className="text-xl">{currentStreak} day streak</Text>
+          <Text weight="bold" className="text-xl">
+            {isLoading ? "—" : `${currentStreak} day streak`}
+          </Text>
         </View>
         <Text weight="light" className="text-sm text-foreground-secondary/100">
-          Longest: {maxStreak} days
+          {isLoading ? "Longest: —" : `Longest: ${maxStreak} days`}
         </Text>
       </View>
-      <WeeklyHeatMap
-        data={streakDays}
-        endDate={new Date()}
-        cellSize={20}
-        cellGap={4}
-        theme={{ light: HEATMAP_COLORS, dark: HEATMAP_COLORS }}
-      />
+      {isLoading ? (
+        <View className="w-full h-[140px] items-center justify-center">
+          <ActivityIndicator size="small" color="#8C6E60" />
+        </View>
+      ) : (
+        <WeeklyHeatMap
+          data={streakDays}
+          endDate={new Date()}
+          cellSize={20}
+          cellGap={4}
+          theme={{ light: HEATMAP_COLORS, dark: HEATMAP_COLORS }}
+        />
+      )}
     </View>
   );
 };

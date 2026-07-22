@@ -84,11 +84,15 @@ export default function ProgressRoute() {
           <ChevronLeft size={20} color="#8C6E60" strokeWidth={2} />
         </Pressable>
 
-        <StreakCalendar data={statsData.data ?? []} />
-        <VocabGraph data={statsData.data ?? []} axisTextStyles={AXIS_TEXT_STYLES} />
-        <WeeklyMessages data={statsData.data ?? []} axisTextStyles={AXIS_TEXT_STYLES} />
+        <StreakCalendar data={statsData.data ?? []} isLoading={statsData.isLoading} />
+        <VocabGraph data={statsData.data ?? []} axisTextStyles={AXIS_TEXT_STYLES} isLoading={statsData.isLoading} />
+        <WeeklyMessages data={statsData.data ?? []} axisTextStyles={AXIS_TEXT_STYLES} isLoading={statsData.isLoading} />
         <MasteryDistribution axisTextStyles={AXIS_TEXT_STYLES} />
-        <KnownWordsPreview numWords={wordsCountData.data?.count || 0} mostRecentWords={wordsData.data ?? []} />
+        <KnownWordsPreview
+          numWords={wordsCountData.data?.count || 0}
+          mostRecentWords={wordsData.data ?? []}
+          isLoading={wordsData.isLoading || wordsCountData.isLoading}
+        />
       </ScrollView>
     </View>
   );
