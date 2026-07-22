@@ -248,6 +248,7 @@ async def get_conversation(current_user=Depends(get_current_user)):
             supabase.table("conversations")
             .select("*")
             .eq("user_id", current_user.id)
+            .order("created_at", desc=True)
             .execute()
         )
     except Exception as e:

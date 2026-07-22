@@ -29,7 +29,13 @@ async def get_known_words_user_statistics(current_user = Depends(get_current_use
 @router.get('/user_statistics/me')
 async def get_user_statistics(current_user = Depends(get_current_user)):
     try:
-        response = supabase.table('temporal_user_statistics').select('*').eq('user_id', current_user.id).execute()
+        response = (
+            supabase.table('temporal_user_statistics')
+            .select('*')
+            .eq('user_id', current_user.id)
+            .order('date', desc=False)
+            .execute()
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
