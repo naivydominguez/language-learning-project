@@ -53,8 +53,7 @@ export default function DailyGoal() {
         </Text>
 
         <Text className="text-lg text-foreground-secondary">
-          How long do you want to practice each day? This counts toward your
-          streak.
+          How long do you want to practice each day? This counts toward a daily streak.
         </Text>
       </View>
 

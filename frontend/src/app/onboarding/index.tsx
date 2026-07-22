@@ -20,14 +20,14 @@ export default function OnboardingIndex() {
         <Text className="text-lg text-foreground-secondary mb-3 leading-6 ">
           Research by linguist Stephen Krashen shows that people acquire
           language by understanding input that is slightly beyond their current
-          level — not through memorizing grammar rules.
+          level. Finding input just right for you is tough, and that's where Immerbot comes in.
         </Text>
 
         <View>
           <InfoCard
             Icon={BookOpen}
             title="Comprehensible input"
-            body="Reading and listening to content you mostly understand — with a few unknown words — is the most direct path to fluency."
+            body="Reading and listening to content you mostly understand with a few unknown words is the most direct path to fluency."
           />
 
           <InfoCard
